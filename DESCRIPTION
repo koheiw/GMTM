@@ -1,0 +1,25 @@
+Package: EBTM 
+Title: Embedding-based Topic Models
+Version: 0.0.1
+Authors@R: person('Kohei', 'Watanabe', role = c('aut', 'cre', 'cph'), email = 'watanabe.kohei@gmail.com', comment = c(ORCID = '0000-0001-6519-5265'))
+Maintainer: Kohei Watanabe <watanabe.kohei@gmail.com>
+Description: What the package does (one paragraph).
+License: Apache License (>= 2.0)
+Encoding: UTF-8
+Depends: 
+    R (>= 3.5.0)
+Imports:
+	quanteda (>= 4.0.0),
+    methods,
+    flexmix
+Suggests: 
+    testthat,
+    word2vec, 
+    spelling,
+    rmarkdown,
+    knitr
+Roxygen: list(markdown = TRUE)
+Language: en-US
+LazyData: true
+Config/roxygen2/version: 8.0.0
+VignetteBuilder: knitr
