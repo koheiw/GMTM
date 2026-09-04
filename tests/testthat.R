@@ -1,3 +1,3 @@
-require(EBTM)
+require(GMTM)
 require(testthat)
-test_check("EBTM")
+test_check("GMTM")
