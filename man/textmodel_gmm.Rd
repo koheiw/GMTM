@@ -2,7 +2,6 @@
 % Please edit documentation in R/gmm.R
 \name{textmodel_gmm}
 \alias{textmodel_gmm}
-\alias{is.textmodel_gmm}
 \title{Gaussian Mixture Model for topic analysis}
 \usage{
 textmodel_gmm(
@@ -12,8 +11,6 @@ textmodel_gmm(
   ...,
   verbose = quanteda_options("verbose")
 )
-
-is.textmodel_gmm(x)
 }
 \arguments{
 \item{x}{a dense matrix of document vectors in rows.}
@@ -21,6 +18,8 @@ is.textmodel_gmm(x)
 \item{k}{the number of topics to identify.}
 
 \item{model}{a fitted model from which initial centroids are extracted.}
+
+\item{...}{passed to the underlying function.}
 
 \item{verbose}{print the progress if \code{TRUE}.}
 }

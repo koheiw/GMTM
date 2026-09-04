@@ -5,8 +5,10 @@
 #' @param k the number of topics to identify.
 #' @param model a fitted model from which initial centroids are extracted.
 #' @param verbose print the progress if `TRUE`.
+#' @param ... passed to the underlying function.
 #' @import Rcpp
 #' @importFrom quanteda check_integer
+#' @importFrom stats runif
 #' @useDynLib GMTM
 #' @export
 textmodel_gmm <- function(x, k = 10, model = NULL, ...,
@@ -38,14 +40,14 @@ textmodel_gmm <- function(x, k = 10, model = NULL, ...,
   return(result)
 }
 
+#' Extract topics of documents
+#' @param x a fitted model.
+#' @rdname topics
 #' @export
 topics <- function(x, ...) {
   UseMethod("topics")
 }
 
-#' Extract topics of documents
-#' @param x a fitted model.
-#' @rdname terms
 #' @method topics textmodel_gmm
 #' @export
 topics.textmodel_gmm <- function(x, ...) {
@@ -58,7 +60,13 @@ topics.textmodel_gmm <- function(x, ...) {
 #' @rdname terms
 #' @param x a fitted model.
 #' @param n the number of topic words.
+#' @param ... passed to functions.
 #' @param data a dfm from which words are extracted for each topic.
+#' @export
+terms <- function(x, ...) {
+  UseMethod("terms")
+}
+
 #' @method terms textmodel_gmm
 #' @export
 terms.textmodel_gmm <- function(x, data, n = 10, ...) {
@@ -80,7 +88,7 @@ terms.textmodel_gmm <- function(x, data, n = 10, ...) {
 #   return(p)
 # }
 
-#' @rdname textmodel_gmm
+#' @keywords internal
 #' @export
 is.textmodel_gmm <- function(x) {
   "textmodel_gmm" %in% class(x)

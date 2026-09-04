@@ -4,6 +4,7 @@
 #' @inheritParams textmodel_gmm
 #' @import Rcpp
 #' @importFrom quanteda check_integer
+#' @importFrom stats runif
 #' @useDynLib GMTM
 #' @export
 textmodel_kmeans <- function(x, k = 10, model = NULL, ...,
@@ -36,11 +37,6 @@ textmodel_kmeans <- function(x, k = 10, model = NULL, ...,
   return(result)
 }
 
-#' @export
-topics <- function(x, ...) {
-  UseMethod("topics")
-}
-
 #' @method topics textmodel_kmeans
 #' @export
 topics.textmodel_kmeans <- function(x, ...) {
@@ -49,7 +45,6 @@ topics.textmodel_kmeans <- function(x, ...) {
   return(v)
 }
 
-#' @rdname terms
 #' @method terms textmodel_kmeans
 #' @export
 terms.textmodel_kmeans <- function(x, data, n = 10, ...) {
@@ -71,7 +66,7 @@ terms.textmodel_kmeans <- function(x, data, n = 10, ...) {
 #   return(p)
 # }
 
-#' @rdname textmodel_kmeans
+#' @keywords internal
 #' @export
 is.textmodel_kmeans <- function(x) {
   "textmodel_kmeans" %in% class(x)
