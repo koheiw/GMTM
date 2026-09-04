@@ -1,38 +1,34 @@
-#' K-means model for topic clustering
+#' K-means for topic clustering
+#' @import Rcpp
+#' @importFrom quanteda check_integer
+#' @useDynLib GMTM
 #' @export
 textmodel_kmeans <- function(x, k = 10, model = NULL, ...,
-                             verbose = quanteda_options("verbose")) {
-
-  dots <- list(...)
+                          verbose = quanteda_options("verbose")) {
 
   if (!is.matrix(x))
     stop("model must be a dense matrix")
 
   label <- NULL
-  if (!is.null(model)) {
+  if (is.null(model)) {
+    k <- check_integer(k, min = 2)
+    cl <- matrix(runif(ncol(x) * k), ncol = k)
+    label <- paste0("topic", seq_len(k))
+    message("k is overwritten by the cluster")
+  } else {
     if (!is.textmodel_kmeans(model))
       stop("model must be a fitted textmodel_kmeans")
-    cl <- model$kmeans$centers
-    k <- nrow(cl)
-    message("k is overwritten by the fitted model", call. = FALSE)
-  } else if (!is.null(dots$centers) && is.matrix(dots$centers)) {
-    cl <- dots$centers
-    k <- nrow(cl)
-    label <- rownames(dots$centers)
-    message("k is overwritten by the centers", call. = FALSE)
-  } else {
-    cl <- k
+    cl <- model$centers
+    label <- model$label
+    message("k is overwritten by the fitted model")
   }
 
-  if (is.null(label))
-    label <- paste0("topic", seq_len(k))
+  result <- cpp_kmeans(x, k, means = cl, verbose = verbose, ...)
 
-  km <- kmeans(x, centers = cl, algorithm = "Lloyd", iter.max = 100)
-  result <- list(kmeans = km,
-                 data = x,
-                 k = nrow(km$centers),
-                 label = label,
-                 docname = rownames(x))
+  dis <- proxyC::dist(x, t(result$centers), sparse = FALSE)
+  result$cluster <- max.col(-1 * dis ^ 2)
+  result$label <- label
+  result$docname <- rownames(x)
   class(result) <- "textmodel_kmeans"
   return(result)
 }
@@ -45,8 +41,9 @@ topics <- function(x, ...) {
 #' @method topics textmodel_kmeans
 #' @export
 topics.textmodel_kmeans <- function(x) {
-  v <- x$kmeans$cluster
-  v <- factor(v, levels = seq_len(x$k), labels = x$label)
+  # TODO: return factor with labels
+  #v <- flexmix::clusters(x$flexmix)
+  v <- factor(x$cluster, levels = seq_len(x$k), labels = x$label)
   names(v) <- x$docname
   return(v)
 }
@@ -57,20 +54,20 @@ terms.textmodel_kmeans <- function(x, data, ...) {
   get_terms(topics(x), data, ...)
 }
 
-#' @method predict textmodel_kmeans
-#' @export
-predict.textmodel_kmeans <- function(x, newdata, ...) {
-  if (missing(newdata)) {
-    p <- fitted(x$kmeans)
-    dimnames(p) <- list(x$docname, NULL)
-  } else {
-    dis <- as.matrix(proxyC::dist(newdata, x$kmeans$center,
-                                  sparse = FALSE, use_nan = TRUE)) ^ 2
-    p <- x$kmeans$center[max.col(dis * -1),, drop = FALSE]
-    dimnames(p) <- list(rownames(newdata), NULL)
-  }
-  return(p)
-}
+#' #' @method predict textmodel_kmeans
+#' #' @export
+#' predict.textmodel_kmeans <- function(x, newdata, ...) {
+#'   if (missing(newdata)) {
+#'     p <- flexmix::posterior(x$flexmix, ...)
+#'     dimnames(p) <- list(x$docname, x$label)
+#'   } else {
+#'     if (!is.matrix(newdata))
+#'       stop("model must be a dense matrix")
+#'     p <- flexmix::posterior(x$flexmix, newdata = list(x = newdata), ...)
+#'     dimnames(p) <- list(rownames(newdata), x$label)
+#'   }
+#'   return(p)
+#' }
 
 #' @export
 is.textmodel_kmeans <- function(x) {

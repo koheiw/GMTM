@@ -10,26 +10,31 @@ inline std::vector<double> to_vector(const arma::urowvec& v) {
 }
 
 // [[Rcpp::export]]
-List cpp_gmm(arma::mat &data, arma::mat means,
-             int k, bool verbose = false) {
+List cpp_gmm(arma::mat &data, int k, arma::mat means,
+             int mode = 1, int iter_km = 10, int iter_em = 10,
+             bool verbose = false) {
 
   inplace_trans(data); // vectors are columns
 
-
-  Rcout << "means.n_rows:" << means.n_rows << "\n";
-  Rcout << "means.n_cols:" << means.n_cols << "\n";
-
-  gmm_diag;
-  model.reset(data.n_rows, k);
-  model.set_means(means);
+  //Rcout << "means.n_rows:" << means.n_rows << "\n";
+  //Rcout << "means.n_cols:" << means.n_cols << "\n";
   //model.means.print("means:");
 
-  bool status = model.learn(data, k, eucl_dist , keep_existing,
-                            10, 5, 1e-10, verbose);
+  gmm_diag model;
+  model.reset(data.n_rows, k);
+  model.set_means(means);
 
-  if(status == false) {
-    cout << "learning failed" << endl;
+  bool status = false;
+  if (mode == 1) {
+    status = model.learn(data, k, eucl_dist , keep_existing,
+                         iter_km, iter_em, 1e-10, verbose = verbose);
+  } else {
+    status = model.learn(data, k, maha_dist , keep_existing,
+                         iter_km, iter_em, 1e-10, verbose = verbose);
   }
+
+  if (!status)
+    throw std::runtime_error("Training of GMM failed");
 
   //model.means.print("means:");
 
@@ -41,24 +46,16 @@ List cpp_gmm(arma::mat &data, arma::mat means,
   urowvec cl_prob = model.assign(data, prob_dist);
 
   arma::mat log_prob(data.n_cols, k, arma::fill::zeros);
-  //Rcout << "log_prob.n_rows:" << log_prob.n_rows << "\n";
-  //Rcout << "log_prob.n_cols:" << log_prob.n_cols << "\n";
-
   for (int j = 0; j < k; j++) {
-    //Rcout << j << "\n";
-    //Rcout << model.log_p(data, j) << "\n";
     log_prob.col(j) = model.log_p(data, j).t();
   }
-
-  //IntegerVector cl_prob_ = arma::conv_to<IntegerVector>::from(cl_prob);
-
   return List::create(Rcpp::Named("k") = k,
-                      Rcpp::Named("cl_eucl") = to_vector(cl_eucl),
-                      Rcpp::Named("cl_prob") = to_vector(cl_prob),
-                      Rcpp::Named("log_prob") = log_prob,
-                      Rcpp::Named("means") = model.means,
-                      Rcpp::Named("dcovs") = model.dcovs,
-                      Rcpp::Named("hefts") = model.hefts);
+                      Rcpp::Named("centers") = model.means,
+                      //Rcpp::Named("dcovs") = model.dcovs,
+                      //Rcpp::Named("hefts") = model.hefts
+                      Rcpp::Named("likelihood") = exp(log_prob),
+                      //Rcpp::Named("cluster") = to_vector(cl_eucl),
+                      Rcpp::Named("cluster") = to_vector(cl_prob));
 }
 
 /*** R
@@ -66,13 +63,5 @@ List cpp_gmm(arma::mat &data, arma::mat means,
 k <- 20
 m <- matrix(rnorm(100 * k), ncol = k)
 out <- cpp_gmm(mat, k, means = m, verbose = FALSE)
-out$cluster
-names(out)
-cluster <- max.col(out$log_prob)
-# p <- exp(out$log_prob)
-# p <- p / rowSums(p)
-# hist(p[100,])
-# table(cluster)
-EBTM:::get_terms(out$cl_eucl, dfmt, min_count = 1)
-EBTM:::get_terms(out$cl_prob, dfmt, min_count = 1)
+GMTM:::get_terms(out$cluster, dfmt, min_count = 1)
 */
