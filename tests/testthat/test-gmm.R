@@ -1,6 +1,6 @@
 library(quanteda)
 library(wordvector)
-library(embTM)
+library(EBTM)
 
 corp <- wordvector::data_corpus_news2014
 
@@ -17,9 +17,18 @@ test_that("textmodel_gmm works", {
 
   set.seed(1234)
 
+  # use k
   mat1 <- head(as.matrix(dov_test, normalize = FALSE), 1000)
   gmm1 <- textmodel_gmm(mat1, k = 10, verbose = FALSE)
 
+  expect_equal(
+    names(gmm1),
+    c("flexmix", "data", "k", "label", "docname")
+  )
+  expect_equal(
+    names(topics(gmm1)),
+    rownames(mat1),
+  )
   expect_true(
     is.factor(topics(gmm1))
   )
@@ -28,8 +37,17 @@ test_that("textmodel_gmm works", {
     paste0("topic", 1:10)
   )
   expect_equal(
-    dim(posterior(gmm1)),
+    dim(predict(gmm1)),
     c(1000, 10)
+  )
+  expect_equal(
+    dimnames(predict(gmm1)),
+    list(rownames(mat1),
+         paste0("topic", 1:10))
+  )
+  expect_equal(
+    dim(predict(gmm1, newdata = mat1[1:5,])),
+    c(5, 10)
   )
 
   # use model
@@ -44,7 +62,7 @@ test_that("textmodel_gmm works", {
     paste0("topic", 1:10)
   )
   expect_equal(
-    dim(posterior(gmm2)),
+    dim(predict(gmm2)),
     c(1000, 10)
   )
 
@@ -56,7 +74,7 @@ test_that("textmodel_gmm works", {
 
   # use cluster
   mat3 <- tail(as.matrix(dov_test, normalize = FALSE), 1000)
-  gmm3 <- textmodel_gmm(mat3, cluster = posterior(gmm1, newdata = mat3),
+  gmm3 <- textmodel_gmm(mat3, cluster = predict(gmm1, newdata = mat3),
                         verbose = FALSE)
   expect_true(
     is.factor(topics(gmm3))
@@ -66,7 +84,7 @@ test_that("textmodel_gmm works", {
     paste0("topic", 1:10)
   )
   expect_equal(
-    dim(posterior(gmm3)),
+    dim(predict(gmm3)),
     c(1000, 10)
   )
 
