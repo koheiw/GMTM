@@ -2,7 +2,8 @@
 % Please edit documentation in R/kmeans.R
 \name{textmodel_kmeans}
 \alias{textmodel_kmeans}
-\title{K-means for topic clustering}
+\alias{is.textmodel_kmeans}
+\title{K-means for topic analysis}
 \usage{
 textmodel_kmeans(
   x,
@@ -11,7 +12,18 @@ textmodel_kmeans(
   ...,
   verbose = quanteda_options("verbose")
 )
+
+is.textmodel_kmeans(x)
+}
+\arguments{
+\item{x}{a dense matrix of document vectors in rows.}
+
+\item{k}{the number of topics to identify.}
+
+\item{model}{a fitted model from which initial centroids are extracted.}
+
+\item{verbose}{print the progress if \code{TRUE}.}
 }
 \description{
-K-means for topic clustering
+Fast k-means clustering of document vectors based on the Armadillo library.
 }

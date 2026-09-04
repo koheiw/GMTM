@@ -1,4 +1,10 @@
-#' Gaussian Mixture Model for topic clustering
+#' Gaussian Mixture Model for topic analysis
+#'
+#' Fast Gaussian mixture model for clustering of document vectors based on the Armadillo library.
+#' @param x a dense matrix of document vectors in rows.
+#' @param k the number of topics to identify.
+#' @param model a fitted model from which initial centroids are extracted.
+#' @param verbose print the progress if `TRUE`.
 #' @import Rcpp
 #' @importFrom quanteda check_integer
 #' @useDynLib GMTM
@@ -37,37 +43,44 @@ topics <- function(x, ...) {
   UseMethod("topics")
 }
 
+#' Extract topics of documents
+#' @param x a fitted model.
+#' @rdname terms
 #' @method topics textmodel_gmm
 #' @export
-topics.textmodel_gmm <- function(x) {
-  # TODO: return factor with labels
-  #v <- flexmix::clusters(x$flexmix)
+topics.textmodel_gmm <- function(x, ...) {
   v <- factor(x$cluster, levels = seq_len(x$k), labels = x$label)
   names(v) <- x$docname
   return(v)
 }
 
+#' Extract frequent words for topics
+#' @rdname terms
+#' @param x a fitted model.
+#' @param n the number of topic words.
+#' @param data a dfm from which words are extracted for each topic.
 #' @method terms textmodel_gmm
 #' @export
-terms.textmodel_gmm <- function(x, data, ...) {
-  get_terms(topics(x), data, ...)
+terms.textmodel_gmm <- function(x, data, n = 10, ...) {
+  get_terms(topics(x), data, n = n, ...)
 }
 
-#' #' @method predict textmodel_gmm
-#' #' @export
-#' predict.textmodel_gmm <- function(x, newdata, ...) {
-#'   if (missing(newdata)) {
-#'     p <- flexmix::posterior(x$flexmix, ...)
-#'     dimnames(p) <- list(x$docname, x$label)
-#'   } else {
-#'     if (!is.matrix(newdata))
-#'       stop("model must be a dense matrix")
-#'     p <- flexmix::posterior(x$flexmix, newdata = list(x = newdata), ...)
-#'     dimnames(p) <- list(rownames(newdata), x$label)
-#'   }
-#'   return(p)
-#' }
+# #' @method predict textmodel_gmm
+# #' @export
+# predict.textmodel_gmm <- function(x, newdata, ...) {
+#   if (missing(newdata)) {
+#     p <- flexmix::posterior(x$flexmix, ...)
+#     dimnames(p) <- list(x$docname, x$label)
+#   } else {
+#     if (!is.matrix(newdata))
+#       stop("model must be a dense matrix")
+#     p <- flexmix::posterior(x$flexmix, newdata = list(x = newdata), ...)
+#     dimnames(p) <- list(rownames(newdata), x$label)
+#   }
+#   return(p)
+# }
 
+#' @rdname textmodel_gmm
 #' @export
 is.textmodel_gmm <- function(x) {
   "textmodel_gmm" %in% class(x)

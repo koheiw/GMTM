@@ -1,10 +1,13 @@
-#' K-means for topic clustering
+#' K-means for topic analysis
+#'
+#' Fast k-means clustering of document vectors based on the Armadillo library.
+#' @inheritParams textmodel_gmm
 #' @import Rcpp
 #' @importFrom quanteda check_integer
 #' @useDynLib GMTM
 #' @export
 textmodel_kmeans <- function(x, k = 10, model = NULL, ...,
-                          verbose = quanteda_options("verbose")) {
+                             verbose = quanteda_options("verbose")) {
 
   if (!is.matrix(x))
     stop("model must be a dense matrix")
@@ -40,35 +43,35 @@ topics <- function(x, ...) {
 
 #' @method topics textmodel_kmeans
 #' @export
-topics.textmodel_kmeans <- function(x) {
-  # TODO: return factor with labels
-  #v <- flexmix::clusters(x$flexmix)
+topics.textmodel_kmeans <- function(x, ...) {
   v <- factor(x$cluster, levels = seq_len(x$k), labels = x$label)
   names(v) <- x$docname
   return(v)
 }
 
+#' @rdname terms
 #' @method terms textmodel_kmeans
 #' @export
-terms.textmodel_kmeans <- function(x, data, ...) {
-  get_terms(topics(x), data, ...)
+terms.textmodel_kmeans <- function(x, data, n = 10, ...) {
+  get_terms(topics(x), data, n = n, ...)
 }
 
-#' #' @method predict textmodel_kmeans
-#' #' @export
-#' predict.textmodel_kmeans <- function(x, newdata, ...) {
-#'   if (missing(newdata)) {
-#'     p <- flexmix::posterior(x$flexmix, ...)
-#'     dimnames(p) <- list(x$docname, x$label)
-#'   } else {
-#'     if (!is.matrix(newdata))
-#'       stop("model must be a dense matrix")
-#'     p <- flexmix::posterior(x$flexmix, newdata = list(x = newdata), ...)
-#'     dimnames(p) <- list(rownames(newdata), x$label)
-#'   }
-#'   return(p)
-#' }
+# #' @method predict textmodel_kmeans
+# #' @export
+# predict.textmodel_kmeans <- function(x, newdata, ...) {
+#   if (missing(newdata)) {
+#     p <- flexmix::posterior(x$flexmix, ...)
+#     dimnames(p) <- list(x$docname, x$label)
+#   } else {
+#     if (!is.matrix(newdata))
+#       stop("model must be a dense matrix")
+#     p <- flexmix::posterior(x$flexmix, newdata = list(x = newdata), ...)
+#     dimnames(p) <- list(rownames(newdata), x$label)
+#   }
+#   return(p)
+# }
 
+#' @rdname textmodel_kmeans
 #' @export
 is.textmodel_kmeans <- function(x) {
   "textmodel_kmeans" %in% class(x)

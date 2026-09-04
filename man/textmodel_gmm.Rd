@@ -2,7 +2,8 @@
 % Please edit documentation in R/gmm.R
 \name{textmodel_gmm}
 \alias{textmodel_gmm}
-\title{Gaussian Mixture Model for topic clustering}
+\alias{is.textmodel_gmm}
+\title{Gaussian Mixture Model for topic analysis}
 \usage{
 textmodel_gmm(
   x,
@@ -11,7 +12,18 @@ textmodel_gmm(
   ...,
   verbose = quanteda_options("verbose")
 )
+
+is.textmodel_gmm(x)
+}
+\arguments{
+\item{x}{a dense matrix of document vectors in rows.}
+
+\item{k}{the number of topics to identify.}
+
+\item{model}{a fitted model from which initial centroids are extracted.}
+
+\item{verbose}{print the progress if \code{TRUE}.}
 }
 \description{
-Gaussian Mixture Model for topic clustering
+Fast Gaussian mixture model for clustering of document vectors based on the Armadillo library.
 }
