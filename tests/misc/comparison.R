@@ -25,7 +25,7 @@ mat[is.nan(mat)] <- 0
 
 set.seed(1234)
 km <- kmeans(mat, 20, algorithm = "Lloyd", iter.max = 100)
-EBTM:::get_terms(km$cluster, dfmt)
+GMTM:::get_terms(km$cluster, dfmt)
 table(km$cluster)
 km$center
 
@@ -38,7 +38,7 @@ gmm <- GMM(mat, 100, "eucl_dist", "random_subset", 10, km_iter = 10, em_iter = 0
 
 cluster <- max.col(gmm$Log_likelihood)
 table(cluster)
-EBTM:::get_terms(factor(cluster), dfmt, min_count = 1)
+GMTM:::get_terms(factor(cluster), dfmt, min_count = 1)
 
 pred <- predict(gmm, mat)
 
@@ -51,13 +51,12 @@ flx <- flexmix(x ~ 1, data = list(x = mat), k = 10,
                model = FLXMCmvnorm(diagonal = TRUE),
                control = list(verbose = 1,
                               minprior = 0))
-EBTM:::get_terms(flx@cluster, dfmt, min_count = 1)
+GMTM:::get_terms(flx@cluster, dfmt, min_count = 1)
 
 library(seededlda)
 lda <- textmodel_lda(dfmt, 10, batch_size = 0.01, auto_iter = TRUE)
 terms(lda)
 
-gmm$centroids
 library(dbscan)
 snn <- sNNclust(mat, k = 20, eps = 0.1, minPts = 10)
 table(snn$cluster)
@@ -70,15 +69,11 @@ dbs <- dbscan(mat2, minPts = 10, eps = 1)
 table(dbs$cluster)
 get_terms(dfmt, dbs$cluster)
 
-# try embeddings from CNN
 library(mclust)
 mc <- Mclust(mat2, G = 20, modelNames = c("VII", "EII"))
 summary(mc)
-defaultPrior(mat, G = 10, modelName = c("VII"))
-defaultPrior(mat, G = 10, modelName = c("EII"))
 
-get_terms(dfmt, predict(mc)$classification)
-
+GMTM::get_terms(predict(mc)$classification, dfmt)
 
 library(umap)
 conf <- umap.defaults
@@ -87,29 +82,4 @@ conf$n_components = 10
 
 ump <- umap(mat, conf)
 plot(ump$layout[,c(3, 6)])
-
 dbs <- dbscan(ump$layout, eps = 0.6, minPts = 2)
-dbs
-#dbs <- dbscan(frNN(mat, eps = 10), minPts = 2)
-plot(mat, col = dbs$cluster)
-points(mat[dbs$cluster == 1, ], pch = 3, col = "grey")
-
-
-
-#-------------------------
-
-embed <- readRDS("D:/Research/Torch-test/result/matrix_ff_ungd.RDS")
-embed <- readRDS("D:/Research/Torch-test/result/matrix_cnn_ungd.RDS")
-embed <- readRDS("D:/Research/Torch-test/result/matrix_gru_ungd.RDS")
-wov2 <- as.textmodel_word2vec(embed[-1,])
-head(similarity(wov, "america"), 10)
-head(similarity(wov2, "america"), 10)
-head(similarity(wov2, "war"), 10)
-head(similarity(wov2, "rights"), 10)
-dov2 <- as.textmodel_doc2vec(dfmt, wov2)
-
-mat2 <- as.matrix(dov2)
-km2 <- kmeans(mat2, 20, algorithm = "Lloyd", iter.max = 100)
-get_terms(dfmt, km2$cluster)
-table(km2$cluster)
-
