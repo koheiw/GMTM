@@ -1,5 +1,5 @@
-Package: EBTM 
-Title: Embedding-based Topic Models
+Package: GMTM 
+Title: Gausian Mixture Text Models for Document vectors
 Version: 0.0.1
 Authors@R: person('Kohei', 'Watanabe', role = c('aut', 'cre', 'cph'), email = 'watanabe.kohei@gmail.com', comment = c(ORCID = '0000-0001-6519-5265'))
 Maintainer: Kohei Watanabe <watanabe.kohei@gmail.com>
@@ -10,9 +10,8 @@ Depends:
     R (>= 3.5.0)
 Imports:
 	quanteda (>= 4.0.0),
-    methods,
-    flexmix,
-    proxyC
+  methods,
+  proxyC
 Suggests: 
     testthat,
     word2vec, 
@@ -20,6 +19,7 @@ Suggests:
     rmarkdown,
     knitr
 Roxygen: list(markdown = TRUE)
+LinkingTo: Rcpp, RcppArmadillo (>= 0.7.600.1.0), quanteda, testthat
 Language: en-US
 LazyData: true
 Config/roxygen2/version: 8.0.0

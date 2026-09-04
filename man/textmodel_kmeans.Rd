@@ -2,7 +2,7 @@
 % Please edit documentation in R/kmeans.R
 \name{textmodel_kmeans}
 \alias{textmodel_kmeans}
-\title{K-means model for topic clustering}
+\title{K-means for topic clustering}
 \usage{
 textmodel_kmeans(
   x,
@@ -13,5 +13,5 @@ textmodel_kmeans(
 )
 }
 \description{
-K-means model for topic clustering
+K-means for topic clustering
 }

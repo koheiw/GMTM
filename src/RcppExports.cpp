@@ -12,27 +12,45 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // cpp_gmm
-List cpp_gmm(arma::mat& data, arma::mat means, int k, bool verbose, int threads);
-RcppExport SEXP _EBTM_cpp_gmm(SEXP dataSEXP, SEXP meansSEXP, SEXP kSEXP, SEXP verboseSEXP, SEXP threadsSEXP) {
+List cpp_gmm(arma::mat& data, int k, arma::mat means, int mode, int iter_km, int iter_em, bool verbose);
+RcppExport SEXP _GMTM_cpp_gmm(SEXP dataSEXP, SEXP kSEXP, SEXP meansSEXP, SEXP modeSEXP, SEXP iter_kmSEXP, SEXP iter_emSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type means(meansSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type means(meansSEXP);
+    Rcpp::traits::input_parameter< int >::type mode(modeSEXP);
+    Rcpp::traits::input_parameter< int >::type iter_km(iter_kmSEXP);
+    Rcpp::traits::input_parameter< int >::type iter_em(iter_emSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_gmm(data, means, k, verbose, threads));
+    rcpp_result_gen = Rcpp::wrap(cpp_gmm(data, k, means, mode, iter_km, iter_em, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_kmeans
+List cpp_kmeans(arma::mat& data, int k, arma::mat& means, int iter, bool verbose);
+RcppExport SEXP _GMTM_cpp_kmeans(SEXP dataSEXP, SEXP kSEXP, SEXP meansSEXP, SEXP iterSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type means(meansSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_kmeans(data, k, means, iter, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_EBTM_cpp_gmm", (DL_FUNC) &_EBTM_cpp_gmm, 5},
+    {"_GMTM_cpp_gmm", (DL_FUNC) &_GMTM_cpp_gmm, 7},
+    {"_GMTM_cpp_kmeans", (DL_FUNC) &_GMTM_cpp_kmeans, 5},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_EBTM(DllInfo *dll) {
+RcppExport void R_init_GMTM(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
