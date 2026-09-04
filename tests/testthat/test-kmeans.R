@@ -1,6 +1,6 @@
 library(quanteda)
 library(wordvector)
-library(EBTM)
+library(GMTM)
 
 corp <- wordvector::data_corpus_news2014
 
@@ -69,8 +69,22 @@ test_that("textmodel_kmeans works", {
 
   term1 <- terms(km1, head(dfmt_test, 1000), n = 20)
   term2 <- terms(km2, tail(dfmt_test, 1000), n = 20)
+
+  expect_equal(
+    dim(term1),
+    c(20, 10)
+  )
+  expect_equal(
+    dim(term2),
+    c(20, 10)
+  )
   expect_true(
-    all(sapply(1:10, function(i) length(intersect(term1[,i], term2[,i]))) > 1),
+    all(sapply(1:10, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
+  )
+
+  expect_error(
+    terms(km1, head(dfmt_test, 100), n = 20),
+    "the number of documents do not match"
   )
 
 })

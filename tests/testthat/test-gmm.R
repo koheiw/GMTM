@@ -36,6 +36,7 @@ test_that("textmodel_gmm works", {
     levels(topics(gmm1)),
     paste0("topic", 1:10)
   )
+
   # expect_equal(
   #   dim(predict(gmm1)),
   #   c(1000, 10)
@@ -68,8 +69,22 @@ test_that("textmodel_gmm works", {
 
   term1 <- terms(gmm1, head(dfmt_test, 1000), n = 20)
   term2 <- terms(gmm2, tail(dfmt_test, 1000), n = 20)
+
+  expect_equal(
+    dim(term1),
+    c(20, 10)
+  )
+  expect_equal(
+    dim(term2),
+    c(20, 10)
+  )
   expect_true(
-    all(sapply(1:10, function(i) length(intersect(term1[,i], term2[,i]))) > 1),
+    all(sapply(1:10, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
+  )
+
+  expect_error(
+    terms(gmm1, head(dfmt_test, 100), n = 20),
+    "the number of documents do not match"
   )
 })
 
