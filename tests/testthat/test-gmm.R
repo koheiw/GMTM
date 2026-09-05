@@ -54,6 +54,7 @@ test_that("model works", {
   mat1 <- head(mat, 1000)
   mat2 <- tail(mat, 1000)
 
+  set.seed(1234)
   gmm1 <- textmodel_gmm(mat1, k = 10, verbose = FALSE)
   gmm2 <- textmodel_gmm(mat2, model = gmm1, verbose = FALSE)
 

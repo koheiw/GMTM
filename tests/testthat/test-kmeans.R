@@ -54,6 +54,7 @@ test_that("model works", {
   mat1 <- head(mat, 1000)
   mat2 <- tail(mat, 1000)
 
+  set.seed(1234)
   km1 <- textmodel_kmeans(mat1, k = 10, verbose = FALSE)
   km2 <- textmodel_kmeans(mat2, model = km1, verbose = FALSE)
 
