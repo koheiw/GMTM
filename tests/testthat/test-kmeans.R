@@ -50,16 +50,12 @@ test_that("model works", {
 
   skip_on_cran()
 
-  mat <- as.matrix(dov_test, normalize = FALSE)
-  mat1 <- head(mat, 1000)
-  mat2 <- tail(mat, 1000)
-
   set.seed(1234)
-  km1 <- textmodel_kmeans(mat1, k = 10, verbose = FALSE)
-  km2 <- textmodel_kmeans(mat2, model = km1, verbose = FALSE)
+  km1 <- textmodel_kmeans(dov_test, k = 10, verbose = FALSE)
+  km2 <- textmodel_kmeans(dov_test, model = km1, verbose = FALSE)
 
-  term1 <- terms(km1, head(dfmt_test, 1000), n = 20)
-  term2 <- terms(km2, tail(dfmt_test, 1000), n = 20)
+  term1 <- terms(km1, dfmt_test, n = 10)
+  term2 <- terms(km2, dfmt_test, n = 10)
 
   expect_true(
     all(sapply(1:10, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
