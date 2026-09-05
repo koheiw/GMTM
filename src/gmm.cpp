@@ -51,7 +51,7 @@ List cpp_gmm(arma::mat &data, int k, arma::mat means,
   }
   return List::create(Rcpp::Named("k") = k,
                       Rcpp::Named("centers") = model.means,
-                      //Rcpp::Named("dcovs") = model.dcovs,
+                      Rcpp::Named("covariance") = model.dcovs,
                       //Rcpp::Named("hefts") = model.hefts
                       Rcpp::Named("likelihood") = exp(log_prob),
                       //Rcpp::Named("cluster") = to_vector(cl_eucl),
