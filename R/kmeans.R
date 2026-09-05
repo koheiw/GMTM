@@ -36,6 +36,7 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, ...,
   } else {
     if (!is.textmodel_kmeans(model))
       stop("model must be a fitted textmodel_kmeans")
+    k <- ncol(model$centers)
     cl <- model$centers
     label <- model$label
     message("k is overwritten by the fitted model")

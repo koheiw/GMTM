@@ -52,14 +52,16 @@ test_that("model works", {
   skip_on_cran()
 
   set.seed(1234)
-  gmm1 <- textmodel_gmm(dov_test, k = 10, verbose = FALSE)
-  gmm2 <- textmodel_gmm(dov_test, model = gmm1, verbose = FALSE)
-
+  gmm1 <- textmodel_gmm(dov_test, k = 15, verbose = FALSE)
+  expect_message(
+    gmm2 <- textmodel_gmm(dov_test, model = gmm1, verbose = FALSE),
+    "k is overwritten by the fitted model"
+  )
   term1 <- terms(gmm1, dfmt_test, n = 10)
   term2 <- terms(gmm2, dfmt_test, n = 10)
 
   expect_true(
-    all(sapply(1:10, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
+    all(sapply(1:15, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
   )
 
 })

@@ -39,6 +39,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, ...,
   } else {
     if (!is.textmodel_gmm(model))
       stop("model must be a fitted textmodel_gmm")
+    k <- ncol(model$centers)
     cl <- model$centers
     label <- model$label
     message("k is overwritten by the fitted model")
