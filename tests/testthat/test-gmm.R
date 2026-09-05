@@ -18,7 +18,7 @@ test_that("textmodel_gmm works", {
 
   expect_equal(
     names(gmm_test),
-    c("k", "centers", "covariance ", "likelihood", "cluster", "label",
+    c("k", "centers", "covariance", "likelihood", "cluster", "label",
       "docname", "call", "version")
   )
   expect_equal(
