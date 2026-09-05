@@ -1,0 +1,49 @@
+---
+output: github_document
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(
+  collapse = FALSE,
+  comment = "##",
+  fig.path = "man/images/"
+)
+```
+
+# GMTM: Gaussian Mixture Text Models for Topic Analysis
+
+## Installation
+
+From CRAN:
+
+```{r, eval=FALSE}
+#install.packages("GMTM") # not yet
+```
+
+From Github:
+
+```{r, eval=FALSE}
+devtools::install_github("koheiw/GMTM")
+```
+
+```{r, message=FALSE}
+library(quanteda)
+library(wordvector)
+library(GMTM)
+
+# pre-processing (quanteda)
+corp <- corpus_reshape(data_corpus_news2014)
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE) |> 
+  tokens_remove(stopwords("en"), min_nchar = 2)
+dfmt <- dfm(toks)
+
+# create document vector (wordvector)
+wov <- textmodel_word2vec(toks, dim = 100)
+dov <- as.textmodel_doc2vec(dfmt, wov)
+
+# train Gaussian mixture model (GMTM)
+gmm <- textmodel_gmm(dov, k = 10)
+table(topics(gmm))
+terms(gmm, data = dfmt)
+```
+
