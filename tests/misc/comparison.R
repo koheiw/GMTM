@@ -5,6 +5,7 @@ corp <- readRDS(file.path("D:/Research/Torch-test/data", "corpus_ungd.RDS"))
 # corp <- seededlda::data_corpus_moviereviews |>
 #   corpus_segment("[.?!]", valuetype = "regex")
 
+corp <- corpus_reshape(wordmap::data_corpus_ungd2017)
 toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE) |>
   tokens_remove(stopwords("en"), min_nchar = 2) |>
   tokens_subset(min_ntoken = 2)
@@ -20,6 +21,7 @@ dov <- as.textmodel_doc2vec(dfmt, wov)
 
 mat <- as.matrix(dov, normalize = FALSE)
 mat[is.nan(mat)] <- 0
+
 
 #-------------------------------
 

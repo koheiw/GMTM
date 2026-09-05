@@ -12,79 +12,57 @@ toks_test <- tokens(corp, remove_punct = TRUE,
 wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 5)
 dfmt_test <- head(dfm(toks_test, remove_padding = TRUE), 2000)
 dov_test <- as.textmodel_doc2vec(dfmt_test, wov_test)
+gmm_test <- textmodel_gmm(dov_test)
 
 test_that("textmodel_gmm works", {
 
-  set.seed(1234)
+  expect_equal(
+    names(gmm_test),
+    c("k", "centers", "likelihood", "cluster", "label", "docname", "call", "version")
+  )
+  expect_equal(
+    names(topics(gmm_test)),
+    rownames(dfmt_test),
+  )
+  expect_true(
+    is.factor(topics(gmm_test))
+  )
+  expect_equal(
+    levels(topics(gmm_test)),
+    paste0("topic", 1:10)
+  )
+  expect_equal(
+    dim(terms(gmm_test, dfmt_test, 15)),
+    c(15, 10)
+  )
+  expect_output(
+    print(gmm_test),
+    "Call:\ntextmodel_gmm\\(.*\\)"
+  )
+  expect_error(
+    terms(gmm_test, head(dfmt_test, 100), n = 20),
+    "the number of documents do not match"
+  )
 
-  # use k
-  mat1 <- head(as.matrix(dov_test, normalize = FALSE), 1000)
+})
+
+test_that("model works", {
+
+  skip_on_cran()
+
+  mat <- as.matrix(dov_test, normalize = FALSE)
+  mat1 <- head(mat, 1000)
+  mat2 <- tail(mat, 1000)
+
   gmm1 <- textmodel_gmm(mat1, k = 10, verbose = FALSE)
-
-  expect_equal(
-    names(gmm1),
-    c("k", "centers", "likelihood", "cluster", "label", "docname")
-  )
-  expect_equal(
-    names(topics(gmm1)),
-    rownames(mat1),
-  )
-  expect_true(
-    is.factor(topics(gmm1))
-  )
-  expect_equal(
-    levels(topics(gmm1)),
-    paste0("topic", 1:10)
-  )
-
-  # expect_equal(
-  #   dim(predict(gmm1)),
-  #   c(1000, 10)
-  # )
-  # expect_equal(
-  #   dimnames(predict(gmm1)),
-  #   list(rownames(mat1),
-  #        paste0("topic", 1:10))
-  # )
-  # expect_equal(
-  #   dim(predict(gmm1, newdata = mat1[1:5,])),
-  #   c(5, 10)
-  # )
-
-  # use model
-  mat2 <- tail(as.matrix(dov_test, normalize = FALSE), 1000)
   gmm2 <- textmodel_gmm(mat2, model = gmm1, verbose = FALSE)
-
-  expect_true(
-    is.factor(topics(gmm2))
-  )
-  expect_equal(
-    levels(topics(gmm2)),
-    paste0("topic", 1:10)
-  )
-  # expect_equal(
-  #   dim(predict(gmm2)),
-  #   c(1000, 10)
-  # )
 
   term1 <- terms(gmm1, head(dfmt_test, 1000), n = 20)
   term2 <- terms(gmm2, tail(dfmt_test, 1000), n = 20)
 
-  expect_equal(
-    dim(term1),
-    c(20, 10)
-  )
-  expect_equal(
-    dim(term2),
-    c(20, 10)
-  )
   expect_true(
     all(sapply(1:10, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
   )
 
-  expect_error(
-    terms(gmm1, head(dfmt_test, 100), n = 20),
-    "the number of documents do not match"
-  )
 })
 
