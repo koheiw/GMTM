@@ -13,7 +13,7 @@ textmodel_kmeans(
 )
 }
 \arguments{
-\item{x}{a dense matrix of document vectors in rows.}
+\item{x}{a \link[wordvector:textmodel_doc2vec]{wordvector::textmodel_doc2vec} or a dense matrix of document vectors in the rows.}
 
 \item{k}{the number of topics to identify.}
 
@@ -23,6 +23,16 @@ textmodel_kmeans(
 
 \item{verbose}{print the progress if \code{TRUE}.}
 }
+\value{
+Returns a fitted \code{textmodel_kmeans} object.
+}
 \description{
-Fast k-means clustering of document vectors based on the Armadillo library.
+K-means clustering of document vectors based on the Armadillo library.
+}
+\examples{
+# dummy document vectors with 50 dimensions
+mat <- t(replicate(1000, rnorm(50)))
+km <- textmodel_kmeans(mat, k = 10)
+table(topics(km))
+
 }

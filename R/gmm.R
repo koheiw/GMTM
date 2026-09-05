@@ -1,28 +1,41 @@
 #' Gaussian Mixture Model for topic analysis
 #'
-#' Fast Gaussian mixture model for clustering of document vectors based on the Armadillo library.
-#' @param x a dense matrix of document vectors in rows.
+#' Gaussian mixture model for clustering of document vectors based on the Armadillo library.
+#' @param x a [wordvector::textmodel_doc2vec] or a dense matrix of document vectors in the rows.
 #' @param k the number of topics to identify.
 #' @param model a fitted model from which initial centroids are extracted.
 #' @param verbose print the progress if `TRUE`.
 #' @param ... passed to the underlying function.
 #' @import Rcpp
-#' @importFrom quanteda check_integer
+#' @importFrom quanteda check_integer check_logical
 #' @importFrom stats runif
 #' @useDynLib GMTM
 #' @export
+#' @returns Returns a fitted `textmodel_gmm` object.
+#' @examples
+#' # dummy document vectors with 50 dimensions
+#' mat <- t(replicate(1000, rnorm(50)))
+#' gmm <- textmodel_gmm(mat, k = 10)
+#' table(topics(gmm))
 textmodel_gmm <- function(x, k = 10, model = NULL, ...,
-                          verbose = quanteda_options("verbose")) {
+                             verbose = quanteda_options("verbose")) {
+  UseMethod("textmodel_gmm")
+}
+
+#' @export
+#' @method textmodel_gmm matrix
+textmodel_gmm.matrix <- function(x, k = 10, model = NULL, ...,
+                                 verbose = quanteda_options("verbose")) {
 
   if (!is.matrix(x))
     stop("model must be a dense matrix")
+  verbose <- check_logical(verbose)
 
   label <- NULL
   if (is.null(model)) {
     k <- check_integer(k, min = 2)
     cl <- matrix(runif(ncol(x) * k), ncol = k)
     label <- paste0("topic", seq_len(k))
-    message("k is overwritten by the cluster")
   } else {
     if (!is.textmodel_gmm(model))
       stop("model must be a fitted textmodel_gmm")
@@ -36,12 +49,24 @@ textmodel_gmm <- function(x, k = 10, model = NULL, ...,
   result$cluster <- as.integer(result$cluster + 1)
   result$label <- label
   result$docname <- rownames(x)
+  result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  result$version <- utils::packageVersion("GMTM")
   class(result) <- "textmodel_gmm"
   return(result)
 }
 
+#' @export
+#' @method textmodel_gmm textmodel_doc2vec
+#' @import wordvector
+textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL, ...,
+                                            verbose = quanteda_options("verbose")) {
+  textmodel_gmm(as.matrix(x, normalize = FALSE),
+                k = k, model = model, ..., verbose = verbose)
+}
+
 #' Extract topics of documents
 #' @param x a fitted model.
+#' @param ... not used.
 #' @rdname topics
 #' @export
 topics <- function(x, ...) {
@@ -60,10 +85,13 @@ topics.textmodel_gmm <- function(x, ...) {
 #' @rdname terms
 #' @param x a fitted model.
 #' @param n the number of topic words.
+#' @param data a [quanteda::dfm] from which words are extracted for each topic.
 #' @param ... passed to functions.
-#' @param data a dfm from which words are extracted for each topic.
+#' @details
+#' The documents in `data` is grouped by topics and weighted by TF-IDF
+#' (a.k.a. c-TF-IDF) to select frequent words for each topics.
 #' @export
-terms <- function(x, ...) {
+terms <- function(x, data, n = 10, ...) {
   UseMethod("terms")
 }
 
@@ -88,8 +116,17 @@ terms.textmodel_gmm <- function(x, data, n = 10, ...) {
 #   return(p)
 # }
 
+#' @method print textmodel_gmm
 #' @keywords internal
 #' @export
+print.textmodel_gmm <- function(x, ...) {
+  cat("\nCall:\n")
+  print(x$call)
+  cat("\n", prettyNum(x$k, big.mark = ","), " topics; ",
+      prettyNum(length(x$cluster), big.mark = ","), " documents; ",
+      "\n", sep = "")
+}
+
 is.textmodel_gmm <- function(x) {
   "textmodel_gmm" %in% class(x)
 }

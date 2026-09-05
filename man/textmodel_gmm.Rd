@@ -13,7 +13,7 @@ textmodel_gmm(
 )
 }
 \arguments{
-\item{x}{a dense matrix of document vectors in rows.}
+\item{x}{a \link[wordvector:textmodel_doc2vec]{wordvector::textmodel_doc2vec} or a dense matrix of document vectors in the rows.}
 
 \item{k}{the number of topics to identify.}
 
@@ -23,6 +23,15 @@ textmodel_gmm(
 
 \item{verbose}{print the progress if \code{TRUE}.}
 }
+\value{
+Returns a fitted \code{textmodel_gmm} object.
+}
 \description{
-Fast Gaussian mixture model for clustering of document vectors based on the Armadillo library.
+Gaussian mixture model for clustering of document vectors based on the Armadillo library.
+}
+\examples{
+# dummy document vectors with 50 dimensions
+mat <- t(replicate(1000, rnorm(50)))
+gmm <- textmodel_gmm(mat, k = 10)
+table(topics(gmm))
 }

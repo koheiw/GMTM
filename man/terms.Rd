@@ -4,17 +4,21 @@
 \alias{terms}
 \title{Extract frequent words for topics}
 \usage{
-terms(x, ...)
+terms(x, data, n = 10, ...)
 }
 \arguments{
 \item{x}{a fitted model.}
 
-\item{...}{passed to functions.}
+\item{data}{a \link[quanteda:dfm]{quanteda::dfm} from which words are extracted for each topic.}
 
 \item{n}{the number of topic words.}
 
-\item{data}{a dfm from which words are extracted for each topic.}
+\item{...}{passed to functions.}
 }
 \description{
 Extract frequent words for topics
+}
+\details{
+The documents in \code{data} is grouped by topics and weighted by TF-IDF
+(a.k.a. c-TF-IDF) to select frequent words for each topics.
 }

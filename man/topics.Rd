@@ -8,6 +8,8 @@ topics(x, ...)
 }
 \arguments{
 \item{x}{a fitted model.}
+
+\item{...}{not used.}
 }
 \description{
 Extract topics of documents

@@ -1,24 +1,38 @@
 #' K-means for topic analysis
 #'
-#' Fast k-means clustering of document vectors based on the Armadillo library.
+#' K-means clustering of document vectors based on the Armadillo library.
 #' @inheritParams textmodel_gmm
 #' @import Rcpp
-#' @importFrom quanteda check_integer
+#' @importFrom quanteda check_integer check_logical
 #' @importFrom stats runif
 #' @useDynLib GMTM
 #' @export
+#' @returns Returns a fitted `textmodel_kmeans` object.
+#' @examples
+#' # dummy document vectors with 50 dimensions
+#' mat <- t(replicate(1000, rnorm(50)))
+#' km <- textmodel_kmeans(mat, k = 10)
+#' table(topics(km))
+#'
 textmodel_kmeans <- function(x, k = 10, model = NULL, ...,
+                             verbose = quanteda_options("verbose")) {
+  UseMethod("textmodel_kmeans")
+}
+
+#' @export
+#' @method textmodel_kmeans matrix
+textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, ...,
                              verbose = quanteda_options("verbose")) {
 
   if (!is.matrix(x))
     stop("model must be a dense matrix")
+  verbose <- check_logical(verbose)
 
   label <- NULL
   if (is.null(model)) {
     k <- check_integer(k, min = 2)
     cl <- matrix(runif(ncol(x) * k), ncol = k)
     label <- paste0("topic", seq_len(k))
-    message("k is overwritten by the cluster")
   } else {
     if (!is.textmodel_kmeans(model))
       stop("model must be a fitted textmodel_kmeans")
@@ -33,8 +47,19 @@ textmodel_kmeans <- function(x, k = 10, model = NULL, ...,
   result$cluster <- max.col(-1 * dis ^ 2)
   result$label <- label
   result$docname <- rownames(x)
+  result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  result$version <- utils::packageVersion("GMTM")
   class(result) <- "textmodel_kmeans"
   return(result)
+}
+
+#' @export
+#' @method textmodel_kmeans textmodel_doc2vec
+#' @import wordvector
+textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, ...,
+                                               verbose = quanteda_options("verbose")) {
+  textmodel_kmeans(as.matrix(x, normalize = FALSE),
+                   k = k, model = model, ..., verbose = verbose)
 }
 
 #' @method topics textmodel_kmeans
@@ -66,8 +91,22 @@ terms.textmodel_kmeans <- function(x, data, n = 10, ...) {
 #   return(p)
 # }
 
+#' @method print textmodel_kmeans
 #' @keywords internal
 #' @export
+print.textmodel_kmeans <- function(x, ...) {
+  cat("\nCall:\n")
+  print(x$call)
+  cat("\n", prettyNum(x$k, big.mark = ","), " topics; ",
+      prettyNum(length(x$cluster), big.mark = ","), " documents; ",
+      "\n", sep = "")
+}
+
 is.textmodel_kmeans <- function(x) {
   "textmodel_kmeans" %in% class(x)
 }
+
+is.textmodel_doc2vec <- function(x) {
+  "textmodel_doc2vec" %in% class(x)
+}
+
