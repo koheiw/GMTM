@@ -15,8 +15,7 @@ List cpp_kmeans(arma::mat &data, int k, arma::mat &means,
 
   inplace_trans(data); // vectors are columns
 
-  bool status = kmeans(means, data, k, keep_existing,
-                       iter = iter, verbose = verbose);
+  bool status = kmeans(means, data, k, keep_existing, iter, verbose);
 
   if (!status)
     throw std::runtime_error("Training of k-means failed");

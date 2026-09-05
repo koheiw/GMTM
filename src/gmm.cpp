@@ -26,11 +26,11 @@ List cpp_gmm(arma::mat &data, int k, arma::mat means,
 
   bool status = false;
   if (mode == 1) {
-    status = model.learn(data, k, eucl_dist , keep_existing,
-                         iter_km, iter_em, 1e-10, verbose = verbose);
+    status = model.learn(data, k, eucl_dist, keep_existing,
+                         iter_km, iter_em, 1e-10, verbose);
   } else {
-    status = model.learn(data, k, maha_dist , keep_existing,
-                         iter_km, iter_em, 1e-10, verbose = verbose);
+    status = model.learn(data, k, maha_dist, keep_existing,
+                         iter_km, iter_em, 1e-10, verbose);
   }
 
   if (!status)
