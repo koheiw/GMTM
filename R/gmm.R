@@ -1,4 +1,4 @@
-#' Gaussian Mixture Model for topic analysis
+#' Gaussian mixture model for topic analysis
 #'
 #' Gaussian mixture model for clustering of document vectors based on the Armadillo library.
 #' @param x a [wordvector::textmodel_doc2vec] or a dense matrix of document vectors in the rows.

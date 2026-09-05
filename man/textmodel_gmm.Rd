@@ -2,7 +2,7 @@
 % Please edit documentation in R/gmm.R
 \name{textmodel_gmm}
 \alias{textmodel_gmm}
-\title{Gaussian Mixture Model for topic analysis}
+\title{Gaussian mixture model for topic analysis}
 \usage{
 textmodel_gmm(
   x,
