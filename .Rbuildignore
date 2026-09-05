@@ -1,2 +1,13 @@
-^DBTM\.Rproj$
+^.*\.Rproj$
 ^\.Rproj\.user$
+^.\Rhistory
+^README\.Rmd$
+^README\.md$
+^\.github
+^cran-comments.md
+^_pkgdown\.yml$
+^docs$
+^vignettes/pkgdown$
+^\.github$
+^\.positai$
+^\.claude$
