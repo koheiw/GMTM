@@ -11,6 +11,9 @@ topics(x, ...)
 
 \item{...}{not used.}
 }
+\value{
+Returns predicted topics as a vector.
+}
 \description{
 Extract topics of documents
 }

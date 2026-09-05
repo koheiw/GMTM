@@ -2,23 +2,32 @@
 % Please edit documentation in R/gmm.R
 \name{terms}
 \alias{terms}
-\title{Extract frequent words for topics}
+\title{Extract words for topics from documents}
 \usage{
 terms(x, data, n = 10, ...)
 }
 \arguments{
 \item{x}{a fitted model.}
 
-\item{data}{a \link[quanteda:dfm]{quanteda::dfm} from which words are extracted for each topic.}
+\item{data}{a \link[quanteda:dfm]{quanteda::dfm} or \link[quanteda:tokens]{quanteda::tokens} from which words are extracted
+for each topic.}
 
 \item{n}{the number of topic words.}
 
 \item{...}{passed to functions.}
 }
+\value{
+Returns a character matrix with the most distinctive words for each topic.
+}
 \description{
-Extract frequent words for topics
+Identify distinctive words for each topic by applying TF-IDF weights to the
+original \link[quanteda:dfm]{quanteda::dfm}.
 }
 \details{
-The documents in \code{data} is grouped by topics and weighted by TF-IDF
-(a.k.a. c-TF-IDF) to select frequent words for each topics.
+To identify distinctive words for topics, original documents must be provided
+along with a fitted model because the information about individual words are lost in
+document vectors.
+The documents in \code{data} is grouped by topic and weighted by TF-IDF
+to select the most distinctive words for each topic. This technique is
+commonly known as c-TF-IDF.
 }
