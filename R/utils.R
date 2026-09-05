@@ -17,3 +17,15 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
   return(result)
 }
 
+
+#' dict <- dictionary(list(eco = "econom*", sec = "securit*", spo = "sport*",
+#'                         pol = "politi*", cri = "crime"))
+#' as.seedwords(dict, wov)
+
+as.seedwords <- function(dictionary, model) {
+  v <- unlist(object2fixed(dictionary, types = rownames(model$values$word)))
+  d <- dfm(as.tokens(split(v, factor(names(v), levels = names(dictionary)))))
+  e <- as.textmodel_doc2vec(d, model)
+  e$values$doc
+}
+
