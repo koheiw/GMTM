@@ -11,6 +11,11 @@
 #' @importFrom stats runif
 #' @useDynLib GMTM
 #' @export
+#' @details
+#' User can change the number of threads for the parallel computing via
+#' `options(GMTM.threads)` or `OMP_THREAD_LIMIT` in the environmental
+#' variable.
+#'
 #' @returns Returns a fitted `textmodel_gmm` object.
 #' @examples
 #' # dummy document vectors with 50 dimensions
@@ -45,6 +50,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, ...,
     message("k is overwritten by the fitted model")
   }
 
+  RcppArmadillo::armadillo_set_number_of_omp_threads(get_threads())
   result <- cpp_gmm(x, k, means = cl, verbose = verbose, ...)
 
   result$cluster <- as.integer(result$cluster + 1)

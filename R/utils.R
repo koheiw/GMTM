@@ -17,3 +17,17 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
   return(result)
 }
 
+get_threads <- function() {
+
+  # respect other settings
+  default <- c("omp" = as.integer(Sys.getenv("OMP_THREAD_LIMIT")),
+               "max" = RcppArmadillo::armadillo_get_number_of_omp_threads())
+  default <- unname(min(default, na.rm = TRUE))
+  suppressWarnings({
+    value <- as.integer(getOption("GMTM.threads", default))
+  })
+  if (length(value) != 1 || is.na(value)) {
+    stop("GMTM.threads must be an integer")
+  }
+  return(value)
+}

@@ -29,6 +29,11 @@ Returns a fitted \code{textmodel_gmm} object.
 \description{
 Gaussian mixture model for clustering of document vectors based on the Armadillo library.
 }
+\details{
+User can change the number of threads for the parallel computing via
+\code{options(GMTM.threads)} or \code{OMP_THREAD_LIMIT} in the environmental
+variable.
+}
 \examples{
 # dummy document vectors with 50 dimensions
 mat <- t(replicate(1000, rnorm(50)))
