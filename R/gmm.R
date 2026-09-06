@@ -1,4 +1,4 @@
-#' Gaussian Mixture Model for topic analysis
+#' Gaussian mixture model for topic analysis
 #'
 #' Gaussian mixture model for clustering of document vectors based on the Armadillo library.
 #' @param x a [wordvector::textmodel_doc2vec] or a dense matrix of document vectors in the rows.
@@ -11,6 +11,11 @@
 #' @importFrom stats runif
 #' @useDynLib GMTM
 #' @export
+#' @details
+#' User can change the number of threads for the parallel computing via
+#' `options(GMTM.threads)` or `OMP_THREAD_LIMIT` in the environmental
+#' variable.
+#'
 #' @returns Returns a fitted `textmodel_gmm` object.
 #' @examples
 #' # dummy document vectors with 50 dimensions
@@ -45,6 +50,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, ...,
     message("k is overwritten by the fitted model")
   }
 
+  RcppArmadillo::armadillo_set_number_of_omp_threads(get_threads())
   result <- cpp_gmm(x, k, means = cl, verbose = verbose, ...)
 
   result$cluster <- as.integer(result$cluster + 1)
@@ -69,6 +75,7 @@ textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL, ...,
 #' @param x a fitted model.
 #' @param ... not used.
 #' @rdname topics
+#' @returns Returns predicted topics as a vector.
 #' @export
 topics <- function(x, ...) {
   UseMethod("topics")
@@ -82,15 +89,24 @@ topics.textmodel_gmm <- function(x, ...) {
   return(v)
 }
 
-#' Extract frequent words for topics
+#' Extract words for topics from documents
+#'
+#' Identify distinctive words for each topic by applying TF-IDF weights to the
+#' original [quanteda::dfm].
 #' @rdname terms
 #' @param x a fitted model.
 #' @param n the number of topic words.
-#' @param data a [quanteda::dfm] from which words are extracted for each topic.
+#' @param data a [quanteda::dfm] or [quanteda::tokens] from which words are extracted
+#'   for each topic.
 #' @param ... passed to functions.
+#' @returns Returns a character matrix with the most distinctive words for each topic.
 #' @details
-#' The documents in `data` is grouped by topics and weighted by TF-IDF
-#' (a.k.a. c-TF-IDF) to select frequent words for each topics.
+#' To identify distinctive words for topics, original documents must be provided
+#' along with a fitted model because the information about individual words are lost in
+#' document vectors.
+#' The documents in `data` is grouped by topic and weighted by TF-IDF
+#' to select the most distinctive words for each topic. This technique is
+#' commonly known as c-TF-IDF.
 #' @export
 terms <- function(x, data, n = 10, ...) {
   UseMethod("terms")

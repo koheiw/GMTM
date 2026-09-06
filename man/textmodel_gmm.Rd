@@ -2,7 +2,7 @@
 % Please edit documentation in R/gmm.R
 \name{textmodel_gmm}
 \alias{textmodel_gmm}
-\title{Gaussian Mixture Model for topic analysis}
+\title{Gaussian mixture model for topic analysis}
 \usage{
 textmodel_gmm(
   x,
@@ -28,6 +28,11 @@ Returns a fitted \code{textmodel_gmm} object.
 }
 \description{
 Gaussian mixture model for clustering of document vectors based on the Armadillo library.
+}
+\details{
+User can change the number of threads for the parallel computing via
+\code{options(GMTM.threads)} or \code{OMP_THREAD_LIMIT} in the environmental
+variable.
 }
 \examples{
 # dummy document vectors with 50 dimensions

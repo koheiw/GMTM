@@ -42,6 +42,7 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, ...,
     message("k is overwritten by the fitted model")
   }
 
+  RcppArmadillo::armadillo_set_number_of_omp_threads(get_threads())
   result <- cpp_kmeans(x, k, means = cl, verbose = verbose, ...)
 
   dis <- proxyC::dist(x, t(result$centers), sparse = FALSE)

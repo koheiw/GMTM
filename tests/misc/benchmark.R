@@ -4,6 +4,7 @@ library(seededlda)
 library(GMTM)
 
 corp <- corpus_reshape(data_corpus_news2014)
+ndoc(corp)
 toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE) |>
   tokens_remove(stopwords("en"), min_nchar = 2) |>
   tokens_tolower() |>
@@ -16,8 +17,10 @@ system.time({
   gmm <- textmodel_gmm(dov, k = 10)
 })
 GMTM::terms(gmm, dfmt)
+table(GMTM::topics(gmm))
 
 system.time({
   lda <- textmodel_lda(dfmt, k = 10, batch_size = 0.01, auto_iter = TRUE)
 })
 seededlda::terms(lda)
+table(seededlda::topics(lda))

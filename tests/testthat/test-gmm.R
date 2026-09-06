@@ -1,6 +1,8 @@
 library(quanteda)
 library(wordvector)
 library(GMTM)
+options(wordvector_threads = 2)
+options(GMTM.threads = 2)
 
 corp <- wordvector::data_corpus_news2014
 

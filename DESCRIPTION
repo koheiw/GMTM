@@ -1,9 +1,9 @@
 Package: GMTM 
-Title: Gaussian Mixture Text Models for Topic Analysis
+Title: Gaussian Mixture Topic Models
 Version: 0.1.0
 Authors@R: person('Kohei', 'Watanabe', role = c('aut', 'cre', 'cph'), email = 'watanabe.kohei@gmail.com', comment = c(ORCID = '0000-0001-6519-5265'))
 Maintainer: Kohei Watanabe <watanabe.kohei@gmail.com>
-Description: Gaussian mixture models and k-means for topic analysis of dense document vectors. The underlying functions are implemented using the Armadillo library
+Description: Gaussian mixture models and k-means for topic analysis of dense document vectors. The underlying clustering functions rely on the Armadillo library.
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 Depends: 
@@ -12,7 +12,8 @@ Imports:
 	quanteda (>= 4.0.0),
   proxyC,
   wordvector, 
-  Rcpp
+  Rcpp,
+  RcppArmadillo
 Suggests: 
   testthat,
   spelling,
@@ -23,4 +24,3 @@ LinkingTo: Rcpp, RcppArmadillo (>= 0.7.600.1.0), quanteda, testthat
 Language: en-US
 LazyData: true
 Config/roxygen2/version: 8.0.0
-VignetteBuilder: knitr

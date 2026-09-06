@@ -1,5 +1,5 @@
 
-# GMTM: Gaussian Mixture Text Models for Topic Analysis
+# GMTM: Gaussian Mixture Topic Models
 
 ## Installation
 
@@ -37,31 +37,31 @@ table(topics(gmm))
 
     ## 
     ##  topic1  topic2  topic3  topic4  topic5  topic6  topic7  topic8  topic9 topic10 
-    ##    6609    6663    1297   10494    6980    5358    6001    8449    5991    8021
+    ##    8153    6444    5710     625    9690    5497    8177    9028    8667    3872
 
 ``` r
 terms(gmm, data = dfmt)
 ```
 
-    ##       topic1       topic2     topic3        topic4       topic5     
-    ##  [1,] "minister"   "percent"  "editing"     "ebola"      "militants"
-    ##  [2,] "snowden"    "index"    "writing"     "malaysia"   "islamic"  
-    ##  [3,] "statement"  "billion"  "stonestreet" "virus"      "syria"    
-    ##  [4,] "government" "growth"   "tait"        "south"      "iraq"     
-    ##  [5,] "chief"      "earnings" "chizu"       "ferry"      "levant"   
-    ##  [6,] "jen"        "futures"  "nomiyama"    "quake"      "sunni"    
-    ##  [7,] "news"       "stocks"   "bangalore"   "hurricane"  "qaeda"    
-    ##  [8,] "foreign"    "inc"      "dalgleish"   "outbreak"   "syrian"   
-    ##  [9,] "official"   "prices"   "maler"       "passengers" "bashar"   
-    ## [10,] "agency"     "cents"    "hepinstall"  "tropical"   "militant" 
-    ##       topic6      topic7      topic8         topic9       topic10     
-    ##  [1,] "pistorius" "killed"    "rugby"        "president"  "russia"    
-    ##  [2,] "court"     "police"    "beats"        "minister"   "sanctions" 
-    ##  [3,] "murder"    "killing"   "championship" "vote"       "president" 
-    ##  [4,] "sentenced" "people"    "2-0"          "parliament" "annexation"
-    ##  [5,] "sentence"  "militants" "6-4"          "prime"      "kerry"     
-    ##  [6,] "jail"      "kills"     "champions"    "polls"      "nuclear"   
-    ##  [7,] "prison"    "bomber"    "scored"       "party"      "russian"   
-    ##  [8,] "woman"     "gunmen"    "coach"        "election"   "crimea"    
-    ##  [9,] "killing"   "mortar"    "innings"      "government" "nato"      
-    ## [10,] "police"    "bomb"      "6-3"          "shinawatra" "lavrov"
+    ##       topic1       topic2     topic3       topic4        topic5       
+    ##  [1,] "said"       "percent"  "president"  "editing"     "kerry"      
+    ##  [2,] "u.s"        "futures"  "polls"      "writing"     "said"       
+    ##  [3,] "ap"         "earnings" "minister"   "stonestreet" "islamic"    
+    ##  [4,] "snowden"    "growth"   "parliament" "tait"        "peace"      
+    ##  [5,] "minister"   "stocks"   "prime"      "chizu"       "syria"      
+    ##  [6,] "co"         "index"    "party"      "nomiyama"    "nuclear"    
+    ##  [7,] "news"       "inc"      "election"   "hepinstall"  "palestinian"
+    ##  [8,] "department" "said"     "government" "pomeroy"     "united"     
+    ##  [9,] "statement"  "corp"     "shinawatra" "bangalore"   "u.n"        
+    ## [10,] "chief"      "cents"    "said"       "lowe"        "ap"         
+    ##       topic6      topic7      topic8         topic9       topic10      
+    ##  [1,] "pistorius" "islamist"  "beats"        "ap"         "ukraine"    
+    ##  [2,] "sentenced" "islamic"   "championship" "said"       "russia"     
+    ##  [3,] "court"     "said"      "krasnaya"     "tsunami"    "pro-russian"
+    ##  [4,] "ap"        "sunni"     "polyana"      "passengers" "nato"       
+    ##  [5,] "prison"    "militants" "ap"           "people"     "russian"    
+    ##  [6,] "trial"     "gunmen"    "2-0"          "mh370"      "crimea"     
+    ##  [7,] "sentence"  "boko"      "rugby"        "volcano"    "said"       
+    ##  [8,] "said"      "killed"    "1-0"          "leone"      "kiev"       
+    ##  [9,] "police"    "haram"     "6-4"          "ebola"      "ukraine's"  
+    ## [10,] "killing"   "israeli"   "champions"    "mexico"     "annexation"
