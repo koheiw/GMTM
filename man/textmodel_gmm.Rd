@@ -20,6 +20,8 @@ textmodel_gmm(
 
 \item{model}{a fitted model from which initial centroids are extracted.}
 
+\item{seeds}{a matrix created using \link{as.seedwords}.}
+
 \item{...}{passed to the underlying function.}
 
 \item{verbose}{print the progress if \code{TRUE}.}
@@ -36,8 +38,17 @@ User can change the number of threads for the parallel computing via
 variable.
 }
 \examples{
-# dummy document vectors with 50 dimensions
-mat <- t(replicate(1000, rnorm(50)))
-gmm <- textmodel_gmm(mat, k = 10)
+library(quanteda)
+library(wordvector)
+options(wordvector_threads = 2)
+
+corp <- head(wordvector::data_corpus_news2014, 1000)
+toks <- tokens(corp, remove_punct = TRUE,
+               remove_symbols = TRUE, remove_number = TRUE) \%>\%
+        tokens_remove(stopwords("en"), min_nchar = 2)
+wov <- textmodel_word2vec(toks, dim = 50)
+dov <- as.textmodel_doc2vec(dfm(toks), wov)
+
+gmm <- textmodel_gmm(dov, k = 10)
 table(topics(gmm))
 }

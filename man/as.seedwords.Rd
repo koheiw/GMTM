@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{as.seedwords}
 \alias{as.seedwords}
-\title{Create seedword vectors from a dictionary}
+\title{Convert a dictionary to a seed word matrix}
 \usage{
 as.seedwords(x, model, residual = 0, ...)
 }
@@ -15,18 +15,28 @@ as.seedwords(x, model, residual = 0, ...)
 
 \item{...}{passed to underlying functions.}
 }
+\value{
+Returns a seed word matrix.
+}
 \description{
-Create seedword vectors from a dictionary
+Convert a dictionary to a seed word matrix
 }
 \details{
 Unseeded topics are named "other" but can be changed via
 options("GMTM.residual.name").
 }
 \examples{
-\donttest{
 library(quanteda)
+library(wordvector)
+options(wordvector_threads = 2)
+
+corp <- head(wordvector::data_corpus_news2014, 1000)
+toks <- tokens(corp, remove_punct = TRUE,
+               remove_symbols = TRUE, remove_number = TRUE) \%>\%
+        tokens_remove(stopwords("en"), min_nchar = 2)
+wov <- textmodel_word2vec(toks, dim = 50)
+
 dict <- dictionary(list(eco = "econom*", sec = "securit*", spo = "sport*",
                         pol = "politi*", cri = "crime"))
-as.seedwords(dict, wov, residual = 2)
-}
+seed <- as.seedwords(dict, wov, residual = 2)
 }

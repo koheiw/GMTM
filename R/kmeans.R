@@ -9,11 +9,19 @@
 #' @export
 #' @returns Returns a fitted `textmodel_kmeans` object.
 #' @examples
-#' # dummy document vectors with 50 dimensions
-#' mat <- t(replicate(1000, rnorm(50)))
-#' km <- textmodel_kmeans(mat, k = 10)
-#' table(topics(km))
+#' library(quanteda)
+#' library(wordvector)
+#' options(wordvector_threads = 2)
 #'
+#' corp <- head(wordvector::data_corpus_news2014, 1000)
+#' toks <- tokens(corp, remove_punct = TRUE,
+#'                remove_symbols = TRUE, remove_number = TRUE) %>%
+#'         tokens_remove(stopwords("en"), min_nchar = 2)
+#' wov <- textmodel_word2vec(toks, dim = 50)
+#' dov <- as.textmodel_doc2vec(dfm(toks), wov)
+#'
+#' km <- textmodel_kmeans(dov, k = 10)
+#' table(topics(km))
 textmodel_kmeans <- function(x, k = 10, model = NULL, seeds = NULL,
                              verbose = quanteda_options("verbose"), ...) {
   UseMethod("textmodel_kmeans")

@@ -17,7 +17,7 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
   return(result)
 }
 
-#' Create seedword vectors from a dictionary
+#' Convert a dictionary to a seed word matrix
 #' @param x a [quanteda::dictionary] of seed words.
 #' @param model a [wordvector::textmodel_word2vec] object.
 #' @param residual the number of unseeded topics.
@@ -25,15 +25,23 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
 #' @details
 #' Unseeded topics are named "other" but can be changed via
 #' options("GMTM.residual.name").
-#' @examples
-#' \donttest{
-#' library(quanteda)
-#' dict <- dictionary(list(eco = "econom*", sec = "securit*", spo = "sport*",
-#'                         pol = "politi*", cri = "crime"))
-#' as.seedwords(dict, wov, residual = 2)
-#' }
 #' @export
 #' @import quanteda wordvector
+#' @returns Returns a seed word matrix.
+#' @examples
+#' library(quanteda)
+#' library(wordvector)
+#' options(wordvector_threads = 2)
+#'
+#' corp <- head(wordvector::data_corpus_news2014, 1000)
+#' toks <- tokens(corp, remove_punct = TRUE,
+#'                remove_symbols = TRUE, remove_number = TRUE) %>%
+#'         tokens_remove(stopwords("en"), min_nchar = 2)
+#' wov <- textmodel_word2vec(toks, dim = 50)
+#'
+#' dict <- dictionary(list(eco = "econom*", sec = "securit*", spo = "sport*",
+#'                         pol = "politi*", cri = "crime"))
+#' seed <- as.seedwords(dict, wov, residual = 2)
 as.seedwords <- function(x, model, residual = 0, ...) {
 
   if (!quanteda::is.dictionary(x))
