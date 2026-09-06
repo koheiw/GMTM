@@ -14,32 +14,39 @@
 #' km <- textmodel_kmeans(mat, k = 10)
 #' table(topics(km))
 #'
-textmodel_kmeans <- function(x, k = 10, model = NULL, ...,
-                             verbose = quanteda_options("verbose")) {
+textmodel_kmeans <- function(x, k = 10, model = NULL, seeds = NULL,
+                             verbose = quanteda_options("verbose"), ...) {
   UseMethod("textmodel_kmeans")
 }
 
 #' @export
 #' @method textmodel_kmeans matrix
-textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, ...,
-                             verbose = quanteda_options("verbose")) {
+textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
+                             verbose = quanteda_options("verbose"), ...) {
 
   if (!is.matrix(x))
     stop("model must be a dense matrix")
   verbose <- check_logical(verbose)
 
   label <- NULL
-  if (is.null(model)) {
+  if (is.null(model) && is.null(seeds)) {
     k <- check_integer(k, min = 2)
-    cl <- matrix(runif(ncol(x) * k), ncol = k)
+    cl <- get_centers(ncol(x), k)
     label <- paste0("topic", seq_len(k))
   } else {
-    if (!is.textmodel_kmeans(model))
-      stop("model must be a fitted textmodel_kmeans")
-    k <- ncol(model$centers)
-    cl <- model$centers
-    label <- model$label
-    message("k is overwritten by the fitted model")
+    if (!is.null(model)) {
+      if (!is.textmodel_kmeans(model))
+        stop("model must be a fitted textmodel_kmeans")
+      k <- ncol(model$centers)
+      cl <- model$centers
+      label <- model$label
+      message("k is overwritten by the fitted model")
+    } else {
+      k <- nrow(seeds)
+      cl <- t(seeds)
+      label <- rownames(seeds)
+      message("k is overwritten by the seeds")
+    }
   }
 
   RcppArmadillo::armadillo_set_number_of_omp_threads(get_threads())
@@ -58,10 +65,10 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, ...,
 #' @export
 #' @method textmodel_kmeans textmodel_doc2vec
 #' @import wordvector
-textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, ...,
-                                               verbose = quanteda_options("verbose")) {
-  textmodel_kmeans(as.matrix(x, normalize = FALSE),
-                   k = k, model = model, ..., verbose = verbose)
+textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NULL,
+                                               verbose = quanteda_options("verbose"), ...) {
+  textmodel_kmeans(as.matrix(x, normalize = FALSE), k = k, model = model,
+                   seeds = seeds, verbose = verbose)
 }
 
 #' @method topics textmodel_kmeans
