@@ -12,6 +12,8 @@ knitr::opts_chunk$set(
 
 # GMTM: Gaussian Mixture Topic Models
 
+An R package for unsupervised or semi-supervised topic analysis of dense document vectors. **GMTM** performs clustering of document vectors using Gaussian mixture models. Document vectors can be source from any package but [wordvectors](https://github.com/koheiw/wordvector) works seamlessly. The underlying function is based on the Armadillo library for fast computation.
+
 ## Installation
 
 From CRAN:
@@ -26,6 +28,10 @@ From Github:
 devtools::install_github("koheiw/GMTM")
 ```
 
+## Example
+
+**GMTM** is applied to identify topics of sentences from 20,000 news articles. Before clustering, [quanteda](https://github.com/quanteda/quanteda) and [wordvectors](https://github.com/koheiw/wordvector) are used for pre-processing of textual data and training document vectors, respectively.
+
 ```{r, message=FALSE}
 library(quanteda)
 library(wordvector)
@@ -37,11 +43,11 @@ toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number =
   tokens_remove(stopwords("en"), min_nchar = 2)
 dfmt <- dfm(toks)
 
-# create document vector (wordvector)
+# train document vectors (wordvector)
 wov <- textmodel_word2vec(toks, dim = 100)
 dov <- as.textmodel_doc2vec(dfmt, wov)
 
-# train Gaussian mixture model (GMTM)
+# fit Gaussian mixture model (GMTM)
 gmm <- textmodel_gmm(dov, k = 10)
 table(topics(gmm))
 terms(gmm, data = dfmt)
