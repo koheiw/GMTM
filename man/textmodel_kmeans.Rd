@@ -8,8 +8,9 @@ textmodel_kmeans(
   x,
   k = 10,
   model = NULL,
-  ...,
-  verbose = quanteda_options("verbose")
+  seeds = NULL,
+  verbose = quanteda_options("verbose"),
+  ...
 )
 }
 \arguments{
@@ -19,9 +20,9 @@ textmodel_kmeans(
 
 \item{model}{a fitted model from which initial centroids are extracted.}
 
-\item{...}{passed to the underlying function.}
-
 \item{verbose}{print the progress if \code{TRUE}.}
+
+\item{...}{passed to the underlying function.}
 }
 \value{
 Returns a fitted \code{textmodel_kmeans} object.

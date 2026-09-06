@@ -8,6 +8,7 @@ textmodel_gmm(
   x,
   k = 10,
   model = NULL,
+  seeds = NULL,
   ...,
   verbose = quanteda_options("verbose")
 )
