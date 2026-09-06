@@ -37,31 +37,31 @@ table(topics(gmm))
 
     ## 
     ##  topic1  topic2  topic3  topic4  topic5  topic6  topic7  topic8  topic9 topic10 
-    ##    8153    6444    5710     625    9690    5497    8177    9028    8667    3872
+    ##     606    7000    5804    8445    6561    6138    7910    4994    6301   12104
 
 ``` r
 terms(gmm, data = dfmt)
 ```
 
-    ##       topic1       topic2     topic3       topic4        topic5       
-    ##  [1,] "said"       "percent"  "president"  "editing"     "kerry"      
-    ##  [2,] "u.s"        "futures"  "polls"      "writing"     "said"       
-    ##  [3,] "ap"         "earnings" "minister"   "stonestreet" "islamic"    
-    ##  [4,] "snowden"    "growth"   "parliament" "tait"        "peace"      
-    ##  [5,] "minister"   "stocks"   "prime"      "chizu"       "syria"      
-    ##  [6,] "co"         "index"    "party"      "nomiyama"    "nuclear"    
-    ##  [7,] "news"       "inc"      "election"   "hepinstall"  "palestinian"
-    ##  [8,] "department" "said"     "government" "pomeroy"     "united"     
-    ##  [9,] "statement"  "corp"     "shinawatra" "bangalore"   "u.n"        
-    ## [10,] "chief"      "cents"    "said"       "lowe"        "ap"         
-    ##       topic6      topic7      topic8         topic9       topic10      
-    ##  [1,] "pistorius" "islamist"  "beats"        "ap"         "ukraine"    
-    ##  [2,] "sentenced" "islamic"   "championship" "said"       "russia"     
-    ##  [3,] "court"     "said"      "krasnaya"     "tsunami"    "pro-russian"
-    ##  [4,] "ap"        "sunni"     "polyana"      "passengers" "nato"       
-    ##  [5,] "prison"    "militants" "ap"           "people"     "russian"    
-    ##  [6,] "trial"     "gunmen"    "2-0"          "mh370"      "crimea"     
-    ##  [7,] "sentence"  "boko"      "rugby"        "volcano"    "said"       
-    ##  [8,] "said"      "killed"    "1-0"          "leone"      "kiev"       
-    ##  [9,] "police"    "haram"     "6-4"          "ebola"      "ukraine's"  
-    ## [10,] "killing"   "israeli"   "champions"    "mexico"     "annexation"
+    ##       topic1        topic2      topic3       topic4      topic5      
+    ##  [1,] "editing"     "militants" "president"  "rugby"     "pistorius" 
+    ##  [2,] "writing"     "islamic"   "minister"   "beats"     "said"      
+    ##  [3,] "stonestreet" "iraq"      "parliament" "champions" "court"     
+    ##  [4,] "tait"        "syria"     "prime"      "ap"        "ap"        
+    ##  [5,] "chizu"       "said"      "polls"      "2-0"       "trial"     
+    ##  [6,] "nomiyama"    "gaza"      "party"      "scored"    "sentenced" 
+    ##  [7,] "gutterman"   "militant"  "election"   "england"   "girlfriend"
+    ##  [8,] "hepinstall"  "levant"    "government" "6-4"       "jury"      
+    ##  [9,] "pomeroy"     "islamist"  "said"       "innings"   "killing"   
+    ## [10,] "bangalore"   "sunni"     "tayyip"     "coach"     "police"    
+    ##       topic6       topic7       topic8      topic9     topic10  
+    ##  [1,] "ap"         "kerry"      "said"      "index"    "said"   
+    ##  [2,] "said"       "sanctions"  "gunmen"    "growth"   "ap"     
+    ##  [3,] "ferry"      "lavrov"     "killed"    "earnings" "u.s"    
+    ##  [4,] "passengers" "ukraine"    "police"    "billion"  "leone"  
+    ##  [5,] "tsunami"    "said"       "militants" "corp"     "reuters"
+    ##  [6,] "mh370"      "russia"     "killing"   "data"     "says"   
+    ##  [7,] "puerto"     "peace"      "people"    "futures"  "china"  
+    ##  [8,] "debris"     "president"  "ap"        "percent"  "sierra" 
+    ##  [9,] "quake"      "annexation" "bomb"      "inc"      "us"     
+    ## [10,] "rescuers"   "poroshenko" "wounding"  "said"     "snowden"
