@@ -17,20 +17,44 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
   return(result)
 }
 
-<<<<<<< HEAD
-
+#' Create seedword vectors from a dictionary
+#' @param dictionary a [quanteda::dictionary] of seed words.
+#' @param model a [wordvector::textmodel_word2vec] object.
+#' @param residual the number of unseeded topics.
+#' @details
+#' Unseeded topics are named "other" but can be changed via
+#' options("GMTM.residual.name").
+#' @examples
+#' \donttest{
+#' library(quanteda)
 #' dict <- dictionary(list(eco = "econom*", sec = "securit*", spo = "sport*",
 #'                         pol = "politi*", cri = "crime"))
-#' as.seedwords(dict, wov)
+#' as.seedwords(dict, wov, residual = 2)
+#' }
+#' @export
+as.seedwords <- function(dictionary, model, residual = 0) {
 
-as.seedwords <- function(dictionary, model) {
   v <- unlist(object2fixed(dictionary, types = rownames(model$values$word)))
   d <- dfm(as.tokens(split(v, factor(names(v), levels = names(dictionary)))))
   e <- as.textmodel_doc2vec(d, model)
-  e$values$doc
+  seed <- e$values$doc
+  if (residual == 0)
+    return(seed)
+
+  other <- get_centers(residual, ncol(seed))
+  if (residual == 1) {
+    rownames(other) <- getOption("GMTM.residual.name", "other")
+  } else {
+    rownames(other) <- paste0(getOption("GMTM.residual.name", "other"),
+                              seq_len(residual))
+  }
+  rbind(seed, other)
 }
 
-=======
+get_centers <- function(nrow, ncol) {
+  matrix(runif(nrow * ncol), ncol = ncol)
+}
+
 get_threads <- function() {
 
   # respect other settings
@@ -45,4 +69,4 @@ get_threads <- function() {
   }
   return(value)
 }
->>>>>>> main
+
