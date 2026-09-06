@@ -12,7 +12,8 @@ Imports:
 	quanteda (>= 4.0.0),
   proxyC,
   wordvector, 
-  Rcpp
+  Rcpp,
+  RcppArmadillo
 Suggests: 
   testthat,
   spelling,
