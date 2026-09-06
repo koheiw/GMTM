@@ -4,7 +4,7 @@
 \alias{as.seedwords}
 \title{Convert a dictionary to a seed word matrix}
 \usage{
-as.seedwords(x, model, residual = 0, ...)
+as.seedwords(x, model, residual = 0, levels = 1)
 }
 \arguments{
 \item{x}{a \link[quanteda:dictionary]{quanteda::dictionary} of seed words.}
@@ -13,7 +13,8 @@ as.seedwords(x, model, residual = 0, ...)
 
 \item{residual}{the number of unseeded topics.}
 
-\item{...}{passed to underlying functions.}
+\item{levels}{integers specifying the levels of entries in
+a hierarchical dictionary.}
 }
 \value{
 Returns a seed word matrix.

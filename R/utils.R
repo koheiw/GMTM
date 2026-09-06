@@ -21,7 +21,8 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
 #' @param x a [quanteda::dictionary] of seed words.
 #' @param model a [wordvector::textmodel_word2vec] object.
 #' @param residual the number of unseeded topics.
-#' @param ... passed to underlying functions.
+#' @param levels integers specifying the levels of entries in
+#'   a hierarchical dictionary.
 #' @details
 #' Unseeded topics are named "other" but can be changed via
 #' options("GMTM.residual.name").
@@ -42,13 +43,14 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
 #' dict <- dictionary(list(eco = "econom*", sec = "securit*", spo = "sport*",
 #'                         pol = "politi*", cri = "crime"))
 #' seed <- as.seedwords(dict, wov, residual = 2)
-as.seedwords <- function(x, model, residual = 0, ...) {
+as.seedwords <- function(x, model, residual = 0, levels = 1) {
 
   if (!quanteda::is.dictionary(x))
     stop("x must be a dictionary object")
   residual <- check_integer(residual, min = 0)
-
-  v <- unlist(object2fixed(x, types = rownames(model$values$word), ...))
+  x <- flatten_dictionary(x, levels = levels)
+  v <- unlist(object2fixed(x, types = rownames(model$values$word),
+                           match_pattern = "single"))
   d <- dfm(as.tokens(split(v, factor(names(v), levels = names(x)))))
   e <- as.textmodel_doc2vec(d, model)
   seed <- e$values$doc

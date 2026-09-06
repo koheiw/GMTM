@@ -71,47 +71,72 @@ test_that("model works", {
 test_that("as.seedwords works", {
 
   dict <- dictionary(list(eco = "econom*", sec = "securit*", spo = "sport*",
-                          pol = "politi*", cri = "crime"))
+                          pol = "politi*", cri = c("crime", "police officer*"),
+                          xxx = "xxx"))
 
   seed1 <- as.seedwords(dict, wov_test)
   expect_equal(
     dim(seed1),
-    c(5, 100)
+    c(6, 100)
   )
   expect_equal(
-    rownames(seed1),
-    c("eco", "sec", "spo", "pol", "cri")
+    apply(seed1, 1, function(x) all(x == 0)),
+    c("eco" = FALSE,
+      "sec" = FALSE,
+      "spo" = FALSE,
+      "pol" = FALSE,
+      "cri" = FALSE,
+      "xxx" = TRUE)
   )
 
   seed2 <- as.seedwords(dict, wov_test, residual = 1)
   expect_equal(
     dim(seed2),
-    c(6, 100)
+    c(7, 100)
   )
   expect_equal(
-    rownames(seed2),
-    c("eco", "sec", "spo", "pol", "cri", "other")
+    apply(seed2, 1, function(x) all(x == 0)),
+    c("eco" = FALSE,
+      "sec" = FALSE,
+      "spo" = FALSE,
+      "pol" = FALSE,
+      "cri" = FALSE,
+      "xxx" = TRUE,
+      "other"= FALSE)
   )
 
   seed3 <- as.seedwords(dict, wov_test, residual = 2)
   expect_equal(
     dim(seed3),
-    c(7, 100)
+    c(8, 100)
   )
   expect_equal(
-    rownames(seed3),
-    c("eco", "sec", "spo", "pol", "cri", "other1", "other2")
+    apply(seed3, 1, function(x) all(x == 0)),
+    c("eco" = FALSE,
+      "sec" = FALSE,
+      "spo" = FALSE,
+      "pol" = FALSE,
+      "cri" = FALSE,
+      "xxx" = TRUE,
+      "other1"= FALSE,
+      "other2"= FALSE)
   )
 
   options(GMTM.residual.name = "else")
   seed4 <- as.seedwords(dict, wov_test, residual = 1)
   expect_equal(
     dim(seed2),
-    c(6, 100)
+    c(7, 100)
   )
   expect_equal(
-    rownames(seed4),
-    c("eco", "sec", "spo", "pol", "cri", "else")
+    apply(seed4, 1, function(x) all(x == 0)),
+    c("eco" = FALSE,
+      "sec" = FALSE,
+      "spo" = FALSE,
+      "pol" = FALSE,
+      "cri" = FALSE,
+      "xxx" = TRUE,
+      "else"= FALSE)
   )
   options(GMTM.residual.name = "other") # restore
 
@@ -128,6 +153,30 @@ test_that("as.seedwords works", {
   expect_error(
     as.seedwords(dict, wov_test, residual = -1),
     "The value of residual must be between 0 and Inf"
+  )
+
+})
+
+test_that("as.seedwords works with hierarchical dictionary", {
+
+  dict <- dictionary(file = "../data/newsmap.yml")
+
+  seed1 <- as.seedwords(dict, wov_test)
+  expect_equal(
+    dim(seed1),
+    c(5, 100)
+  )
+  expect_all_true(
+    rowSums(seed1) != 0
+  )
+
+  seed2 <- as.seedwords(dict, wov_test, levels = 1:2)
+  expect_equal(
+    dim(seed2),
+    c(22, 100)
+  )
+  expect_all_true(
+    rowSums(seed2) != 0
   )
 
 })
