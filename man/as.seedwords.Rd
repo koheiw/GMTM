@@ -23,7 +23,7 @@ Returns a seed word matrix.
 Convert a dictionary to a seed word matrix
 }
 \details{
-Unseeded topics are named "other" but can be changed via
+Unseeded topics are labeled "other", but it can be changed via
 options("GMTM.residual.name").
 }
 \examples{

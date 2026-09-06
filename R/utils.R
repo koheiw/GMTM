@@ -24,7 +24,7 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
 #' @param levels integers specifying the levels of entries in
 #'   a hierarchical dictionary.
 #' @details
-#' Unseeded topics are named "other" but can be changed via
+#' Unseeded topics are labeled "other", but it can be changed via
 #' options("GMTM.residual.name").
 #' @export
 #' @import quanteda wordvector
