@@ -10,7 +10,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# GMTM: Gaussian Mixture Text Models for Topic Analysis
+# GMTM: Gaussian Mixture Topic Models
 
 ## Installation
 
