@@ -24,4 +24,3 @@ LinkingTo: Rcpp, RcppArmadillo (>= 0.7.600.1.0), quanteda, testthat
 Language: en-US
 LazyData: true
 Config/roxygen2/version: 8.0.0
-VignetteBuilder: knitr
