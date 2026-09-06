@@ -41,6 +41,8 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
     k <- check_integer(k, min = 2)
     cl <- get_centers(ncol(x), k)
     label <- paste0("topic", seq_len(k))
+  } else if (!is.null(model) && !is.null(seeds)) {
+    stop("either model or seeds must be NULL")
   } else {
     if (!is.null(model)) {
       if (!is.textmodel_gmm(model))

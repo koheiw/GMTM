@@ -68,3 +68,93 @@ test_that("model works", {
 
 })
 
+test_that("as.seedwords works", {
+
+  dict <- dictionary(list(eco = "econom*", sec = "securit*", spo = "sport*",
+                          pol = "politi*", cri = "crime"))
+
+  seed1 <- as.seedwords(dict, wov_test)
+  expect_equal(
+    dim(seed1),
+    c(5, 100)
+  )
+  expect_equal(
+    rownames(seed1),
+    c("eco", "sec", "spo", "pol", "cri")
+  )
+
+  seed2 <- as.seedwords(dict, wov_test, residual = 1)
+  expect_equal(
+    dim(seed2),
+    c(6, 100)
+  )
+  expect_equal(
+    rownames(seed2),
+    c("eco", "sec", "spo", "pol", "cri", "other")
+  )
+
+  seed3 <- as.seedwords(dict, wov_test, residual = 2)
+  expect_equal(
+    dim(seed3),
+    c(7, 100)
+  )
+  expect_equal(
+    rownames(seed3),
+    c("eco", "sec", "spo", "pol", "cri", "other1", "other2")
+  )
+
+  options(GMTM.residual.name = "else")
+  seed4 <- as.seedwords(dict, wov_test, residual = 1)
+  expect_equal(
+    dim(seed2),
+    c(6, 100)
+  )
+  expect_equal(
+    rownames(seed2),
+    c("eco", "sec", "spo", "pol", "cri", "else")
+  )
+  options(GMTM.residual.name = "other") # restore
+
+  expect_error(
+    as.seedwords(dict, dov_test),
+    "model must be a trained textmodel_word2vec"
+  )
+
+  expect_error(
+    as.seedwords(list(), wov_test),
+    "x must be a dictionary object"
+  )
+
+  expect_error(
+    as.seedwords(dict, wov_test, residual = -1),
+    "The value of residual must be between 0 and Inf"
+  )
+
+})
+
+test_that("seeds works", {
+
+  dict <- dictionary(list(eco = "econom*", sec = "securit*", spo = "sport*",
+                          pol = "politi*", cri = "crime"))
+
+  seed1 <- as.seedwords(dict, wov_test, residual = 0)
+  gmm1 <- textmodel_gmm(dov_test, seeds = seed1)
+  expect_equal(
+    colnames(terms(gmm1, dfmt_test)),
+    names(dict)
+  )
+
+  seed2 <- as.seedwords(dict, wov_test, residual = 1)
+  gmm2 <- textmodel_gmm(dov_test, seeds = seed2)
+  expect_equal(
+    colnames(terms(gmm2, dfmt_test)),
+    c(names(dict), "other")
+  )
+
+  expect_error(
+    textmodel_gmm(dov_test, model = gmm1, seeds = seed1),
+    "either model or seeds must be NULL"
+  )
+
+})
+

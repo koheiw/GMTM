@@ -18,9 +18,10 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
 }
 
 #' Create seedword vectors from a dictionary
-#' @param dictionary a [quanteda::dictionary] of seed words.
+#' @param x a [quanteda::dictionary] of seed words.
 #' @param model a [wordvector::textmodel_word2vec] object.
 #' @param residual the number of unseeded topics.
+#' @param ... passed to underlying functions.
 #' @details
 #' Unseeded topics are named "other" but can be changed via
 #' options("GMTM.residual.name").
@@ -32,10 +33,15 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
 #' as.seedwords(dict, wov, residual = 2)
 #' }
 #' @export
-as.seedwords <- function(dictionary, model, residual = 0) {
+#' @import quanteda wordvector
+as.seedwords <- function(x, model, residual = 0, ...) {
 
-  v <- unlist(object2fixed(dictionary, types = rownames(model$values$word)))
-  d <- dfm(as.tokens(split(v, factor(names(v), levels = names(dictionary)))))
+  if (!quanteda::is.dictionary(x))
+    stop("x must be a dictionary object")
+  residual <- check_integer(residual, min = 0)
+
+  v <- unlist(object2fixed(x, types = rownames(model$values$word), ...))
+  d <- dfm(as.tokens(split(v, factor(names(v), levels = names(x)))))
   e <- as.textmodel_doc2vec(d, model)
   seed <- e$values$doc
   if (residual == 0)

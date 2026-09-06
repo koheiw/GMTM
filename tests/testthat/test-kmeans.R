@@ -68,3 +68,28 @@ test_that("model works", {
 
 })
 
+test_that("seeds works", {
+
+  dict <- dictionary(list(eco = "econom*", sec = "securit*", spo = "sport*",
+                          pol = "politi*", cri = "crime"))
+
+  seed1 <- as.seedwords(dict, wov_test, residual = 0)
+  kmeans1 <- textmodel_kmeans(dov_test, seeds = seed1)
+  expect_equal(
+    colnames(terms(kmeans1, dfmt_test)),
+    names(dict)
+  )
+
+  seed2 <- as.seedwords(dict, wov_test, residual = 1)
+  kmeans2 <- textmodel_kmeans(dov_test, seeds = seed2)
+  expect_equal(
+    colnames(terms(kmeans2, dfmt_test)),
+    c(names(dict), "other")
+  )
+
+  expect_error(
+    textmodel_kmeans(dov_test, model = kmeans1, seeds = seed1),
+    "either model or seeds must be NULL"
+  )
+
+})
