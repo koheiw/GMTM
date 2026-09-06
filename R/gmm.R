@@ -4,6 +4,7 @@
 #' @param x a [wordvector::textmodel_doc2vec] or a dense matrix of document vectors in the rows.
 #' @param k the number of topics to identify.
 #' @param model a fitted model from which initial centroids are extracted.
+#' @param seeds a matrix created using [GMTM::as.seedwords].
 #' @param verbose print the progress if `TRUE`.
 #' @param ... passed to the underlying function.
 #' @import Rcpp
@@ -18,18 +19,27 @@
 #'
 #' @returns Returns a fitted `textmodel_gmm` object.
 #' @examples
-#' # dummy document vectors with 50 dimensions
-#' mat <- t(replicate(1000, rnorm(50)))
-#' gmm <- textmodel_gmm(mat, k = 10)
+#' library(quanteda)
+#' library(wordvector)
+#' options(wordvector_threads = 2)
+#'
+#' corp <- head(wordvector::data_corpus_news2014, 1000)
+#' toks <- tokens(corp, remove_punct = TRUE,
+#'                remove_symbols = TRUE, remove_number = TRUE) %>%
+#'         tokens_remove(stopwords("en"), min_nchar = 2)
+#' wov <- textmodel_word2vec(toks, dim = 50)
+#' dov <- as.textmodel_doc2vec(dfm(toks), wov)
+#'
+#' gmm <- textmodel_gmm(dov, k = 10)
 #' table(topics(gmm))
-textmodel_gmm <- function(x, k = 10, model = NULL, ...,
+textmodel_gmm <- function(x, k = 10, model = NULL, seeds = NULL, ...,
                              verbose = quanteda_options("verbose")) {
   UseMethod("textmodel_gmm")
 }
 
 #' @export
 #' @method textmodel_gmm matrix
-textmodel_gmm.matrix <- function(x, k = 10, model = NULL, ...,
+textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
                                  verbose = quanteda_options("verbose")) {
 
   if (!is.matrix(x))
@@ -37,17 +47,26 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, ...,
   verbose <- check_logical(verbose)
 
   label <- NULL
-  if (is.null(model)) {
+  if (is.null(model) && is.null(seeds)) {
     k <- check_integer(k, min = 2)
-    cl <- matrix(runif(ncol(x) * k), ncol = k)
+    cl <- get_centers(ncol(x), k)
     label <- paste0("topic", seq_len(k))
+  } else if (!is.null(model) && !is.null(seeds)) {
+    stop("either model or seeds must be NULL")
   } else {
-    if (!is.textmodel_gmm(model))
-      stop("model must be a fitted textmodel_gmm")
-    k <- ncol(model$centers)
-    cl <- model$centers
-    label <- model$label
-    message("k is overwritten by the fitted model")
+    if (!is.null(model)) {
+      if (!is.textmodel_gmm(model))
+        stop("model must be a fitted textmodel_gmm")
+      k <- ncol(model$centers)
+      cl <- model$centers
+      label <- model$label
+      message("k is overwritten by the fitted model")
+    } else {
+      k <- nrow(seeds)
+      cl <- t(seeds)
+      label <- rownames(seeds)
+      message("k is overwritten by the seeds")
+    }
   }
 
   RcppArmadillo::armadillo_set_number_of_omp_threads(get_threads())
@@ -65,10 +84,10 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, ...,
 #' @export
 #' @method textmodel_gmm textmodel_doc2vec
 #' @import wordvector
-textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL, ...,
-                                            verbose = quanteda_options("verbose")) {
-  textmodel_gmm(as.matrix(x, normalize = FALSE),
-                k = k, model = model, ..., verbose = verbose)
+textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NULL,
+                                            verbose = quanteda_options("verbose"), ...) {
+  textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
+                seeds = seeds, verbose = verbose, ...)
 }
 
 #' Extract topics of documents
