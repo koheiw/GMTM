@@ -110,7 +110,7 @@ test_that("as.seedwords works", {
     c(6, 100)
   )
   expect_equal(
-    rownames(seed2),
+    rownames(seed4),
     c("eco", "sec", "spo", "pol", "cri", "else")
   )
   options(GMTM.residual.name = "other") # restore
