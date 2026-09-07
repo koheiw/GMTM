@@ -89,14 +89,25 @@ get_threads <- function() {
   return(value)
 }
 
-# matrix_group <- function(x, f, normalize = TRUE) {
-#   f <- factor(f)
-#   lis <- split(x, f, drop = FALSE)
-#   t(sapply(lis, function(v) {
-#     p <- matrix(y, ncol = ncol(x))
-#     if (normalize)
-#       p <- p / rowSums(p)
-#     colMeans(p, na.rm = TRUE)
-#   }))
-# }
+#' Compute sum of rows by a given factor
+#' @param x a matrix.
+#' @param f a factor indicating groups.
+#' @param normalize if `TRUE`, normalize rows before grouping.
+#' @keywords internal
+#' @export
+group_matrix <- function(x, f, normalize = TRUE) {
+
+  if (normalize)
+    x <- x / rowSums(x)
+  lis <- split(x, f, drop = FALSE)
+  t(sapply(lis, function(y) {
+    if (length(y) == 0)
+      y <- rep(0, ncol(x))
+    p <- matrix(y, ncol = ncol(x))
+    colSums(p, na.rm = TRUE)
+  }))
+
+}
+
+
 
