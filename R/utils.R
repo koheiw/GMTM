@@ -89,3 +89,14 @@ get_threads <- function() {
   return(value)
 }
 
+# matrix_group <- function(x, f, normalize = TRUE) {
+#   f <- factor(f)
+#   lis <- split(x, f, drop = FALSE)
+#   t(sapply(lis, function(v) {
+#     p <- matrix(y, ncol = ncol(x))
+#     if (normalize)
+#       p <- p / rowSums(p)
+#     colMeans(p, na.rm = TRUE)
+#   }))
+# }
+
