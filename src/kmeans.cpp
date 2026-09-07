@@ -1,6 +1,10 @@
 #include <RcppArmadillo.h>
 #include <chrono>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 using namespace arma;
 using namespace std;
 using namespace Rcpp;
@@ -11,9 +15,13 @@ inline std::vector<double> to_vector(const arma::urowvec& v) {
 
 // [[Rcpp::export]]
 List cpp_kmeans(arma::mat &data, int k, arma::mat &means,
-                int iter = 10, bool verbose = false) {
+                int iter = 10, bool verbose = false, int threads = -1) {
 
   inplace_trans(data); // vectors are columns
+
+#ifdef _OPENMP
+  omp_set_num_threads(threads);
+#endif
 
   bool status = kmeans(means, data, k, keep_existing, iter, verbose);
 

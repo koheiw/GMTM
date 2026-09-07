@@ -59,8 +59,7 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
     }
   }
 
-  RcppArmadillo::armadillo_set_number_of_omp_threads(get_threads())
-  result <- cpp_kmeans(x, k, means = cl, verbose = verbose, ...)
+  result <- cpp_kmeans(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
 
   dis <- proxyC::dist(x, t(result$centers), sparse = FALSE)
   result$cluster <- max.col(-1 * dis ^ 2)

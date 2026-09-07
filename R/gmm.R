@@ -69,8 +69,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
     }
   }
 
-  RcppArmadillo::armadillo_set_number_of_omp_threads(get_threads())
-  result <- cpp_gmm(x, k, means = cl, verbose = verbose, ...)
+  result <- cpp_gmm(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
 
   result$cluster <- as.integer(result$cluster + 1)
   result$label <- label

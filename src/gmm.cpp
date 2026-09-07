@@ -1,6 +1,10 @@
 #include <RcppArmadillo.h>
 #include <chrono>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 using namespace arma;
 using namespace std;
 using namespace Rcpp;
@@ -10,15 +14,28 @@ inline std::vector<double> to_vector(const arma::urowvec& v) {
 }
 
 // [[Rcpp::export]]
+bool cpp_omp_enabled() {
+#ifdef _OPENMP
+  return true;
+#elif
+  return false;
+#endif
+}
+
+// [[Rcpp::export]]
 List cpp_gmm(arma::mat &data, int k, arma::mat means,
              int mode = 1, int iter_km = 10, int iter_em = 10,
-             bool verbose = false) {
+             bool verbose = false, int threads = -1) {
 
   inplace_trans(data); // vectors are columns
 
   //Rcout << "means.n_rows:" << means.n_rows << "\n";
   //Rcout << "means.n_cols:" << means.n_cols << "\n";
   //model.means.print("means:");
+
+#ifdef _OPENMP
+  omp_set_num_threads(threads);
+#endif
 
   gmm_diag model;
   model.reset(data.n_rows, k);
