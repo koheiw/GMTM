@@ -11,9 +11,19 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// cpp_omp_enabled
+bool cpp_omp_enabled();
+RcppExport SEXP _GMTM_cpp_omp_enabled() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_omp_enabled());
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_gmm
-List cpp_gmm(arma::mat& data, int k, arma::mat means, int mode, int iter_km, int iter_em, bool verbose);
-RcppExport SEXP _GMTM_cpp_gmm(SEXP dataSEXP, SEXP kSEXP, SEXP meansSEXP, SEXP modeSEXP, SEXP iter_kmSEXP, SEXP iter_emSEXP, SEXP verboseSEXP) {
+List cpp_gmm(arma::mat& data, int k, arma::mat means, int mode, int iter_km, int iter_em, bool verbose, int threads);
+RcppExport SEXP _GMTM_cpp_gmm(SEXP dataSEXP, SEXP kSEXP, SEXP meansSEXP, SEXP modeSEXP, SEXP iter_kmSEXP, SEXP iter_emSEXP, SEXP verboseSEXP, SEXP threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,13 +34,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type iter_km(iter_kmSEXP);
     Rcpp::traits::input_parameter< int >::type iter_em(iter_emSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_gmm(data, k, means, mode, iter_km, iter_em, verbose));
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_gmm(data, k, means, mode, iter_km, iter_em, verbose, threads));
     return rcpp_result_gen;
 END_RCPP
 }
 // cpp_kmeans
-List cpp_kmeans(arma::mat& data, int k, arma::mat& means, int iter, bool verbose);
-RcppExport SEXP _GMTM_cpp_kmeans(SEXP dataSEXP, SEXP kSEXP, SEXP meansSEXP, SEXP iterSEXP, SEXP verboseSEXP) {
+List cpp_kmeans(arma::mat& data, int k, arma::mat& means, int iter, bool verbose, int threads);
+RcppExport SEXP _GMTM_cpp_kmeans(SEXP dataSEXP, SEXP kSEXP, SEXP meansSEXP, SEXP iterSEXP, SEXP verboseSEXP, SEXP threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -39,14 +50,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::mat& >::type means(meansSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_kmeans(data, k, means, iter, verbose));
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_kmeans(data, k, means, iter, verbose, threads));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_GMTM_cpp_gmm", (DL_FUNC) &_GMTM_cpp_gmm, 7},
-    {"_GMTM_cpp_kmeans", (DL_FUNC) &_GMTM_cpp_kmeans, 5},
+    {"_GMTM_cpp_omp_enabled", (DL_FUNC) &_GMTM_cpp_omp_enabled, 0},
+    {"_GMTM_cpp_gmm", (DL_FUNC) &_GMTM_cpp_gmm, 8},
+    {"_GMTM_cpp_kmeans", (DL_FUNC) &_GMTM_cpp_kmeans, 6},
     {NULL, NULL, 0}
 };
 
