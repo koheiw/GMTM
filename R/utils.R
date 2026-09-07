@@ -47,6 +47,9 @@ as.seedwords <- function(x, model, residual = 0, levels = 1) {
 
   if (!quanteda::is.dictionary(x))
     stop("x must be a dictionary object")
+  if (is.null(model$values$word))
+    stop("model does not have the layer for words")
+
   residual <- check_integer(residual, min = 0)
   x <- flatten_dictionary(x, levels = levels)
   v <- unlist(object2fixed(x, types = rownames(model$values$word),

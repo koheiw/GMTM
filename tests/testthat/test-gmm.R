@@ -20,8 +20,8 @@ test_that("textmodel_gmm works", {
 
   expect_equal(
     names(gmm_test),
-    c("k", "centers", "covariance", "likelihood", "cluster", "label",
-      "docname", "call", "version")
+    c("k", "centers", "covariance", "cluster", "cluster.likelihood",
+      "model", "model.likelihood", "label", "docname", "call", "version")
   )
   expect_equal(
     names(topics(gmm_test)),
@@ -141,8 +141,8 @@ test_that("as.seedwords works", {
   options(GMTM.residual.name = "other") # restore
 
   expect_error(
-    as.seedwords(dict, dov_test),
-    "model must be a trained textmodel_word2vec"
+    as.seedwords(dict, list()),
+    "model does not have the layer for words"
   )
 
   expect_error(
