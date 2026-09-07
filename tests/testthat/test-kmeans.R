@@ -52,7 +52,9 @@ test_that("model works", {
 
   skip_on_cran()
 
+  options(GMTM.threads = 1)
   set.seed(1234)
+
   km1 <- textmodel_kmeans(dov_test, k = 15, verbose = FALSE)
   expect_message(
     km2 <- textmodel_kmeans(dov_test, model = km1, verbose = FALSE),
@@ -64,6 +66,13 @@ test_that("model works", {
 
   expect_true(
     all(sapply(1:15, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
+  )
+
+  options(GMTM.threads = 2) # reset
+
+  expect_error(
+    textmodel_kmeans(dov_test, model = list()),
+    "the model must be a fitted textmodel_kmeans"
   )
 
 })
@@ -89,7 +98,7 @@ test_that("seeds works", {
 
   expect_error(
     textmodel_kmeans(dov_test, model = kmeans1, seeds = seed1),
-    "either model or seeds must be NULL"
+    "either the model or seeds must be NULL"
   )
 
 })

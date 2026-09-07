@@ -48,7 +48,7 @@ as.seedwords <- function(x, model, residual = 0, levels = 1) {
   if (!quanteda::is.dictionary(x))
     stop("x must be a dictionary object")
   if (is.null(model$values$word))
-    stop("model does not have the layer for words")
+    stop("the model does not have the layer for words")
 
   residual <- check_integer(residual, min = 0)
   x <- flatten_dictionary(x, levels = levels)
@@ -91,15 +91,20 @@ get_threads <- function() {
 
 #' Compute sum of rows by a given factor
 #' @param x a matrix.
-#' @param f a factor indicating groups.
+#' @param factor a factor indicating groups.
 #' @param normalize if `TRUE`, normalize rows before grouping.
 #' @keywords internal
 #' @export
-group_matrix <- function(x, f, normalize = TRUE) {
+group_matrix <- function(x, factor, normalize = TRUE) {
+
+  if (!is.matrix(x))
+    stop("x must be a matrix")
+  if (length(factor) != nrow(x))
+    stop("the length of the factor does not much nrow(x)")
 
   if (normalize)
     x <- x / rowSums(x)
-  lis <- split(x, f, drop = FALSE)
+  lis <- split(x, factor, drop = FALSE)
   t(sapply(lis, function(y) {
     if (length(y) == 0)
       y <- rep(0, ncol(x))

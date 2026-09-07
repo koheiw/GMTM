@@ -4,12 +4,12 @@
 \alias{group_matrix}
 \title{Compute sum of rows by a given factor}
 \usage{
-group_matrix(x, f, normalize = TRUE)
+group_matrix(x, factor, normalize = TRUE)
 }
 \arguments{
 \item{x}{a matrix.}
 
-\item{f}{a factor indicating groups.}
+\item{factor}{a factor indicating groups.}
 
 \item{normalize}{if \code{TRUE}, normalize rows before grouping.}
 }

@@ -70,6 +70,12 @@ test_that("model works", {
 
   options(GMTM.threads = 2) # reset
 
+
+  expect_error(
+    textmodel_gmm(dov_test, model = list()),
+    "the model must be a fitted textmodel_gmm"
+  )
+
 })
 
 test_that("as.seedwords works", {
@@ -206,7 +212,7 @@ test_that("seeds works", {
 
   expect_error(
     textmodel_gmm(dov_test, model = gmm1, seeds = seed1),
-    "either model or seeds must be NULL"
+    "either the model or seeds must be NULL"
   )
 
 })

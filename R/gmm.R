@@ -42,8 +42,6 @@ textmodel_gmm <- function(x, k = 10, model = NULL, seeds = NULL, ...,
 textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
                                  verbose = quanteda_options("verbose")) {
 
-  if (!is.matrix(x))
-    stop("model must be a dense matrix")
   verbose <- check_logical(verbose)
 
   label <- NULL
@@ -52,11 +50,11 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
     cl <- get_centers(ncol(x), k)
     label <- paste0("topic", seq_len(k))
   } else if (!is.null(model) && !is.null(seeds)) {
-    stop("either model or seeds must be NULL")
+    stop("either the model or seeds must be NULL")
   } else {
     if (!is.null(model)) {
       if (!is.textmodel_gmm(model))
-        stop("model must be a fitted textmodel_gmm")
+        stop("the model must be a fitted textmodel_gmm")
       k <- ncol(model$centers)
       cl <- model$centers
       label <- model$label
