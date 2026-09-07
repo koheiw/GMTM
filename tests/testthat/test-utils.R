@@ -27,3 +27,36 @@ test_that("OMP is enabled", {
   )
 
 })
+
+test_that("OMP is enabled", {
+
+  mat <- matrix(rep(c(0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0), 5), nrow = 7, ncol = 5)
+  rownames(mat) <- paste0("doc", c(2, 2, 2, 1, 1, 3, 0))
+
+  expect_equal(
+    matrix_group(mat, rownames(mat)),
+    matrix(c(0, 0.4, 0.6, 0.2), nrow = 4, ncol = 5,
+           dimnames = list(paste0("doc", 0:3), NULL))
+  )
+
+  expect_equal(
+    matrix_group(mat, v, normalize = FALSE),
+    matrix(c(0, 0.2, 0.3, 0.1), nrow = 4, ncol = 5,
+           dimnames = list(paste0("doc", 0:3), NULL))
+  )
+
+  v1 <- factor(rownames(mat), levels = paste0("doc", 0:4))
+  expect_equal(
+    matrix_group(mat, v1),
+    matrix(c(0, 0.4, 0.6, 0.2, 0), nrow = 5, ncol = 5,
+           dimnames = list(paste0("doc", 0:4), NULL))
+  )
+
+  v2 <- factor(rownames(mat), levels = paste0("doc", 4:0))
+  expect_equal(
+    matrix_group(mat, v2),
+    matrix(c(0, 0.2, 0.6, 0.4, 0), nrow = 5, ncol = 5,
+           dimnames = list(paste0("doc", 4:0), NULL))
+  )
+
+})
