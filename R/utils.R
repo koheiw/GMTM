@@ -89,9 +89,13 @@ get_threads <- function() {
   return(value)
 }
 
-#' @keyword internal
+#' Compute sum of rows by a given factor
+#' @param x a matrix.
+#' @param f a factor indicating groups.
+#' @param normalize if `TRUE`, normalize rows before grouping.
+#' @keywords internal
 #' @export
-matrix_group <- function(x, f, normalize = TRUE) {
+group_matrix <- function(x, f, normalize = TRUE) {
 
   if (normalize)
     x <- x / rowSums(x)
