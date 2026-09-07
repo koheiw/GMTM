@@ -38,24 +38,22 @@ List cpp_gmm(arma::mat &data, int k, arma::mat means,
 
   //model.means.print("means:");
 
-  //double  scalar_likelihood = model.log_p( data.col(0)    );
-  //rowvec     set_likelihood = model.log_p( data.cols(0,9) );
+  //urowvec cluster = model.assign(data, eucl_dist);
+  urowvec cluster = model.assign(data, prob_dist);
 
-  //double overall_likelihood = model.avg_log_p(data);
-  urowvec cl_eucl = model.assign(data, eucl_dist);
-  urowvec cl_prob = model.assign(data, prob_dist);
-
-  arma::mat log_prob(data.n_cols, k, arma::fill::zeros);
+  double prob = model.avg_log_p(data);
+  arma::mat cluster_prob(data.n_cols, k, arma::fill::zeros);
   for (int j = 0; j < k; j++) {
-    log_prob.col(j) = model.log_p(data, j).t();
+    cluster_prob.col(j) = model.log_p(data, j).t();
   }
   return List::create(Rcpp::Named("k") = k,
                       Rcpp::Named("centers") = model.means,
                       Rcpp::Named("covariance") = model.dcovs,
                       //Rcpp::Named("hefts") = model.hefts
-                      Rcpp::Named("likelihood") = exp(log_prob),
-                      //Rcpp::Named("cluster") = to_vector(cl_eucl),
-                      Rcpp::Named("cluster") = to_vector(cl_prob));
+                      Rcpp::Named("cluster") = to_vector(cluster),
+                      Rcpp::Named("cluster.likelihood") = exp(cluster_prob),
+                      Rcpp::Named("model") = "diagonal",
+                      Rcpp::Named("model.likelihood") = exp(prob));
 }
 
 /*** R
