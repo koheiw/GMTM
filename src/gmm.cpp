@@ -17,7 +17,7 @@ inline std::vector<double> to_vector(const arma::urowvec& v) {
 bool cpp_omp_enabled() {
 #ifdef _OPENMP
   return true;
-#elif
+#else
   return false;
 #endif
 }
