@@ -30,10 +30,6 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - if: matrix.config.os == 'macos-latest'
-        run: |
-            brew install libomp
-
       - uses: actions/checkout@v4
 
       - uses: r-lib/actions/setup-pandoc@v2
