@@ -53,7 +53,9 @@ test_that("model works", {
 
   skip_on_cran()
 
+  options(GMTM.threads = 1)
   set.seed(1234)
+
   gmm1 <- textmodel_gmm(dov_test, k = 15, verbose = FALSE)
   expect_message(
     gmm2 <- textmodel_gmm(dov_test, model = gmm1, verbose = FALSE),
@@ -65,6 +67,8 @@ test_that("model works", {
   expect_true(
     all(sapply(1:15, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
   )
+
+  options(GMTM.threads = 2) # reset
 
 })
 
