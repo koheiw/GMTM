@@ -206,7 +206,7 @@ test_that("seeds works", {
 
   expect_error(
     textmodel_gmm(dov_test, model = gmm1, seeds = seed1),
-    "either model or seeds must be NULL"
+    "either the model or seeds must be NULL"
   )
 
 })

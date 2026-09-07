@@ -89,7 +89,7 @@ test_that("seeds works", {
 
   expect_error(
     textmodel_kmeans(dov_test, model = kmeans1, seeds = seed1),
-    "either model or seeds must be NULL"
+    "either the model or seeds must be NULL"
   )
 
 })
