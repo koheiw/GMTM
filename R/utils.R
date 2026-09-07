@@ -97,8 +97,10 @@ get_threads <- function() {
 #' @export
 group_matrix <- function(x, factor, normalize = TRUE) {
 
+  if (!is.matrix(x))
+    stop("x must be a matrix")
   if (length(factor) != nrow(x))
-    stop("the length of factor does not much nrow(x)")
+    stop("the length of the factor does not much nrow(x)")
 
   if (normalize)
     x <- x / rowSums(x)
