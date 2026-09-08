@@ -12,7 +12,10 @@ knitr::opts_chunk$set(
 
 # GMTM: Gaussian Mixture Topic Models
 
-An R package for unsupervised or semi-supervised topic analysis of dense document vectors. **GMTM** performs clustering of document vectors using Gaussian mixture models. Document vectors can be source from any package but [wordvectors](https://github.com/koheiw/wordvector) works seamlessly. The underlying function is based on the Armadillo library for fast computation.
+An R package for unsupervised or semi-supervised topic analysis of dense document vectors. **GMTM** performs clustering of document vectors using Gaussian mixture models. Document vectors can be source from any package but [wordvectors](https://github.com/koheiw/wordvector) works seamlessly. The underlying function is based on the [Armadillo library](https://arma.sourceforge.net/docs.html#gmm_diag) for fast computation. The algorithm is explain in the article below:
+
+Sanderson, C., & Curtin, R. (2017). *An open source C++ implementation of multi-threaded Gaussian mixture models, k-means and expectation maximisation*. https://doi.org/10.1109/ICSPCS.2017.8270510
+
 
 ## Installation
 

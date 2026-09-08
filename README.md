@@ -5,8 +5,13 @@ An R package for unsupervised or semi-supervised topic analysis of dense
 document vectors. **GMTM** performs clustering of document vectors using
 Gaussian mixture models. Document vectors can be source from any package
 but [wordvectors](https://github.com/koheiw/wordvector) works
-seamlessly. The underlying function is based on the Armadillo library
-for fast computation.
+seamlessly. The underlying function is based on the [Armadillo
+library](https://arma.sourceforge.net/docs.html#gmm_diag) for fast
+computation. The algorithm is explain in the article below:
+
+Sanderson, C., & Curtin, R. (2017). *An open source C++ implementation
+of multi-threaded Gaussian mixture models, k-means and expectation
+maximisation*. <https://doi.org/10.1109/ICSPCS.2017.8270510>
 
 ## Installation
 
@@ -58,34 +63,34 @@ table(topics(gmm))
 
     ## 
     ##  topic1  topic2  topic3  topic4  topic5  topic6  topic7  topic8  topic9 topic10 
-    ##    9151    9947    9637    6292    6366    4391    3823    6184    4957    5115
+    ##    5723   10008    8335    6383    5885    5186     801    8978    7020    7544
 
 ``` r
 terms(gmm, data = dfmt)
 ```
 
-    ##       topic1      topic2    topic3         topic4     topic5        topic6     
-    ##  [1,] "ebola"     "kerry"   "editing"      "index"    "palestinian" "militants"
-    ##  [2,] "leone"     "iaea"    "rugby"        "corp"     "syria"       "islamist" 
-    ##  [3,] "tsunami"   "snowden" "beats"        "data"     "bashar"      "gunmen"   
-    ##  [4,] "virus"     "nuclear" "championship" "earnings" "militants"   "qaeda"    
-    ##  [5,] "mh370"     "obama"   "2-0"          "futures"  "islamist"    "levant"   
-    ##  [6,] "quake"     "abe"     "1-0"          "co"       "qaeda"       "islamists"
-    ##  [7,] "sierra"    "uranium" "england"      "cents"    "iraq"        "sanaa"    
-    ##  [8,] "hurricane" "wto"     "6-4"          "wireless" "israeli"     "boko"     
-    ##  [9,] "tropical"  "zarif"   "champions"    "stocks"   "islamic"     "shiite"   
-    ## [10,] "antarctic" "atomic"  "coach"        "inc"      "israel"      "haram"    
-    ##       topic7        topic8       topic9     topic10       
-    ##  [1,] "annexation"  "pistorius"  "killing"  "polls"       
-    ##  [2,] "pro-russian" "murder"     "kills"    "shinawatra"  
-    ##  [3,] "poroshenko"  "sentenced"  "injuring" "bharatiya"   
-    ##  [4,] "lavrov"      "sentence"   "bomber"   "janata"      
-    ##  [5,] "crimean"     "prison"     "gunmen"   "dilma"       
-    ##  [6,] "putin"       "guilty"     "rescuers" "vote"        
-    ##  [7,] "sanctions"   "girlfriend" "hospital" "parliament"  
-    ##  [8,] "crimea"      "jury"       "village"  "bjp"         
-    ##  [9,] "separatists" "sentences"  "ferry"    "rousseff"    
-    ## [10,] "nato"        "trial"      "wounding" "presidential"
+    ##       topic1       topic2       topic3         topic4      topic5     
+    ##  [1,] "president"  "ebola"      "rugby"        "percent"   "killed"   
+    ##  [2,] "minister"   "passengers" "champions"    "index"     "police"   
+    ##  [3,] "parliament" "leone"      "beats"        "billion"   "killing"  
+    ##  [4,] "prime"      "south"      "championship" "growth"    "people"   
+    ##  [5,] "polls"      "tsunami"    "6-4"          "earnings"  "gunmen"   
+    ##  [6,] "party"      "quake"      "scored"       "futures"   "militants"
+    ##  [7,] "election"   "earthquake" "coach"        "stocks"    "kills"    
+    ##  [8,] "government" "ferry"      "innings"      "inc"       "bomber"   
+    ##  [9,] "shinawatra" "hurricane"  "6-3"          "quarterly" "mortar"   
+    ## [10,] "bharatiya"  "mh370"      "2-0"          "cents"     "bomb"     
+    ##       topic6       topic7        topic8       topic9      topic10     
+    ##  [1,] "pistorius"  "editing"     "snowden"    "militants" "russia"    
+    ##  [2,] "court"      "writing"     "minister"   "islamic"   "sanctions" 
+    ##  [3,] "murder"     "stonestreet" "co"         "syria"     "lavrov"    
+    ##  [4,] "sentenced"  "tait"        "government" "levant"    "merkel"    
+    ##  [5,] "sentences"  "chizu"       "u.n"        "sunni"     "putin"     
+    ##  [6,] "girlfriend" "nomiyama"    "us"         "syrian"    "nato"      
+    ##  [7,] "killing"    "bangalore"   "statement"  "bashar"    "annexation"
+    ##  [8,] "prison"     "dalgleish"   "news"       "qaeda"     "kerry"     
+    ##  [9,] "woman"      "maler"       "department" "militant"  "president" 
+    ## [10,] "jail"       "hepinstall"  "united"     "iraq"      "nuclear"
 
 ### Semi-supervised analysis
 
@@ -109,31 +114,31 @@ table(topics(sgmm))
 
     ## 
     ##  economy politics security   sports   crimes    other 
-    ##     8255    19168    10118     8463     7950    11909
+    ##     8800     6828     9870     9857    16493    14015
 
 ``` r
 terms(sgmm, data = dfmt)
 ```
 
-    ##       economy    politics      security     sports      crimes       
-    ##  [1,] "growth"   "lavrov"      "militants"  "rugby"     "sentence"   
-    ##  [2,] "stocks"   "kerry"       "islamist"   "6-4"       "pistorius"  
-    ##  [3,] "index"    "peace"       "sunni"      "innings"   "killing"    
-    ##  [4,] "earnings" "parliament"  "islamic"    "6-3"       "sentenced"  
-    ##  [5,] "futures"  "nato"        "killing"    "beats"     "arrested"   
-    ##  [6,] "chrysler" "nuclear"     "iraq"       "6-2"       "crimes"     
-    ##  [7,] "tsx"      "poroshenko"  "syria"      "3-0"       "prison"     
-    ##  [8,] "wireless" "pro-russian" "insurgents" "twenty20"  "murder"     
-    ##  [9,] "corp"     "u.n"         "army"       "champions" "brotherhood"
-    ## [10,] "cents"    "resolution"  "qaeda"      "2-0"       "guantanamo" 
+    ##       economy    politics     security      sports      crimes      
+    ##  [1,] "index"    "parliament" "militants"   "editing"   "pistorius" 
+    ##  [2,] "data"     "bharatiya"  "islamic"     "rugby"     "killing"   
+    ##  [3,] "earnings" "janata"     "killing"     "krasnaya"  "rico"      
+    ##  [4,] "futures"  "erdogan"    "syria"       "polyana"   "passengers"
+    ##  [5,] "chrysler" "bjp"        "army"        "beats"     "sentenced" 
+    ##  [6,] "profit"   "shinawatra" "observatory" "2-0"       "girlfriend"
+    ##  [7,] "tsx"      "reform"     "civilians"   "6-4"       "sierra"    
+    ##  [8,] "wireless" "speaker"    "syrian"      "liverpool" "mh370"     
+    ##  [9,] "stocks"   "tayyip"     "sunni"       "1-0"       "crimes"    
+    ## [10,] "cents"    "abdullah"   "bombing"     "striker"   "leone"     
     ##       other        
-    ##  [1,] "editing"    
-    ##  [2,] "ebola"      
-    ##  [3,] "hurricane"  
-    ##  [4,] "stonestreet"
-    ##  [5,] "magnitude"  
-    ##  [6,] "earthquake" 
-    ##  [7,] "tsunami"    
-    ##  [8,] "ice"        
-    ##  [9,] "rescuers"   
-    ## [10,] "killing"
+    ##  [1,] "kerry"      
+    ##  [2,] "lavrov"     
+    ##  [3,] "nuclear"    
+    ##  [4,] "u.n"        
+    ##  [5,] "syria"      
+    ##  [6,] "crimea"     
+    ##  [7,] "separatists"
+    ##  [8,] "islamic"    
+    ##  [9,] "pro-russian"
+    ## [10,] "palestinian"
