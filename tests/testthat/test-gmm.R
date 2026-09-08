@@ -25,6 +25,11 @@ test_that("textmodel_gmm works", {
       "model", "model.likelihood", "label", "docname", "docvars",
       "call", "version")
   )
+  expect_true(
+    is.data.frame(gmm_test$docvars)
+  )
+
+  # topics
   expect_equal(
     names(topics(gmm_test)),
     rownames(dfmt_test),
@@ -37,13 +42,6 @@ test_that("textmodel_gmm works", {
     paste0("topic", 1:10)
   )
   expect_equal(
-    dim(terms(gmm_test, dfmt_test, 15)),
-    c(15, 10)
-  )
-  expect_true(
-    is.data.frame(gmm_test$docvars)
-  )
-  expect_equal(
     length(topics(gmm_test, group = FALSE)),
     6580
   )
@@ -51,6 +49,22 @@ test_that("textmodel_gmm works", {
     length(topics(gmm_test, group = TRUE)),
     2000
   )
+  expect_error(
+    topics(gmm_test, c("A")),
+    "The type of group must be logical"
+  )
+
+  # terms
+  expect_equal(
+    dim(terms(gmm_test, dfmt_test, 15)),
+    c(15, 10)
+  )
+  expect_error(
+    terms(gmm_test, head(dfmt_test, 100), n = 20),
+    "the number of documents do not match"
+  )
+
+  # probability
   expect_equal(
     dim(probability(gmm_test, group = FALSE)),
     c(6580, 10)
@@ -59,15 +73,16 @@ test_that("textmodel_gmm works", {
     dim(probability(gmm_test, group = TRUE)),
     c(2000, 10)
   )
+  expect_error(
+    probability(gmm_test, c("A")),
+    "The type of group must be logical"
+  )
+
+  # print
   expect_output(
     print(gmm_test),
     "Call:\ntextmodel_gmm\\(.*\\)"
   )
-  expect_error(
-    terms(gmm_test, head(dfmt_test, 100), n = 20),
-    "the number of documents do not match"
-  )
-
 })
 
 test_that("model works", {

@@ -24,6 +24,11 @@ test_that("textmodel_kmeans works", {
     c("k", "centers", "cluster", "label", "docname", "docvars",
       "call", "version")
   )
+  expect_true(
+    is.data.frame(km_test$docvars)
+  )
+
+  # topics
   expect_equal(
     names(topics(km_test)),
     rownames(dfmt_test),
@@ -36,13 +41,6 @@ test_that("textmodel_kmeans works", {
     paste0("topic", 1:10)
   )
   expect_equal(
-    dim(terms(km_test, dfmt_test, 15)),
-    c(15, 10)
-  )
-  expect_true(
-    is.data.frame(km_test$docvars)
-  )
-  expect_equal(
     length(topics(km_test, group = FALSE)),
     6580
   )
@@ -50,15 +48,26 @@ test_that("textmodel_kmeans works", {
     length(topics(km_test, group = TRUE)),
     2000
   )
-  expect_output(
-    print(km_test),
-    "Call:\ntextmodel_kmeans\\(.*\\)"
+  expect_error(
+    topics(km_test, c("A")),
+    "The type of group must be logical"
+  )
+
+  # terms
+  expect_equal(
+    dim(terms(km_test, dfmt_test, 15)),
+    c(15, 10)
   )
   expect_error(
     terms(km_test, head(dfmt_test, 100), n = 20),
     "the number of documents do not match"
   )
 
+  # print
+  expect_output(
+    print(km_test),
+    "Call:\ntextmodel_kmeans\\(.*\\)"
+  )
 })
 
 test_that("model works", {

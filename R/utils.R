@@ -116,6 +116,8 @@ group_matrix <- function(x, factor, normalize = TRUE) {
 
 get_topics <- function(x, group) {
 
+  group <- check_logical(group, strict = TRUE)
+
   if (group) {
     prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)
     v <- max.col(prob, ties.method = "first")
@@ -129,6 +131,9 @@ get_topics <- function(x, group) {
 }
 
 get_probability <- function(x, group) {
+
+  group <- check_logical(group, strict = TRUE)
+
   if (group) {
     prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)
   } else {
