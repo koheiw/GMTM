@@ -95,7 +95,8 @@ textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NUL
 
 #' Extract the topics of documents
 #' @param x a fitted model.
-#' @param group if `TRUE`, collapse the probability by the original document `doc_id`.
+#' @param group if `TRUE`, aggregate the probability of topics by the original
+#'   document `doc_id`. Ignored if `x` is a `textmodel_kmeans` object.
 #' @param ... not used.
 #' @rdname topics
 #' @returns Returns predicted topics as a vector.

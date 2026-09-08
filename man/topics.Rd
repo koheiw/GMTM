@@ -9,7 +9,8 @@ topics(x, group = FALSE, ...)
 \arguments{
 \item{x}{a fitted model.}
 
-\item{group}{if \code{TRUE}, collapse the probability by the original document \code{doc_id}.}
+\item{group}{if \code{TRUE}, aggregate the probability of topics by the original
+document \code{doc_id}. Ignored if \code{x} is a \code{textmodel_kmeans} object.}
 
 \item{...}{not used.}
 }
