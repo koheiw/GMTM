@@ -72,6 +72,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
   result$cluster <- as.integer(result$cluster + 1)
   result$label <- label
   result$docname <- rownames(x)
+  result$docvars <- data.frame(docname_ = rownames(x))
   result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   result$version <- utils::packageVersion("GMTM")
   class(result) <- "textmodel_gmm"
@@ -83,8 +84,11 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
 #' @import wordvector
 textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NULL,
                                             verbose = quanteda_options("verbose"), ...) {
-  textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
-                seeds = seeds, verbose = verbose, ...)
+  result <- textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
+                          seeds = seeds, verbose = verbose, ...)
+  if (!is.null(x$docvars))
+    result$docvars <- x$docvars
+  return(result)
 }
 
 #' Extract topics of documents

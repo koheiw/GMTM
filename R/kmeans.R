@@ -63,6 +63,7 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
   result$cluster <- max.col(-1 * dis ^ 2)
   result$label <- label
   result$docname <- rownames(x)
+  result$docvars <- data.frame(docname_ = rownames(x))
   result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   result$version <- utils::packageVersion("GMTM")
   class(result) <- "textmodel_kmeans"
@@ -74,8 +75,11 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
 #' @import wordvector
 textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NULL,
                                                verbose = quanteda_options("verbose"), ...) {
-  textmodel_kmeans(as.matrix(x, normalize = FALSE), k = k, model = model,
-                   seeds = seeds, verbose = verbose)
+  result <- textmodel_kmeans(as.matrix(x, normalize = FALSE), k = k, model = model,
+                             seeds = seeds, verbose = verbose)
+  if (!is.null(x$docvars))
+    result$docvars <- x$docvars
+  return(result)
 }
 
 #' @method topics textmodel_kmeans

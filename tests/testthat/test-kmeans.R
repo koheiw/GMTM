@@ -20,7 +20,8 @@ test_that("textmodel_kmeans works", {
 
   expect_equal(
     names(km_test),
-    c("k", "centers", "cluster", "label", "docname", "call", "version")
+    c("k", "centers", "cluster", "label", "docname", "docvars",
+      "call", "version")
   )
   expect_equal(
     names(topics(km_test)),
@@ -36,6 +37,9 @@ test_that("textmodel_kmeans works", {
   expect_equal(
     dim(terms(km_test, dfmt_test, 15)),
     c(15, 10)
+  )
+  expect_true(
+    is.data.frame(km_test$docvars)
   )
   expect_output(
     print(km_test),

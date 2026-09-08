@@ -21,7 +21,8 @@ test_that("textmodel_gmm works", {
   expect_equal(
     names(gmm_test),
     c("k", "centers", "covariance", "cluster", "cluster.likelihood",
-      "model", "model.likelihood", "label", "docname", "call", "version")
+      "model", "model.likelihood", "label", "docname", "docvars",
+      "call", "version")
   )
   expect_equal(
     names(topics(gmm_test)),
@@ -37,6 +38,9 @@ test_that("textmodel_gmm works", {
   expect_equal(
     dim(terms(gmm_test, dfmt_test, 15)),
     c(15, 10)
+  )
+  expect_true(
+    is.data.frame(gmm_test$docvars)
   )
   expect_output(
     print(gmm_test),
