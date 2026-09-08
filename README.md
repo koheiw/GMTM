@@ -63,34 +63,34 @@ table(topics(gmm))
 
     ## 
     ##  topic1  topic2  topic3  topic4  topic5  topic6  topic7  topic8  topic9 topic10 
-    ##    5723   10008    8335    6383    5885    5186     801    8978    7020    7544
+    ##    7376    5272   10970    3829    7954    9086    5649    9470     608    5649
 
 ``` r
 terms(gmm, data = dfmt)
 ```
 
-    ##       topic1       topic2       topic3         topic4      topic5     
-    ##  [1,] "president"  "ebola"      "rugby"        "percent"   "killed"   
-    ##  [2,] "minister"   "passengers" "champions"    "index"     "police"   
-    ##  [3,] "parliament" "leone"      "beats"        "billion"   "killing"  
-    ##  [4,] "prime"      "south"      "championship" "growth"    "people"   
-    ##  [5,] "polls"      "tsunami"    "6-4"          "earnings"  "gunmen"   
-    ##  [6,] "party"      "quake"      "scored"       "futures"   "militants"
-    ##  [7,] "election"   "earthquake" "coach"        "stocks"    "kills"    
-    ##  [8,] "government" "ferry"      "innings"      "inc"       "bomber"   
-    ##  [9,] "shinawatra" "hurricane"  "6-3"          "quarterly" "mortar"   
-    ## [10,] "bharatiya"  "mh370"      "2-0"          "cents"     "bomb"     
-    ##       topic6       topic7        topic8       topic9      topic10     
-    ##  [1,] "pistorius"  "editing"     "snowden"    "militants" "russia"    
-    ##  [2,] "court"      "writing"     "minister"   "islamic"   "sanctions" 
-    ##  [3,] "murder"     "stonestreet" "co"         "syria"     "lavrov"    
-    ##  [4,] "sentenced"  "tait"        "government" "levant"    "merkel"    
-    ##  [5,] "sentences"  "chizu"       "u.n"        "sunni"     "putin"     
-    ##  [6,] "girlfriend" "nomiyama"    "us"         "syrian"    "nato"      
-    ##  [7,] "killing"    "bangalore"   "statement"  "bashar"    "annexation"
-    ##  [8,] "prison"     "dalgleish"   "news"       "qaeda"     "kerry"     
-    ##  [9,] "woman"      "maler"       "department" "militant"  "president" 
-    ## [10,] "jail"       "hepinstall"  "united"     "iraq"      "nuclear"
+    ##       topic1     topic2       topic3    topic4        topic5     
+    ##  [1,] "percent"  "president"  "u.s"     "ukraine"     "islamic"  
+    ##  [2,] "earnings" "parliament" "said"    "russia"      "said"     
+    ##  [3,] "inc"      "minister"   "kerry"   "annexation"  "militants"
+    ##  [4,] "growth"   "polls"      "peace"   "putin"       "syria"    
+    ##  [5,] "futures"  "party"      "ap"      "crimea"      "islamist" 
+    ##  [6,] "said"     "election"   "united"  "russian"     "israeli"  
+    ##  [7,] "index"    "prime"      "u.n"     "pro-russian" "qaeda"    
+    ##  [8,] "corp"     "government" "talks"   "said"        "killed"   
+    ##  [9,] "chrysler" "said"       "syria"   "separatists" "army"     
+    ## [10,] "data"     "vote"       "islamic" "nato"        "sunni"    
+    ##       topic6         topic7      topic8       topic9        topic10    
+    ##  [1,] "beats"        "pistorius" "ap"         "editing"     "said"     
+    ##  [2,] "championship" "sentenced" "said"       "writing"     "minister" 
+    ##  [3,] "polyana"      "sentence"  "people"     "stonestreet" "told"     
+    ##  [4,] "ap"           "court"     "police"     "tait"        "kerry"    
+    ##  [5,] "2-0"          "ap"        "passengers" "chizu"       "news"     
+    ##  [6,] "scored"       "trial"     "south"      "nomiyama"    "reuters"  
+    ##  [7,] "rugby"        "prison"    "two"        "hepinstall"  "snowden"  
+    ##  [8,] "1-0"          "guilty"    "city"       "pomeroy"     "statement"
+    ##  [9,] "england"      "said"      "ebola"      "bangalore"   "foreign"  
+    ## [10,] "6-4"          "sentences" "evacuated"  "grove"       "state"
 
 ### Semi-supervised analysis
 
@@ -114,31 +114,31 @@ table(topics(sgmm))
 
     ## 
     ##  economy politics security   sports   crimes    other 
-    ##     8800     6828     9870     9857    16493    14015
+    ##     9013    18622     9224    10160     8479    10365
 
 ``` r
 terms(sgmm, data = dfmt)
 ```
 
-    ##       economy    politics     security      sports      crimes      
-    ##  [1,] "index"    "parliament" "militants"   "editing"   "pistorius" 
-    ##  [2,] "data"     "bharatiya"  "islamic"     "rugby"     "killing"   
-    ##  [3,] "earnings" "janata"     "killing"     "krasnaya"  "rico"      
-    ##  [4,] "futures"  "erdogan"    "syria"       "polyana"   "passengers"
-    ##  [5,] "chrysler" "bjp"        "army"        "beats"     "sentenced" 
-    ##  [6,] "profit"   "shinawatra" "observatory" "2-0"       "girlfriend"
-    ##  [7,] "tsx"      "reform"     "civilians"   "6-4"       "sierra"    
-    ##  [8,] "wireless" "speaker"    "syrian"      "liverpool" "mh370"     
-    ##  [9,] "stocks"   "tayyip"     "sunni"       "1-0"       "crimes"    
-    ## [10,] "cents"    "abdullah"   "bombing"     "striker"   "leone"     
-    ##       other        
-    ##  [1,] "kerry"      
-    ##  [2,] "lavrov"     
-    ##  [3,] "nuclear"    
-    ##  [4,] "u.n"        
-    ##  [5,] "syria"      
-    ##  [6,] "crimea"     
-    ##  [7,] "separatists"
-    ##  [8,] "islamic"    
-    ##  [9,] "pro-russian"
-    ## [10,] "palestinian"
+    ##       economy    politics      security    sports     crimes       
+    ##  [1,] "growth"   "lavrov"      "sunni"     "krasnaya" "sentence"   
+    ##  [2,] "index"    "nato"        "militants" "polyana"  "pistorius"  
+    ##  [3,] "earnings" "pro-russian" "islamic"   "beats"    "sentenced"  
+    ##  [4,] "futures"  "poroshenko"  "syria"     "editing"  "killing"    
+    ##  [5,] "chrysler" "resolution"  "killing"   "2-0"      "prison"     
+    ##  [6,] "tsx"      "kerry"       "qaeda"     "6-4"      "brotherhood"
+    ##  [7,] "retail"   "crimea"      "syrian"    "innings"  "girlfriend" 
+    ##  [8,] "wireless" "yatseniuk"   "shiite"    "6-3"      "extradition"
+    ##  [9,] "cents"    "separatists" "gunmen"    "rugby"    "terror"     
+    ## [10,] "consumer" "steinmeier"  "islamists" "6-2"      "jail"       
+    ##       other       
+    ##  [1,] "tropical"  
+    ##  [2,] "killing"   
+    ##  [3,] "capsized"  
+    ##  [4,] "tsunami"   
+    ##  [5,] "rescuers"  
+    ##  [6,] "volcano"   
+    ##  [7,] "kilometres"
+    ##  [8,] "wildfire"  
+    ##  [9,] "landslides"
+    ## [10,] "lava"
