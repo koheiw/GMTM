@@ -41,16 +41,8 @@ test_that("textmodel_kmeans works", {
     paste0("topic", 1:10)
   )
   expect_equal(
-    length(topics(km_test, group = FALSE)),
-    6580
-  )
-  expect_equal(
-    length(topics(km_test, group = TRUE)),
-    2000
-  )
-  expect_error(
-    topics(km_test, c("A")),
-    "The type of group must be logical"
+    names(topics(km_test)),
+    docnames(dfmt_test)
   )
 
   # terms

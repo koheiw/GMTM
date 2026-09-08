@@ -42,12 +42,12 @@ test_that("textmodel_gmm works", {
     paste0("topic", 1:10)
   )
   expect_equal(
-    length(topics(gmm_test, group = FALSE)),
-    6580
+    names(topics(gmm_test, group = FALSE)),
+    docnames(dfmt_test)
   )
   expect_equal(
-    length(topics(gmm_test, group = TRUE)),
-    2000
+    names(topics(gmm_test, group = TRUE)),
+    levels(docid(dfmt_test))
   )
   expect_error(
     topics(gmm_test, c("A")),
@@ -73,6 +73,14 @@ test_that("textmodel_gmm works", {
     dim(probability(gmm_test, group = TRUE)),
     c(2000, 10)
   )
+  expect_equal(
+    rownames(probability(gmm_test, group = FALSE)),
+    docnames(dfmt_test)
+  )
+  expect_equal(
+    rownames(probability(gmm_test, group = TRUE)),
+    levels(docid(dfmt_test))
+  )
   expect_error(
     probability(gmm_test, c("A")),
     "The type of group must be logical"
@@ -94,7 +102,7 @@ test_that("model works", {
 
   gmm1 <- textmodel_gmm(dov_test, k = 15, verbose = FALSE)
   expect_message(
-    gmm2 <- textmodel_gmm(dov_test, model = gmm1, verbose = FALSE),
+    gmm2 <- textmodel_gmm(dov_test, model = gmm1, iter_km = 0, verbose = FALSE),
     "k is overwritten by the fitted model"
   )
   term1 <- terms(gmm1, dfmt_test, n = 10)

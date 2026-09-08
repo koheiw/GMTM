@@ -13,10 +13,12 @@
 #' @useDynLib GMTM
 #' @export
 #' @details
-#' User can change the number of threads for the parallel computing via
+#' Users can change the number of threads for the parallel computing via
 #' `options(GMTM.threads)` or `OMP_THREAD_LIMIT` in the environmental
 #' variable.
 #'
+#' The number of iterations in kmeans (`iter_km`) and expectation maximization
+#' (`iter_em`) stages can be set via `...`.
 #' @returns Returns a fitted `textmodel_gmm` object.
 #' @examples
 #' library(quanteda)

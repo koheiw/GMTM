@@ -84,8 +84,8 @@ textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = 
 
 #' @method topics textmodel_kmeans
 #' @export
-topics.textmodel_kmeans <- function(x, group = FALSE, ...) {
-  get_topics(x, group)
+topics.textmodel_kmeans <- function(x, ...) {
+  get_topics(x)
 }
 
 #' @method terms textmodel_kmeans
