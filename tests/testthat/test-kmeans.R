@@ -4,15 +4,16 @@ library(GMTM)
 options(wordvector_threads = 2)
 options(GMTM.threads = 2)
 
-corp <- wordvector::data_corpus_news2014
+corp <- head(wordvector::data_corpus_news2014, 2000)
+corp <- corpus_reshape(corp)
 
 toks_test <- tokens(corp, remove_punct = TRUE,
                     remove_symbols = TRUE, remove_number = TRUE) |>
              tokens_remove(stopwords("en"), min_nchar = 2) |>
              tokens_subset(min_ntoken = 2)
 
-wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 5)
-dfmt_test <- head(dfm(toks_test, remove_padding = TRUE), 2000)
+wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
+dfmt_test <- dfm(toks_test, remove_padding = TRUE)
 dov_test <- as.textmodel_doc2vec(dfmt_test, wov_test)
 km_test <- textmodel_kmeans(dov_test)
 
@@ -40,6 +41,14 @@ test_that("textmodel_kmeans works", {
   )
   expect_true(
     is.data.frame(km_test$docvars)
+  )
+  expect_equal(
+    length(topics(km_test, group = FALSE)),
+    6580
+  )
+  expect_equal(
+    length(topics(km_test, group = TRUE)),
+    2000
   )
   expect_output(
     print(km_test),

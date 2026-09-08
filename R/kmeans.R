@@ -66,7 +66,7 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
   result$docvars <- data.frame(docname_ = rownames(x))
   result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   result$version <- utils::packageVersion("GMTM")
-  class(result) <- "textmodel_kmeans"
+  class(result) <- c("textmodel_kmeans", "textmodel_gmtm")
   return(result)
 }
 
@@ -84,10 +84,8 @@ textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = 
 
 #' @method topics textmodel_kmeans
 #' @export
-topics.textmodel_kmeans <- function(x, ...) {
-  v <- factor(x$cluster, levels = seq_len(x$k), labels = x$label)
-  names(v) <- x$docname
-  return(v)
+topics.textmodel_kmeans <- function(x, group = FALSE, ...) {
+  get_topics(x, group)
 }
 
 #' @method terms textmodel_kmeans

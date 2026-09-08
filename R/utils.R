@@ -114,5 +114,27 @@ group_matrix <- function(x, factor, normalize = TRUE) {
 
 }
 
+get_topics <- function(x, group) {
 
+  if (group) {
+    prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)
+    v <- max.col(prob, ties.method = "first")
+  } else {
+    v <- x$cluster
+  }
+  v <- factor(v, levels = seq_len(x$k), labels = x$label)
+  names(v) <- x$docname
+  return(v)
+
+}
+
+get_probability <- function(x, group) {
+  if (group) {
+    prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)
+  } else {
+    prob <- x$cluster.likelihood
+  }
+  prob <- prob / rowSums(prob)
+  return(prob)
+}
 

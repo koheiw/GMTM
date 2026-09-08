@@ -4,15 +4,16 @@ library(GMTM)
 options(wordvector_threads = 2)
 options(GMTM.threads = 2)
 
-corp <- wordvector::data_corpus_news2014
+corp <- head(wordvector::data_corpus_news2014, 2000)
+corp <- corpus_reshape(corp)
 
 toks_test <- tokens(corp, remove_punct = TRUE,
                     remove_symbols = TRUE, remove_number = TRUE) |>
              tokens_remove(stopwords("en"), min_nchar = 2) |>
              tokens_subset(min_ntoken = 2)
 
-wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 5)
-dfmt_test <- head(dfm(toks_test, remove_padding = TRUE), 2000)
+wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
+dfmt_test <- dfm(toks_test, remove_padding = TRUE)
 dov_test <- as.textmodel_doc2vec(dfmt_test, wov_test)
 gmm_test <- textmodel_gmm(dov_test)
 
@@ -41,6 +42,22 @@ test_that("textmodel_gmm works", {
   )
   expect_true(
     is.data.frame(gmm_test$docvars)
+  )
+  expect_equal(
+    length(topics(gmm_test, group = FALSE)),
+    6580
+  )
+  expect_equal(
+    length(topics(gmm_test, group = TRUE)),
+    2000
+  )
+  expect_equal(
+    dim(probability(gmm_test, group = FALSE)),
+    c(6580, 10)
+  )
+  expect_equal(
+    dim(probability(gmm_test, group = TRUE)),
+    c(2000, 10)
   )
   expect_output(
     print(gmm_test),
@@ -73,7 +90,6 @@ test_that("model works", {
   )
 
   options(GMTM.threads = 2) # reset
-
 
   expect_error(
     textmodel_gmm(dov_test, model = list()),

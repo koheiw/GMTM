@@ -75,7 +75,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
   result$docvars <- data.frame(docname_ = rownames(x))
   result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   result$version <- utils::packageVersion("GMTM")
-  class(result) <- "textmodel_gmm"
+  class(result) <- c("textmodel_gmm", "textmodel_gmtm")
   return(result)
 }
 
@@ -91,22 +91,43 @@ textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NUL
   return(result)
 }
 
-#' Extract topics of documents
+#' Extract the topics of documents
 #' @param x a fitted model.
+#' @param group if `TRUE`, collapse the probability by the original document `doc_id`.
 #' @param ... not used.
 #' @rdname topics
 #' @returns Returns predicted topics as a vector.
+#' @details
+#' The original `doc_id` is inherited from [quanteda::dfm] or [quanteda::tokens]
+#' and saved in `x$dovars$docid_` as factor.
+#'
 #' @export
-topics <- function(x, ...) {
+topics <- function(x, group = FALSE, ...) {
   UseMethod("topics")
 }
 
 #' @method topics textmodel_gmm
 #' @export
-topics.textmodel_gmm <- function(x, ...) {
-  v <- factor(x$cluster, levels = seq_len(x$k), labels = x$label)
-  names(v) <- x$docname
-  return(v)
+topics.textmodel_gmm <- function(x, group = FALSE, ...) {
+  get_topics(x, group)
+}
+
+#' Extract the probabilities of topics
+#' @inheritParams topics
+#' @returns Returns the probabilities of topics as a matrix.
+#' @details
+#' The original `doc_id` is inherited from [quanteda::dfm] or [quanteda::tokens]
+#' and saved in `x$dovars$docid_` as factor.
+#'
+#' @export
+probability <- function(x, group = FALSE, ...) {
+  UseMethod("probability")
+}
+
+#' @method probability textmodel_gmm
+#' @export
+probability.textmodel_gmm <- function(x, group = FALSE, ...) {
+  get_probability(x, group)
 }
 
 #' Extract words for topics from documents
