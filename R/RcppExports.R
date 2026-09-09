@@ -5,8 +5,8 @@ cpp_omp_enabled <- function() {
     .Call('_GMTM_cpp_omp_enabled', PACKAGE = 'GMTM')
 }
 
-cpp_gmm <- function(data, k, means, mode = 1L, iter_km = 10L, iter_em = 10L, verbose = FALSE, threads = -1L) {
-    .Call('_GMTM_cpp_gmm', PACKAGE = 'GMTM', data, k, means, mode, iter_km, iter_em, verbose, threads)
+cpp_gmm <- function(data, k, means, dist_type = 1L, iter_km = 10L, iter_em = 10L, verbose = FALSE, threads = -1L) {
+    .Call('_GMTM_cpp_gmm', PACKAGE = 'GMTM', data, k, means, dist_type, iter_km, iter_em, verbose, threads)
 }
 
 cpp_kmeans <- function(data, k, means, iter = 10L, verbose = FALSE, threads = -1L) {
