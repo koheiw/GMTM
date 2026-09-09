@@ -98,21 +98,6 @@ terms.textmodel_kmeans <- function(x, data, n = 10, ...) {
   get_terms(topics(x), data, n = n, ...)
 }
 
-# #' @method predict textmodel_kmeans
-# #' @export
-# predict.textmodel_kmeans <- function(x, newdata, ...) {
-#   if (missing(newdata)) {
-#     p <- flexmix::posterior(x$flexmix, ...)
-#     dimnames(p) <- list(x$docname, x$label)
-#   } else {
-#     if (!is.matrix(newdata))
-#       stop("model must be a dense matrix")
-#     p <- flexmix::posterior(x$flexmix, newdata = list(x = newdata), ...)
-#     dimnames(p) <- list(rownames(newdata), x$label)
-#   }
-#   return(p)
-# }
-
 #' @method print textmodel_kmeans
 #' @keywords internal
 #' @export
@@ -126,9 +111,5 @@ print.textmodel_kmeans <- function(x, ...) {
 
 is.textmodel_kmeans <- function(x) {
   "textmodel_kmeans" %in% class(x)
-}
-
-is.textmodel_doc2vec <- function(x) {
-  "textmodel_doc2vec" %in% class(x)
 }
 

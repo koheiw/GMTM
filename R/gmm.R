@@ -120,18 +120,16 @@ topics.textmodel_gmm <- function(x, group = FALSE, ...) {
   get_topics(x, group)
 }
 
+#' @importFrom wordvector probability
+#' @export
+wordvector::probability
+
 #' Extract the probabilities of topics
 #' @inheritParams topics
 #' @returns Returns the probabilities of topics as a matrix.
 #' @details
 #' The original `doc_id` is inherited from [quanteda::dfm] or [quanteda::tokens]
 #' and saved in `x$dovars$docid_` as factor.
-#'
-#' @export
-probability <- function(x, group = FALSE, ...) {
-  UseMethod("probability")
-}
-
 #' @method probability textmodel_gmm
 #' @export
 probability.textmodel_gmm <- function(x, group = FALSE, ...) {
@@ -166,21 +164,6 @@ terms <- function(x, data, n = 10, ...) {
 terms.textmodel_gmm <- function(x, data, n = 10, ...) {
   get_terms(topics(x), data, n = n, ...)
 }
-
-# #' @method predict textmodel_gmm
-# #' @export
-# predict.textmodel_gmm <- function(x, newdata, ...) {
-#   if (missing(newdata)) {
-#     p <- flexmix::posterior(x$flexmix, ...)
-#     dimnames(p) <- list(x$docname, x$label)
-#   } else {
-#     if (!is.matrix(newdata))
-#       stop("model must be a dense matrix")
-#     p <- flexmix::posterior(x$flexmix, newdata = list(x = newdata), ...)
-#     dimnames(p) <- list(rownames(newdata), x$label)
-#   }
-#   return(p)
-# }
 
 #' @method print textmodel_gmm
 #' @keywords internal
