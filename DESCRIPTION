@@ -1,9 +1,11 @@
 Package: GMTM 
 Title: Gaussian Mixture Topic Models
 Version: 0.1.0
-Authors@R: person('Kohei', 'Watanabe', role = c('aut', 'cre', 'cph'), email = 'watanabe.kohei@gmail.com', comment = c(ORCID = '0000-0001-6519-5265'))
+Authors@R: c(person('Kohei', 'Watanabe', role = c('aut', 'cre', 'cph'), email = 'watanabe.kohei@gmail.com', comment = c(ORCID = '0000-0001-6519-5265')),
+             person('Sanderson', 'Conrad', role = c('ctb', 'cph'), comment = "C++ code for GMM and k-means"),
+             person('Curtin', 'Ryan', role = c('ctb', 'cph'), comment = "C++ code for GMM and k-means"))
 Maintainer: Kohei Watanabe <watanabe.kohei@gmail.com>
-Description: Gaussian mixture models and k-means for topic analysis of dense document vectors. The underlying clustering functions rely on the Armadillo library.
+Description: Gaussian mixture models (GMM) and k-means for topic analysis of dense document vectors. The underlying clustering functions rely on the Armadillo library (Sanderson & Curtin, 2017) <doi:10.1109/ICSPCS.2017.8270510>.
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 Depends: 

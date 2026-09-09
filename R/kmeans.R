@@ -1,6 +1,6 @@
-#' K-means for topic analysis
+#' Topic analysis using k-means
 #'
-#' K-means clustering of document vectors based on the Armadillo library.
+#' Perform topic analysis of document vectors using k-means.
 #' @inheritParams textmodel_gmm
 #' @import Rcpp
 #' @importFrom quanteda check_integer check_logical

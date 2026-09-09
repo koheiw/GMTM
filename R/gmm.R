@@ -1,6 +1,6 @@
-#' Gaussian mixture model for topic analysis
+#' Topic analysis using Gaussian mixture models
 #'
-#' Gaussian mixture model for clustering of document vectors based on the Armadillo library.
+#' Perform topic analysis of document vectors using Gaussian mixture models.
 #' @param x a [wordvector::textmodel_doc2vec] or a dense matrix of document vectors in the rows.
 #' @param k the number of topics to identify.
 #' @param model a fitted model from which initial centroids are extracted.
@@ -17,7 +17,7 @@
 #' `options(GMTM.threads)` or `OMP_THREAD_LIMIT` in the environmental
 #' variable.
 #'
-#' The number of iterations in kmeans (`iter_km`) and expectation maximization
+#' The number of iterations in k-means (`iter_km`) and expectation maximization
 #' (`iter_em`) stages can be set via `...`.
 #' @returns Returns a fitted `textmodel_gmm` object.
 #' @examples
