@@ -73,7 +73,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
-  result$cluster[b] <- NA_integer_
+  result$cluster[b] <- NA_real_
   result$cluster.likelihood[b,] <- NA_real_
 
   result$cluster <- as.integer(result$cluster + 1)
