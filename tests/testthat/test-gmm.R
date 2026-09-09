@@ -75,7 +75,7 @@ test_that("textmodel_gmm works", {
     docnames(dfmt_test)
   )
   expect_true(
-    all(round(rowSums(prob_ng), 10) == 1)
+    all(round(rowSums(prob_ng), 10) %in% c(1, NA))
   )
   prob_gp <- probability(gmm_test, group = TRUE)
   expect_equal(
@@ -87,7 +87,7 @@ test_that("textmodel_gmm works", {
     levels(docid(dfmt_test))
   )
   expect_true(
-    all(round(rowSums(prob_gp), 10) == 1)
+    all(round(rowSums(prob_gp), 10) %in% c(1, NA))
   )
   expect_error(
     probability(gmm_test, c("A")),
@@ -264,6 +264,19 @@ test_that("seeds works", {
   expect_error(
     textmodel_gmm(dov_test, model = gmm1, seeds = seed1),
     "either the model or seeds must be NULL"
+  )
+
+})
+
+test_that("returns NA for empty documents", {
+
+  b <- rowSums(abs(dov_test$values$doc)) == 0
+
+  expect_true(
+    all(is.na(gmm_test$cluster[b]))
+  )
+  expect_true(
+    all(is.na(gmm_test$cluster.likelihood[b,]))
   )
 
 })

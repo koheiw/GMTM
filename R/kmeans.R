@@ -58,9 +58,13 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
   }
 
   result <- cpp_kmeans(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
-
   dis <- proxyC::dist(x, t(result$centers), sparse = FALSE)
-  result$cluster <- max.col(-1 * dis ^ 2)
+  result$cluster <- max.col(-1 * dis ^ 2, ties.method = "first")
+
+  # NA for empty documents
+  b <- rowSums(abs(x)) == 0
+  result$cluster[b] <- NA
+
   result$label <- label
   result$docname <- rownames(x)
   result$docvars <- data.frame(docname_ = rownames(x))

@@ -71,6 +71,11 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
 
   result <- cpp_gmm(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
 
+  # NA for empty documents
+  b <- rowSums(abs(x)) == 0
+  result$cluster[b] <- NA
+  result$cluster.likelihood[b,] <- NA
+
   result$cluster <- as.integer(result$cluster + 1)
   result$label <- label
   result$docname <- rownames(x)

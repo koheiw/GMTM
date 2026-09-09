@@ -116,3 +116,13 @@ test_that("seeds works", {
   )
 
 })
+
+test_that("returns NA for empty documents", {
+
+  b <- rowSums(abs(dov_test$values$doc)) == 0
+
+  expect_true(
+    all(is.na(km_test$cluster[b]))
+  )
+
+})

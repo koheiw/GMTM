@@ -141,7 +141,6 @@ get_probability <- function(x, group = FALSE) {
     prob <- x$cluster.likelihood
     rownames(prob) <- x$docname
   }
-  prob <- prob / rowSums(prob)
-  return(prob)
+  return(prob / rowSums(prob))
 }
 
