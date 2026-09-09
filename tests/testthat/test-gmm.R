@@ -281,3 +281,14 @@ test_that("returns NA for empty documents", {
 
 })
 
+test_that("dist_type works", {
+
+  expect_true(
+    GMTM:::is.textmodel_gmm(textmodel_gmm(dov_test, dist_type = 1))
+  )
+  expect_true(
+    GMTM:::is.textmodel_gmm(textmodel_gmm(dov_test, dist_type = 2))
+  )
+
+})
+
