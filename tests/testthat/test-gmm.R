@@ -4,16 +4,17 @@ library(GMTM)
 options(wordvector_threads = 2)
 options(GMTM.threads = 2)
 
-corp <- head(wordvector::data_corpus_news2014, 2000)
-corp <- corpus_reshape(corp)
+corp <- wordvector::data_corpus_news2014
+corp_test <- corpus_reshape(corp)
 
-toks_test <- tokens(corp, remove_punct = TRUE,
+toks_test <- tokens(corp_test, remove_punct = TRUE,
                     remove_symbols = TRUE, remove_number = TRUE) |>
              tokens_remove(stopwords("en"), min_nchar = 2) |>
              tokens_subset(min_ntoken = 2)
-
 wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
-dfmt_test <- dfm(toks_test, remove_padding = TRUE)
+
+dfmt_test <- dfm(toks_test, remove_padding = TRUE) |>
+  dfm_subset(docid_ %in% head(levels(docid(toks_test)), 1000))
 dov_test <- as.textmodel_doc2vec(dfmt_test, wov_test)
 gmm_test <- textmodel_gmm(dov_test)
 
@@ -68,7 +69,7 @@ test_that("textmodel_gmm works", {
   prob_ng <- probability(gmm_test, group = FALSE)
   expect_equal(
     dim(prob_ng),
-    c(6580, 10)
+    c(3529, 10)
   )
   expect_equal(
     rownames(prob_ng),
@@ -80,7 +81,7 @@ test_that("textmodel_gmm works", {
   prob_gp <- probability(gmm_test, group = TRUE)
   expect_equal(
     dim(prob_gp),
-    c(2000, 10)
+    c(1000, 10)
   )
   expect_equal(
     rownames(prob_gp),
