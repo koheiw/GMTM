@@ -100,6 +100,12 @@ test_that("textmodel_gmm works", {
     print(gmm_test),
     "Call:\ntextmodel_gmm\\(.*\\)"
   )
+
+  # error
+  expect_error(
+    textmodel_gmm(dov_test$values$doc[1:2,]),
+    "Failed to train Gaussian mixture model"
+  )
 })
 
 test_that("model works", {
