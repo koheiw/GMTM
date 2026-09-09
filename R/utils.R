@@ -118,6 +118,9 @@ get_topics <- function(x, group = FALSE) {
 
   group <- check_logical(group, strict = TRUE)
 
+  if (x$k != length(x$label))
+    stop("The length of label is invalid")
+
   if (group) {
     prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)
     v <- max.col(prob, ties.method = "first")

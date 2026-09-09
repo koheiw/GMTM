@@ -106,6 +106,13 @@ test_that("textmodel_gmm works", {
     textmodel_gmm(dov_test$values$doc[1:2,]),
     "Failed to train Gaussian mixture model"
   )
+
+  gmm_temp <- gmm_test
+  gmm_temp$label <- head(gmm_temp$label, 5)
+  expect_error(
+    topics(gmm_temp),
+    "The length of label is invalid"
+  )
 })
 
 test_that("model works", {
