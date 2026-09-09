@@ -63,7 +63,7 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
-  result$cluster[b] <- NA
+  result$cluster[b] <- NA_integer_
 
   result$label <- label
   result$docname <- rownames(x)
