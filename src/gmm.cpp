@@ -24,7 +24,7 @@ bool cpp_omp_enabled() {
 
 // [[Rcpp::export]]
 List cpp_gmm(arma::mat &data, int k, arma::mat means,
-             int mode = 1, int iter_km = 10, int iter_em = 10,
+             int dist_type = 1, int iter_km = 10, int iter_em = 10,
              bool verbose = false, int threads = -1) {
 
   inplace_trans(data); // vectors are columns
@@ -42,11 +42,11 @@ List cpp_gmm(arma::mat &data, int k, arma::mat means,
   model.set_means(means);
 
   bool status = false;
-  if (mode == 1) {
-    status = model.learn(data, k, eucl_dist, keep_existing,
+  if (dist_type == 1) {
+    status = model.learn(data, k, maha_dist, keep_existing,
                          iter_km, iter_em, 1e-10, verbose);
   } else {
-    status = model.learn(data, k, maha_dist, keep_existing,
+    status = model.learn(data, k, eucl_dist, keep_existing,
                          iter_km, iter_em, 1e-10, verbose);
   }
 

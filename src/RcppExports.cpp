@@ -22,20 +22,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_gmm
-List cpp_gmm(arma::mat& data, int k, arma::mat means, int mode, int iter_km, int iter_em, bool verbose, int threads);
-RcppExport SEXP _GMTM_cpp_gmm(SEXP dataSEXP, SEXP kSEXP, SEXP meansSEXP, SEXP modeSEXP, SEXP iter_kmSEXP, SEXP iter_emSEXP, SEXP verboseSEXP, SEXP threadsSEXP) {
+List cpp_gmm(arma::mat& data, int k, arma::mat means, int dist_type, int iter_km, int iter_em, bool verbose, int threads);
+RcppExport SEXP _GMTM_cpp_gmm(SEXP dataSEXP, SEXP kSEXP, SEXP meansSEXP, SEXP dist_typeSEXP, SEXP iter_kmSEXP, SEXP iter_emSEXP, SEXP verboseSEXP, SEXP threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat& >::type data(dataSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     Rcpp::traits::input_parameter< arma::mat >::type means(meansSEXP);
-    Rcpp::traits::input_parameter< int >::type mode(modeSEXP);
+    Rcpp::traits::input_parameter< int >::type dist_type(dist_typeSEXP);
     Rcpp::traits::input_parameter< int >::type iter_km(iter_kmSEXP);
     Rcpp::traits::input_parameter< int >::type iter_em(iter_emSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_gmm(data, k, means, mode, iter_km, iter_em, verbose, threads));
+    rcpp_result_gen = Rcpp::wrap(cpp_gmm(data, k, means, dist_type, iter_km, iter_em, verbose, threads));
     return rcpp_result_gen;
 END_RCPP
 }

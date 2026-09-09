@@ -58,15 +58,19 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
   }
 
   result <- cpp_kmeans(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
-
   dis <- proxyC::dist(x, t(result$centers), sparse = FALSE)
-  result$cluster <- max.col(-1 * dis ^ 2)
+  result$cluster <- max.col(-1 * dis ^ 2, ties.method = "first")
+
+  # NA for empty documents
+  b <- rowSums(abs(x)) == 0
+  result$cluster[b] <- NA_integer_
+
   result$label <- label
   result$docname <- rownames(x)
   result$docvars <- data.frame(docname_ = rownames(x))
   result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   result$version <- utils::packageVersion("GMTM")
-  class(result) <- "textmodel_kmeans"
+  class(result) <- c("textmodel_kmeans", "textmodel_gmtm")
   return(result)
 }
 
@@ -85,9 +89,7 @@ textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = 
 #' @method topics textmodel_kmeans
 #' @export
 topics.textmodel_kmeans <- function(x, ...) {
-  v <- factor(x$cluster, levels = seq_len(x$k), labels = x$label)
-  names(v) <- x$docname
-  return(v)
+  get_topics(x)
 }
 
 #' @method terms textmodel_kmeans
