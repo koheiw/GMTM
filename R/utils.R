@@ -36,7 +36,7 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
 #'
 #' corp <- head(wordvector::data_corpus_news2014, 1000)
 #' toks <- tokens(corp, remove_punct = TRUE,
-#'                remove_symbols = TRUE, remove_number = TRUE) %>%
+#'                remove_symbols = TRUE, remove_numbers = TRUE) %>%
 #'         tokens_remove(stopwords("en"), min_nchar = 2)
 #' wov <- textmodel_word2vec(toks, dim = 50)
 #'
