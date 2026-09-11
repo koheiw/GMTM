@@ -21,8 +21,10 @@ export(topics)
 import(Rcpp)
 import(quanteda)
 import(wordvector)
-importFrom(quanteda,check_integer)
-importFrom(quanteda,check_logical)
+importFrom(quanteda,
+  check_integer,
+  check_logical
+)
 importFrom(stats,runif)
 importFrom(utils,head)
 useDynLib(GMTM)

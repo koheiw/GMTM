@@ -42,7 +42,7 @@ library(GMTM)
 
 # pre-processing using quanteda
 corp <- corpus_reshape(data_corpus_news2014)
-toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE) |> 
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_numbers = TRUE) |> 
   tokens_remove(stopwords("en"), min_nchar = 2)
 dfmt <- dfm(toks)
 
@@ -63,34 +63,34 @@ table(topics(gmm))
 
     ## 
     ##  topic1  topic2  topic3  topic4  topic5  topic6  topic7  topic8  topic9 topic10 
-    ##    6891    8318    1119    5982    5479    6628    6905    8414   10366    5761
+    ##     601    5866    7227    6926    7775   10906    5742    7632    7736    5293
 
 ``` r
 terms(gmm, data = dfmt)
 ```
 
-    ##       topic1        topic2      topic3        topic4       topic5      
-    ##  [1,] "russia"      "militants" "editing"     "minister"   "pistorius" 
-    ##  [2,] "sanctions"   "islamic"   "writing"     "statement"  "murder"    
-    ##  [3,] "lavrov"      "syria"     "stonestreet" "news"       "sentenced" 
-    ##  [4,] "kerry"       "militant"  "tait"        "department" "court"     
-    ##  [5,] "annexation"  "killed"    "chizu"       "kerry"      "prison"    
-    ##  [6,] "pro-russian" "gaza"      "nomiyama"    "government" "judge"     
-    ##  [7,] "president"   "army"      "dalgleish"   "chief"      "sentence"  
-    ##  [8,] "peace"       "syrian"    "maler"       "official"   "police"    
-    ##  [9,] "russian"     "sunni"     "hepinstall"  "foreign"    "killing"   
-    ## [10,] "crimea"      "qaeda"     "bangalore"   "snowden"    "girlfriend"
-    ##       topic6       topic7     topic8         topic9    topic10     
-    ##  [1,] "ferry"      "percent"  "rugby"        "ebola"   "president" 
-    ##  [2,] "people"     "index"    "beats"        "leone"   "vote"      
-    ##  [3,] "quake"      "futures"  "championship" "china"   "minister"  
-    ##  [4,] "passengers" "growth"   "scored"       "un"      "parliament"
-    ##  [5,] "police"     "earnings" "6-4"          "south"   "shinawatra"
-    ##  [6,] "rescuers"   "stocks"   "champions"    "united"  "prime"     
-    ##  [7,] "typhoon"    "corp"     "innings"      "sierra"  "polls"     
-    ##  [8,] "capsized"   "profit"   "6-3"          "us"      "party"     
-    ##  [9,] "tropical"   "cents"    "2-0"          "climate" "election"  
-    ## [10,] "city"       "data"     "1-0"          "liberia" "elections"
+    ##       topic1        topic2         topic3       topic4     topic5      
+    ##  [1,] "editing"     "government"   "militants"  "ap"       "said"      
+    ##  [2,] "writing"     "presidential" "islamic"    "krasnaya" "ap"        
+    ##  [3,] "stonestreet" "elections"    "syria"      "polyana"  "tsunami"   
+    ##  [4,] "tait"        "president"    "iraq"       "sochi"    "passengers"
+    ##  [5,] "chizu"       "minister"     "sunni"      "olympics" "ebola"     
+    ##  [6,] "nomiyama"    "parliament"   "government" "new"      "tropical"  
+    ##  [7,] "gutterman"   "prime"        "gaza"       "cannes"   "hurricane" 
+    ##  [8,] "hepinstall"  "party"        "said"       "world"    "mh370"     
+    ##  [9,] "pomeroy"     "election"     "military"   "olympic"  "people"    
+    ## [10,] "bangalore"   "said"         "islamist"   "janeiro"  "south"     
+    ##       topic6      topic7         topic8     topic9      topic10    
+    ##  [1,] "said"      "champions"    "earnings" "said"      "police"   
+    ##  [2,] "ukraine"   "championship" "futures"  "police"    "said"     
+    ##  [3,] "kerry"     "rugby"        "index"    "murder"    "gunmen"   
+    ##  [4,] "sanctions" "beats"        "billion"  "sentenced" "killed"   
+    ##  [5,] "lavrov"    "1-0"          "said"     "pistorius" "killing"  
+    ##  [6,] "russia"    "england"      "growth"   "court"     "militants"
+    ##  [7,] "obama"     "ap"           "inc"      "ap"        "people"   
+    ##  [8,] "u.s"       "scored"       "stock"    "rights"    "bomb"     
+    ##  [9,] "crimea"    "2-0"          "percent"  "lawyer"    "soldiers" 
+    ## [10,] "nuclear"   "3-0"          "tsx"      "sentence"  "ap"
 
 ### Semi-supervised analysis
 
@@ -114,31 +114,31 @@ table(topics(sgmm))
 
     ## 
     ##  economy politics security   sports   crimes    other 
-    ##     8374    18310    10292     8436     8416    12035
+    ##     8390    18691    10398     8410     8189    11626
 
 ``` r
 terms(sgmm, data = dfmt)
 ```
 
-    ##       economy    politics      security    sports     crimes       
-    ##  [1,] "growth"   "lavrov"      "militants" "beats"    "pistorius"  
-    ##  [2,] "index"    "kerry"       "islamic"   "6-4"      "sentence"   
-    ##  [3,] "earnings" "parliament"  "killing"   "innings"  "killing"    
-    ##  [4,] "futures"  "nuclear"     "syria"     "6-3"      "prison"     
-    ##  [5,] "inc"      "poroshenko"  "militant"  "scored"   "jury"       
-    ##  [6,] "chrysler" "pro-russian" "syrian"    "rugby"    "brotherhood"
-    ##  [7,] "tsx"      "u.n"         "shiite"    "6-2"      "girlfriend" 
-    ##  [8,] "wireless" "resolution"  "mortar"    "3-0"      "terror"     
-    ##  [9,] "stocks"   "crimea"      "civilians" "twenty20" "sentenced"  
-    ## [10,] "corp"     "yatseniuk"   "rebels"    "2-0"      "jail"       
+    ##       economy    politics      security    sports      crimes       
+    ##  [1,] "growth"   "lavrov"      "militants" "beats"     "pistorius"  
+    ##  [2,] "stocks"   "kerry"       "islamic"   "6-4"       "sentence"   
+    ##  [3,] "index"    "parliament"  "killing"   "innings"   "killing"    
+    ##  [4,] "earnings" "nato"        "syria"     "6-3"       "crimes"     
+    ##  [5,] "chrysler" "nuclear"     "militant"  "rugby"     "arrested"   
+    ##  [6,] "tsx"      "poroshenko"  "army"      "6-2"       "murder"     
+    ##  [7,] "futures"  "pro-russian" "shiite"    "3-0"       "brotherhood"
+    ##  [8,] "wireless" "u.n"         "civilians" "twenty20"  "jury"       
+    ##  [9,] "corp"     "erdogan"     "syrian"    "champions" "sentences"  
+    ## [10,] "cents"    "resolution"  "sunni"     "2-0"       "girlfriend" 
     ##       other        
     ##  [1,] "editing"    
-    ##  [2,] "ebola"      
-    ##  [3,] "tsunami"    
-    ##  [4,] "hurricane"  
-    ##  [5,] "stonestreet"
-    ##  [6,] "ice"        
-    ##  [7,] "earthquake" 
-    ##  [8,] "tropical"   
-    ##  [9,] "rescuers"   
-    ## [10,] "writing"
+    ##  [2,] "hurricane"  
+    ##  [3,] "stonestreet"
+    ##  [4,] "magnitude"  
+    ##  [5,] "rico"       
+    ##  [6,] "earthquake" 
+    ##  [7,] "tsunami"    
+    ##  [8,] "rescuers"   
+    ##  [9,] "killing"    
+    ## [10,] "tropical"
