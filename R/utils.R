@@ -103,7 +103,7 @@ group_matrix <- function(x, factor, normalize = TRUE) {
     stop("the length of the factor does not much nrow(x)")
 
   if (normalize)
-    x <- x / rowSums(x)
+    x <- x / rowSums(abs(x))
   lis <- split(x, factor, drop = FALSE)
   t(sapply(lis, function(y) {
     if (length(y) == 0)
