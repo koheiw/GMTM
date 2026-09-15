@@ -103,7 +103,7 @@ group_matrix <- function(x, factor, normalize = TRUE) {
     stop("the length of the factor does not much nrow(x)")
 
   if (normalize)
-    x <- x / rowSums(x)
+    x <- x / rowSums(abs(x))
   lis <- split(x, factor, drop = FALSE)
   t(sapply(lis, function(y) {
     if (length(y) == 0)
@@ -117,6 +117,9 @@ group_matrix <- function(x, factor, normalize = TRUE) {
 get_topics <- function(x, group = FALSE) {
 
   group <- check_logical(group, strict = TRUE)
+
+  if (x$k != length(x$label))
+    stop("The length of label is invalid")
 
   if (group) {
     prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)

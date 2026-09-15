@@ -2,7 +2,7 @@
 % Please edit documentation in R/gmm.R
 \name{textmodel_gmm}
 \alias{textmodel_gmm}
-\title{Gaussian mixture model for topic analysis}
+\title{Topic analysis using Gaussian mixture models}
 \usage{
 textmodel_gmm(
   x,
@@ -30,14 +30,14 @@ textmodel_gmm(
 Returns a fitted \code{textmodel_gmm} object.
 }
 \description{
-Gaussian mixture model for clustering of document vectors based on the Armadillo library.
+Perform topic analysis of document vectors using Gaussian mixture models.
 }
 \details{
 Users can change the number of threads for the parallel computing via
 \code{options(GMTM.threads)} or \code{OMP_THREAD_LIMIT} in the environmental
 variable.
 
-The number of iterations in kmeans (\code{iter_km}) and expectation maximization
+The number of iterations in k-means (\code{iter_km}) and expectation maximization
 (\code{iter_em}) stages can be set via \code{...}.
 }
 \examples{
