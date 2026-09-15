@@ -51,7 +51,7 @@ List cpp_gmm(arma::mat &data, int k, arma::mat means,
   }
 
   if (!status)
-    throw std::runtime_error("Training of GMM failed");
+    throw std::runtime_error("Failed to train Gaussian mixture model");
 
   //model.means.print("means:");
 

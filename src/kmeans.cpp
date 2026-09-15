@@ -26,7 +26,7 @@ List cpp_kmeans(arma::mat &data, int k, arma::mat &means,
   bool status = kmeans(means, data, k, keep_existing, iter, verbose);
 
   if (!status)
-    throw std::runtime_error("Training of k-means failed");
+    throw std::runtime_error("Failed to train k-means");
 
   return List::create(Rcpp::Named("k") = k,
                       Rcpp::Named("centers") = means);
