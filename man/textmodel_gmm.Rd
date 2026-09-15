@@ -35,7 +35,8 @@ Gaussian mixture model for clustering of document vectors based on the Armadillo
 \details{
 Users can change the number of threads for the parallel computing via
 \code{options(GMTM.threads)} or \code{OMP_THREAD_LIMIT} in the environmental
-variable.
+variable. To reproduce results, set \code{options(GMTM.threads = 1)} and call
+\code{set.seed()} immediately before \code{textmodel_gmm()} or \code{textmodel_kmeans()}.
 
 The number of iterations in kmeans (\code{iter_km}) and expectation maximization
 (\code{iter_em}) stages can be set via \code{...}.
