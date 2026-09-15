@@ -127,3 +127,19 @@ test_that("returns NA for empty documents", {
   )
 
 })
+
+
+test_that("results are reproduced", {
+
+  options(GMTM.threads = 1)
+
+  mat <- replicate(10, {
+    set.seed(1234)
+    topics(textmodel_kmeans(dov_test))
+  })
+  expect_true(
+    all(mat[,1] == mat)
+  )
+
+  options(GMTM.threads = 2) # reset
+})
