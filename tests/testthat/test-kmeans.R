@@ -61,6 +61,12 @@ test_that("textmodel_kmeans works", {
     print(km_test),
     "Call:\ntextmodel_kmeans\\(.*\\)"
   )
+
+  # error
+  expect_error(
+    textmodel_kmeans(dov_test$values$doc[1:2,]),
+    "Failed to train k-means"
+  )
 })
 
 test_that("model works", {

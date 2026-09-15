@@ -36,7 +36,7 @@ get_terms <- function(topic, data, n = 10, min_count = 1) {
 #'
 #' corp <- head(wordvector::data_corpus_news2014, 1000)
 #' toks <- tokens(corp, remove_punct = TRUE,
-#'                remove_symbols = TRUE, remove_number = TRUE) %>%
+#'                remove_symbols = TRUE, remove_numbers = TRUE) %>%
 #'         tokens_remove(stopwords("en"), min_nchar = 2)
 #' wov <- textmodel_word2vec(toks, dim = 50)
 #'
@@ -103,7 +103,7 @@ group_matrix <- function(x, factor, normalize = TRUE) {
     stop("the length of the factor does not much nrow(x)")
 
   if (normalize)
-    x <- x / rowSums(x)
+    x <- x / rowSums(abs(x))
   lis <- split(x, factor, drop = FALSE)
   t(sapply(lis, function(y) {
     if (length(y) == 0)
@@ -117,6 +117,9 @@ group_matrix <- function(x, factor, normalize = TRUE) {
 get_topics <- function(x, group = FALSE) {
 
   group <- check_logical(group, strict = TRUE)
+
+  if (x$k != length(x$label))
+    stop("The length of label is invalid")
 
   if (group) {
     prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)

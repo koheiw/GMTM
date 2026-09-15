@@ -2,7 +2,7 @@
 % Please edit documentation in R/kmeans.R
 \name{textmodel_kmeans}
 \alias{textmodel_kmeans}
-\title{K-means for topic analysis}
+\title{Topic analysis using k-means}
 \usage{
 textmodel_kmeans(
   x,
@@ -30,7 +30,7 @@ textmodel_kmeans(
 Returns a fitted \code{textmodel_kmeans} object.
 }
 \description{
-K-means clustering of document vectors based on the Armadillo library.
+Perform topic analysis of document vectors using k-means.
 }
 \examples{
 library(quanteda)

@@ -8,6 +8,7 @@ knitr::opts_chunk$set(
   comment = "##",
   fig.path = "man/images/"
 )
+set.seed(123)
 ```
 
 # GMTM: Gaussian Mixture Topic Models
@@ -42,7 +43,7 @@ library(GMTM)
 
 # pre-processing using quanteda
 corp <- corpus_reshape(data_corpus_news2014)
-toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE) |> 
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_numbers = TRUE) |> 
   tokens_remove(stopwords("en"), min_nchar = 2)
 dfmt <- dfm(toks)
 
