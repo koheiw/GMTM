@@ -5,6 +5,7 @@
 #' @param k the number of topics to identify.
 #' @param model a fitted model from which initial centroids are extracted.
 #' @param seeds a matrix created using [GMTM::as.seedwords].
+#' @param omit indices of singular values of `x` to be zero.
 #' @param verbose print the progress if `TRUE`.
 #' @param ... passed to the underlying function.
 #' @import Rcpp
@@ -16,6 +17,10 @@
 #' Users can change the number of threads for the parallel computing via
 #' `options(GMTM.threads)` or `OMP_THREAD_LIMIT` in the environmental
 #' variable.
+#'
+#' `omit` is used to reduce the noise in the `x` by applying `base::svd` before
+#' applying GMM. Singular values corresponding to `omit` are set to
+#' zero, removing their variance in `x`.
 #'
 #' The number of iterations in k-means (`iter_km`) and expectation maximization
 #' (`iter_em`) stages can be set via `...`.
@@ -41,10 +46,19 @@ textmodel_gmm <- function(x, k = 10, model = NULL, seeds = NULL, ...,
 
 #' @export
 #' @method textmodel_gmm matrix
-textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
-                                 verbose = quanteda_options("verbose")) {
+textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
+                                 seeds = NULL, omit = NULL,
+                                 verbose = quanteda_options("verbose"),
+                                 ...) {
 
   verbose <- check_logical(verbose)
+
+  if (!is.null(omit)) {
+    omit <- check_integer(omit, min = 1, max = ncol(x), max_len = ncol(x))
+    svd <- svd(x)
+    svd$d[omit] <- 0
+    x <- svd$u %*% diag(svd$d) %*% t(svd$v)
+  }
 
   label <- NULL
   if (is.null(model) && is.null(seeds)) {
@@ -80,6 +94,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
   result$label <- label
   result$docname <- rownames(x)
   result$docvars <- data.frame(docname_ = rownames(x))
+  result$omit <- omit
   result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   result$version <- utils::packageVersion("GMTM")
   class(result) <- c("textmodel_gmm", "textmodel_gmtm")
@@ -90,11 +105,14 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL, seeds = NULL, ...,
 #' @method textmodel_gmm textmodel_doc2vec
 #' @import wordvector
 textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NULL,
-                                            verbose = quanteda_options("verbose"), ...) {
+                                            verbose = quanteda_options("verbose"),
+                                            ...) {
   result <- textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
                           seeds = seeds, verbose = verbose, ...)
   if (!is.null(x$docvars))
     result$docvars <- x$docvars
+
+  result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   return(result)
 }
 

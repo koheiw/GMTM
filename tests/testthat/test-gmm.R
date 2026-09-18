@@ -306,3 +306,22 @@ test_that("dist_type works", {
 
 })
 
+test_that("omit works", {
+
+  gmm1 <- textmodel_gmm(dov_test, omit = 1:3)
+  expect_true(
+    GMTM:::is.textmodel_gmm(gmm1)
+  )
+
+  expect_identical(
+    gmm1$omit,
+    1L:3L
+  )
+
+  expect_error(
+    textmodel_gmm(dov_test, omit = -1),
+    "The value of omit must be between 1 and 100"
+  )
+
+})
+

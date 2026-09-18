@@ -25,6 +25,8 @@ textmodel_gmm(
 \item{...}{passed to the underlying function.}
 
 \item{verbose}{print the progress if \code{TRUE}.}
+
+\item{omit}{indices of singular values of \code{x} to be zero.}
 }
 \value{
 Returns a fitted \code{textmodel_gmm} object.
@@ -37,6 +39,10 @@ Users can change the number of threads for the parallel computing via
 \code{options(GMTM.threads)} or \code{OMP_THREAD_LIMIT} in the environmental
 variable.
 
+\code{omit} is used to reduce the noise in the \code{x} by applying \code{base::svd} before
+applying GMM. Singular values corresponding to \code{omit} are set to
+zero, removing their variance in \code{x}.
+
 The number of iterations in k-means (\code{iter_km}) and expectation maximization
 (\code{iter_em}) stages can be set via \code{...}.
 }
@@ -47,7 +53,7 @@ options(wordvector_threads = 2)
 
 corp <- head(wordvector::data_corpus_news2014, 1000)
 toks <- tokens(corp, remove_punct = TRUE,
-               remove_symbols = TRUE, remove_number = TRUE) \%>\%
+               remove_symbols = TRUE, remove_numbers = TRUE) \%>\%
         tokens_remove(stopwords("en"), min_nchar = 2)
 wov <- textmodel_word2vec(toks, dim = 50)
 dov <- as.textmodel_doc2vec(dfm(toks), wov)
