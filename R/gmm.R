@@ -60,7 +60,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
     omit <- check_integer(omit, min = 1, max = ncol(x), max_len = ncol(x))
     s <- svd(x)
     s$d[omit] <- 0
-    x <- s$u %*% diag(s$d) %*% t(s$v)
+    x[] <- s$u %*% diag(s$d) %*% t(s$v)
   }
 
   label <- NULL
