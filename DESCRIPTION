@@ -1,6 +1,6 @@
 Package: GMTM
 Title: Gaussian Mixture Topic Models
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(person('Kohei', 'Watanabe', role = c('aut', 'cre', 'cph'), email = 'watanabe.kohei@gmail.com', comment = c(ORCID = '0000-0001-6519-5265')),
              person('Sanderson', 'Conrad', role = c('ctb', 'cph'), comment = "C++ code for GMM and k-means"),
              person('Curtin', 'Ryan', role = c('ctb', 'cph'), comment = "C++ code for GMM and k-means"))
