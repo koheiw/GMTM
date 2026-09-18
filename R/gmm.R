@@ -19,8 +19,8 @@
 #' variable.
 #'
 #' `omit` is used to reduce the noise in the `x` by applying `base::svd` before
-#' applying GMM. Singular values corresponding to `omit` are set to
-#' zero, removing their variance in `x`. See Chan et al. (2020)
+#' clustering. If it is not `NULL`, singular values corresponding to `omit` are
+#' set to zero, removing their variance in `x`. See Chan et al. (2020)
 #' <doi:10.1080/19312458.2020.1812555> for the methodology.
 #'
 #' The number of iterations in k-means (`iter_km`) and expectation maximization
@@ -40,8 +40,10 @@
 #'
 #' gmm <- textmodel_gmm(dov, k = 10)
 #' table(topics(gmm))
-textmodel_gmm <- function(x, k = 10, model = NULL, seeds = NULL, ...,
-                             verbose = quanteda_options("verbose")) {
+textmodel_gmm <- function(x, k = 10, model = NULL,
+                          seeds = NULL, omit = NULL,
+                          verbose = quanteda_options("verbose"),
+                          ...) {
   UseMethod("textmodel_gmm")
 }
 
@@ -105,11 +107,12 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
 #' @export
 #' @method textmodel_gmm textmodel_doc2vec
 #' @import wordvector
-textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NULL,
+textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
+                                            seeds = NULL, omit = NULL,
                                             verbose = quanteda_options("verbose"),
                                             ...) {
   result <- textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
-                          seeds = seeds, verbose = verbose, ...)
+                          seeds = seeds, omit = omit, verbose = verbose, ...)
   if (!is.null(x$docvars))
     result$docvars <- x$docvars
 

@@ -9,8 +9,9 @@ textmodel_gmm(
   k = 10,
   model = NULL,
   seeds = NULL,
-  ...,
-  verbose = quanteda_options("verbose")
+  omit = NULL,
+  verbose = quanteda_options("verbose"),
+  ...
 )
 }
 \arguments{
@@ -22,11 +23,11 @@ textmodel_gmm(
 
 \item{seeds}{a matrix created using \link{as.seedwords}.}
 
-\item{...}{passed to the underlying function.}
+\item{omit}{indices of singular values of \code{x} to be zero.}
 
 \item{verbose}{print the progress if \code{TRUE}.}
 
-\item{omit}{indices of singular values of \code{x} to be zero.}
+\item{...}{passed to the underlying function.}
 }
 \value{
 Returns a fitted \code{textmodel_gmm} object.
@@ -40,8 +41,8 @@ Users can change the number of threads for the parallel computing via
 variable.
 
 \code{omit} is used to reduce the noise in the \code{x} by applying \code{base::svd} before
-applying GMM. Singular values corresponding to \code{omit} are set to
-zero, removing their variance in \code{x}. See Chan et al. (2020)
+clustering. If it is not \code{NULL}, singular values corresponding to \code{omit} are
+set to zero, removing their variance in \code{x}. See Chan et al. (2020)
 \url{doi:10.1080/19312458.2020.1812555} for the methodology.
 
 The number of iterations in k-means (\code{iter_km}) and expectation maximization
