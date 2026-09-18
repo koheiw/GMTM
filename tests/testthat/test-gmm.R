@@ -60,6 +60,10 @@ test_that("textmodel_gmm works", {
     dim(terms(gmm_test, dfmt_test, 15)),
     c(15, 10)
   )
+  expect_equal(
+    dim(terms(topics(gmm_test), dfmt_test, 15)),
+    c(15, 10)
+  )
   expect_error(
     terms(gmm_test, head(dfmt_test, 100), n = 20),
     "the number of documents do not match"

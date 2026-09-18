@@ -163,7 +163,7 @@ probability.textmodel_gmm <- function(x, group = FALSE, ...) {
 #' Identify distinctive words for each topic by applying TF-IDF weights to the
 #' original [quanteda::dfm].
 #' @rdname terms
-#' @param x a fitted model.
+#' @param x a fitted model or a factor from `GMTM::topics()`.
 #' @param n the number of topic words.
 #' @param data a [quanteda::dfm] or [quanteda::tokens] from which words are extracted
 #'   for each topic.
@@ -185,6 +185,12 @@ terms <- function(x, data, n = 10, ...) {
 #' @export
 terms.textmodel_gmm <- function(x, data, n = 10, ...) {
   get_terms(topics(x), data, n = n, ...)
+}
+
+#' @method terms factor
+#' @export
+terms.factor <- function(x, data, n = 10, ...) {
+  get_terms(x, data, n = n, ...)
 }
 
 #' @method print textmodel_gmm

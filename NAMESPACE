@@ -3,6 +3,7 @@
 S3method(print,textmodel_gmm)
 S3method(print,textmodel_kmeans)
 S3method(probability,textmodel_gmm)
+S3method(terms,factor)
 S3method(terms,textmodel_gmm)
 S3method(terms,textmodel_kmeans)
 S3method(textmodel_gmm,matrix)
