@@ -20,7 +20,8 @@
 #'
 #' `omit` is used to reduce the noise in the `x` by applying `base::svd` before
 #' applying GMM. Singular values corresponding to `omit` are set to
-#' zero, removing their variance in `x`.
+#' zero, removing their variance in `x`. See Chan et al. (2020)
+#' <doi:10.1080/19312458.2020.1812555> for the methodology.
 #'
 #' The number of iterations in k-means (`iter_km`) and expectation maximization
 #' (`iter_em`) stages can be set via `...`.

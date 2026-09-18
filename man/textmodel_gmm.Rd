@@ -41,7 +41,8 @@ variable.
 
 \code{omit} is used to reduce the noise in the \code{x} by applying \code{base::svd} before
 applying GMM. Singular values corresponding to \code{omit} are set to
-zero, removing their variance in \code{x}.
+zero, removing their variance in \code{x}. See Chan et al. (2020)
+\url{doi:10.1080/19312458.2020.1812555} for the methodology.
 
 The number of iterations in k-means (\code{iter_km}) and expectation maximization
 (\code{iter_em}) stages can be set via \code{...}.
