@@ -306,3 +306,20 @@ test_that("dist_type works", {
 
 })
 
+
+test_that("results are reproduced", {
+
+  options(GMTM.threads = 1)
+
+  mat <- replicate(10, {
+    set.seed(1234)
+    topics(textmodel_gmm(dov_test))
+  })
+  expect_true(
+    all(mat[,1] == mat)
+  )
+
+  options(GMTM.threads = 2) # reset
+})
+
+
