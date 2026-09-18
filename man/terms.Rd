@@ -7,7 +7,7 @@
 terms(x, data, n = 10, ...)
 }
 \arguments{
-\item{x}{a fitted model.}
+\item{x}{a fitted model or a factor from \code{GMTM::topics()}.}
 
 \item{data}{a \link[quanteda:dfm]{quanteda::dfm} or \link[quanteda:tokens]{quanteda::tokens} from which words are extracted
 for each topic.}
