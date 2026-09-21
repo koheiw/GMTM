@@ -5,7 +5,7 @@ library(GMTM)
 
 corp <- corpus_reshape(data_corpus_news2014)
 ndoc(corp)
-toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_number = TRUE) |>
+toks <- tokens(corp, remove_punct = TRUE, remove_symbols = TRUE, remove_numbers = TRUE) |>
   tokens_remove(stopwords("en"), min_nchar = 2) |>
   tokens_tolower() |>
   tokens_trim(min_termfreq = 5)

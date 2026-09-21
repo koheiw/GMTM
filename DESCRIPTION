@@ -20,7 +20,8 @@ Suggests:
   testthat,
   spelling,
   rmarkdown,
-  knitr
+  knitr,
+  withr
 Roxygen: list(markdown = TRUE)
 LinkingTo: Rcpp, RcppArmadillo (>= 0.7.600.1.0)
 Language: en-US

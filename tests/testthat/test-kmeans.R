@@ -8,7 +8,7 @@ corp <- wordvector::data_corpus_news2014
 corp_test <- corpus_reshape(corp)
 
 toks_test <- tokens(corp_test, remove_punct = TRUE,
-                    remove_symbols = TRUE, remove_number = TRUE) |>
+                    remove_symbols = TRUE, remove_numbers = TRUE) |>
              tokens_remove(stopwords("en"), min_nchar = 2) |>
              tokens_subset(min_ntoken = 2)
 wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
@@ -73,7 +73,7 @@ test_that("model works", {
 
   skip_on_cran()
 
-  options(GMTM.threads = 1)
+  withr::local_options(list(GMTM.threads = 1))
   set.seed(1234)
 
   km1 <- textmodel_kmeans(dov_test, k = 15, verbose = FALSE)
@@ -88,8 +88,6 @@ test_that("model works", {
   expect_true(
     all(sapply(1:15, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
   )
-
-  options(GMTM.threads = 2) # reset
 
   expect_error(
     textmodel_kmeans(dov_test, model = list()),
@@ -132,4 +130,18 @@ test_that("returns NA for empty documents", {
     all(is.na(km_test$cluster[b]))
   )
 
+})
+
+
+test_that("results are reproduced", {
+
+  withr::local_options(list(GMTM.threads = 1))
+
+  mat <- replicate(10, {
+    set.seed(1234)
+    topics(textmodel_kmeans(dov_test))
+  })
+  expect_true(
+    all(mat[,1] == mat)
+  )
 })

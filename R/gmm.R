@@ -16,7 +16,8 @@
 #' @details
 #' Users can change the number of threads for the parallel computing via
 #' `options(GMTM.threads)` or `OMP_THREAD_LIMIT` in the environmental
-#' variable.
+#' variable. To reproduce results, set `options(GMTM.threads = 1)` and call
+#' `set.seed()` immediately before `textmodel_gmm()` or `textmodel_kmeans()`.
 #'
 #' `omit` is used to reduce the noise in the `x` by applying `base::svd` before
 #' clustering. If it is not `NULL`, singular values corresponding to `omit` are
