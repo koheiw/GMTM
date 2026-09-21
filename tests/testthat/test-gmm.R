@@ -60,6 +60,10 @@ test_that("textmodel_gmm works", {
     dim(terms(gmm_test, dfmt_test, 15)),
     c(15, 10)
   )
+  expect_equal(
+    dim(terms(topics(gmm_test), dfmt_test, 15)),
+    c(15, 10)
+  )
   expect_error(
     terms(gmm_test, head(dfmt_test, 100), n = 20),
     "the number of documents do not match"
@@ -318,4 +322,23 @@ test_that("results are reproduced", {
   )
 })
 
+
+test_that("omit works", {
+
+  gmm1 <- textmodel_gmm(dov_test, omit = 1:3)
+  expect_true(
+    GMTM:::is.textmodel_gmm(gmm1)
+  )
+
+  expect_identical(
+    gmm1$omit,
+    1L:3L
+  )
+
+  expect_error(
+    textmodel_gmm(dov_test, omit = -1),
+    "The value of omit must be between 1 and 100"
+  )
+
+})
 
