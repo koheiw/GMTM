@@ -8,7 +8,7 @@ corp <- wordvector::data_corpus_news2014
 corp_test <- corpus_reshape(corp)
 
 toks_test <- tokens(corp_test, remove_punct = TRUE,
-                    remove_symbols = TRUE, remove_number = TRUE) |>
+                    remove_symbols = TRUE, remove_numbers = TRUE) |>
              tokens_remove(stopwords("en"), min_nchar = 2) |>
              tokens_subset(min_ntoken = 2)
 wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
