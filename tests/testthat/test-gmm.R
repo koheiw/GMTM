@@ -119,7 +119,7 @@ test_that("model works", {
 
   skip_on_cran()
 
-  options(GMTM.threads = 1)
+  withr::local_options(list(GMTM.threads = 1))
   set.seed(1234)
 
   gmm1 <- textmodel_gmm(dov_test, k = 15, verbose = FALSE)
@@ -133,8 +133,6 @@ test_that("model works", {
   expect_true(
     all(sapply(1:15, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
   )
-
-  options(GMTM.threads = 2) # reset
 
   expect_error(
     textmodel_gmm(dov_test, model = list()),
@@ -309,7 +307,7 @@ test_that("dist_type works", {
 
 test_that("results are reproduced", {
 
-  options(GMTM.threads = 1)
+  withr::local_options(list(GMTM.threads = 1))
 
   mat <- replicate(10, {
     set.seed(1234)
@@ -318,8 +316,6 @@ test_that("results are reproduced", {
   expect_true(
     all(mat[,1] == mat)
   )
-
-  options(GMTM.threads = 2) # reset
 })
 
 
