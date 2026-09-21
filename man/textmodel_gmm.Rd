@@ -23,7 +23,7 @@ textmodel_gmm(
 
 \item{seeds}{a matrix created using \link{as.seedwords}.}
 
-\item{omit}{indices of singular values of \code{x} to be zero.}
+\item{omit}{indices of singular values of \code{x} to be zero. See the details.}
 
 \item{verbose}{print the progress if \code{TRUE}.}
 
@@ -40,6 +40,9 @@ Users can change the number of threads for the parallel computing via
 \code{options(GMTM.threads)} or \code{OMP_THREAD_LIMIT} in the environmental
 variable. To reproduce results, set \code{options(GMTM.threads = 1)} and call
 \code{set.seed()} immediately before \code{textmodel_gmm()} or \code{textmodel_kmeans()}.
+
+On MacOS, only one thread is used regardless of \code{GMTM.threads}
+because CRAN's toolchain for the platform does not support OpenMP.
 
 \code{omit} is used to reduce the noise in the \code{x} by applying \code{base::svd} before
 clustering. If it is not \code{NULL}, singular values corresponding to \code{omit} are
