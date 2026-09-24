@@ -20,7 +20,7 @@ test_that("get_threads works", {
 
 test_that("OMP is enabled", {
 
-  skip_on_os("mac")
+  skip_on_cran()
 
   expect_true(
     GMTM:::cpp_omp_enabled()
