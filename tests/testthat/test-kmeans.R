@@ -22,11 +22,14 @@ test_that("textmodel_kmeans works", {
 
   expect_equal(
     names(km_test),
-    c("k", "centers", "cluster", "label", "docname", "docvars",
-      "call", "version")
+    c("k", "omit", "centers", "cluster", "frequency",
+      "label", "docname", "docvars", "call", "version")
   )
   expect_true(
     is.data.frame(km_test$docvars)
+  )
+  expect_true(
+    is.numeric(km_test$frequency)
   )
 
   # topics

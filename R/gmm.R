@@ -92,21 +92,27 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
     }
   }
 
-  result <- cpp_gmm(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
+  temp <- cpp_gmm(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
-  result$cluster[b] <- NA_real_
-  result$cluster.likelihood[b,] <- NA_real_
+  temp$cluster[b] <- NA_real_
+  temp$cluster.likelihood[b,] <- NA_real_
 
-  result$cluster <- as.integer(result$cluster + 1)
-  result$label <- label
-  result$docname <- rownames(x)
-  result$docvars <- data.frame(docname_ = rownames(x))
-  result$omit <- omit
-  result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
-  result$version <- utils::packageVersion("GMTM")
-  class(result) <- c("textmodel_gmm", "textmodel_gmtm")
+  result <- build_gmm(
+    k = temp$k,
+    omit = omit,
+    centers = temp$centers,
+    covariance = temp$covariance,
+    cluster = as.integer(temp$cluster + 1),
+    cluster.likelihood = temp$cluster.likelihood,
+    model = temp$model,
+    model.likelihood = temp$model.likelihood,
+    label = label,
+    docname = rownames(x),
+    docvars = data.frame(docname_ = rownames(x)),
+    call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  )
   return(result)
 }
 
@@ -121,6 +127,8 @@ textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
                           seeds = seeds, omit = omit, verbose = verbose, ...)
   if (!is.null(x$docvars))
     result$docvars <- x$docvars
+  if (!is.null(x$frequency))
+    result$frequency <- x$frequency
 
   result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   return(result)
@@ -213,3 +221,30 @@ print.textmodel_gmm <- function(x, ...) {
 is.textmodel_gmm <- function(x) {
   "textmodel_gmm" %in% class(x)
 }
+
+build_gmm <- function(...) {
+
+  args <- list(...)
+  result <- list(
+    k = NULL,
+    omit = NULL,
+    centers = NULL,
+    covariance = NULL,
+    cluster = NULL,
+    cluster.likelihood = NULL,
+    model = NULL,
+    model.likelihood = NULL,
+    frequency = NULL,
+    label = NULL,
+    docname = NULL,
+    docvars = NULL,
+    call = NULL,
+    version = utils::packageVersion("GMTM")
+  )
+  for (m in intersect(names(result), names(args))) {
+    result[m] <- args[m]
+  }
+  class(result) <- c("textmodel_gmm", "textmodel_gmtm")
+  return(result)
+}
+
