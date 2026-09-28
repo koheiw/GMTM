@@ -22,11 +22,16 @@ test_that("textmodel_kmeans works", {
 
   expect_equal(
     names(km_test),
-    c("k", "centers", "cluster", "label", "docname", "docvars",
-      "call", "version")
+    c("k", "omit", "centers", "cluster", "frequency",
+      "label", "docname", "docvars", "call", "version")
   )
-  expect_true(
-    is.data.frame(km_test$docvars)
+  expect_equal(
+    colnames(km_test$docvars),
+    c("docname_", "docid_", "segid_", "date")
+  )
+  expect_equal(
+    km_test$frequency,
+    dov_test$frequency
   )
 
   # topics
@@ -66,6 +71,23 @@ test_that("textmodel_kmeans works", {
   expect_error(
     textmodel_kmeans(dov_test$values$doc[1:2,]),
     "Failed to train k-means"
+  )
+})
+
+test_that("textmodel_kmeans works with matrix", {
+
+  km1 <- textmodel_kmeans(as.matrix(dov_test))
+  expect_equal(
+    names(km1),
+    c("k", "omit", "centers", "cluster", "frequency",
+      "label", "docname", "docvars", "call", "version")
+  )
+  expect_equal(
+    colnames(km1$docvars),
+    "docname_"
+  )
+  expect_null(
+    km1$frequency
   )
 })
 

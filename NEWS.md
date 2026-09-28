@@ -1,6 +1,6 @@
 ## GMTM version 0.2.1
 
-- Improve tests and value checks.
+- Improve the consistency of the `textmodel_kmeans` and `textmodel_gmm` objects.
 
 ## GMTM version 0.2.0
 

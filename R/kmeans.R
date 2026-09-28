@@ -59,20 +59,23 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
     }
   }
 
-  result <- cpp_kmeans(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
-  dis <- proxyC::dist(x, t(result$centers), sparse = FALSE)
-  result$cluster <- max.col(-1 * dis ^ 2, ties.method = "first")
+  temp <- cpp_kmeans(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
+  dis <- proxyC::dist(x, t(temp$centers), sparse = FALSE)
+  temp$cluster <- max.col(-1 * dis ^ 2, ties.method = "first")
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
-  result$cluster[b] <- NA_integer_
+  temp$cluster[b] <- NA_integer_
 
-  result$label <- label
-  result$docname <- rownames(x)
-  result$docvars <- data.frame(docname_ = rownames(x))
-  result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
-  result$version <- utils::packageVersion("GMTM")
-  class(result) <- c("textmodel_kmeans", "textmodel_gmtm")
+  result = build_kmeans(
+    k = k,
+    centers = temp$centers,
+    cluster = temp$cluster,
+    label = label,
+    docname = rownames(x),
+    docvars = data.frame(docname_ = rownames(x)),
+    call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  )
   return(result)
 }
 
@@ -85,6 +88,10 @@ textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = 
                              seeds = seeds, verbose = verbose)
   if (!is.null(x$docvars))
     result$docvars <- x$docvars
+  if (!is.null(x$frequency))
+    result$frequency <- x$frequency
+
+  result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   return(result)
 }
 
@@ -113,5 +120,28 @@ print.textmodel_kmeans <- function(x, ...) {
 
 is.textmodel_kmeans <- function(x) {
   "textmodel_kmeans" %in% class(x)
+}
+
+
+build_kmeans <- function(...) {
+
+  args <- list(...)
+  result <- list(
+    k = NULL,
+    omit = NULL,
+    centers = NULL,
+    cluster = NULL,
+    frequency = NULL,
+    label = NULL,
+    docname = NULL,
+    docvars = NULL,
+    call = NULL,
+    version = utils::packageVersion("GMTM")
+  )
+  for (m in intersect(names(result), names(args))) {
+    result[m] <- args[m]
+  }
+  class(result) <- c("textmodel_kmeans", "textmodel_gmtm")
+  return(result)
 }
 
