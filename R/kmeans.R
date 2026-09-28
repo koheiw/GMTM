@@ -32,6 +32,8 @@ textmodel_kmeans <- function(x, k = 10, model = NULL, seeds = NULL,
 textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
                              verbose = quanteda_options("verbose"), ...) {
 
+  if (any(is.na(x)))
+    stop("x should not contain any NA")
   verbose <- check_logical(verbose)
 
   label <- NULL

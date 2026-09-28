@@ -145,3 +145,22 @@ test_that("results are reproduced", {
     all(mat[,1] == mat)
   )
 })
+
+test_that("kmeans errors with NA", {
+
+  mat <- as.matrix(dov_test)
+
+  mat[1:100,] <- NA
+  expect_error(
+    textmodel_kmeans(mat),
+    "x should not contain any NA"
+  )
+
+  mat[1:100,] <- 0
+  expect_identical(
+    class(textmodel_kmeans(mat)),
+    c("textmodel_kmeans", "textmodel_gmtm")
+  )
+
+})
+
