@@ -29,8 +29,9 @@ test_that("textmodel_kmeans works", {
     colnames(km_test$docvars),
     c("docname_", "docid_", "segid_", "date")
   )
-  expect_true(
-    is.numeric(km_test$frequency)
+  expect_equal(
+    km_test$frequency,
+    dov_test$frequency
   )
 
   # topics

@@ -30,8 +30,9 @@ test_that("textmodel_gmm works", {
     colnames(gmm_test$docvars),
     c("docname_", "docid_", "segid_", "date")
   )
-  expect_true(
-    is.numeric(gmm_test$frequency)
+  expect_equal(
+    gmm_test$frequency,
+    dov_test$frequency
   )
 
   # topics
