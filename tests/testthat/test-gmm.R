@@ -342,3 +342,21 @@ test_that("omit works", {
 
 })
 
+test_that("gmm errors with NA", {
+
+  mat <- as.matrix(dov_test)
+
+  mat[1:100,] <- NA
+  expect_error(
+    textmodel_gmm(mat),
+    "x should not contain any NA"
+  )
+
+  mat[1:100,] <- 0
+  expect_identical(
+    class(textmodel_gmm(mat)),
+    c("textmodel_gmm", "textmodel_gmtm")
+  )
+
+})
+

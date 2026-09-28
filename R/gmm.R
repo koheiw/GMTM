@@ -58,6 +58,8 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
                                  verbose = quanteda_options("verbose"),
                                  ...) {
 
+  if (any(is.na(x)))
+    stop("x should not contain any NA")
   verbose <- check_logical(verbose)
 
   if (!is.null(omit)) {
