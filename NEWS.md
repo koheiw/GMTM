@@ -1,3 +1,7 @@
+## GMTM version 0.2.1
+
+- Improve tests and value checks.
+
 ## GMTM version 0.2.0
 
 - Add `probability()` to extract topic likelihood of documents.
