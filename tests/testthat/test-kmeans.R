@@ -73,6 +73,23 @@ test_that("textmodel_kmeans works", {
   )
 })
 
+test_that("textmodel_kmeans works with matrix", {
+
+  km1 <- textmodel_kmeans(as.matrix(dov_test))
+  expect_equal(
+    names(km1),
+    c("k", "omit", "centers", "cluster", "frequency",
+      "label", "docname", "docvars", "call", "version")
+  )
+  expect_equal(
+    colnames(km1$docvars),
+    "docname_"
+  )
+  expect_null(
+    km1$frequency
+  )
+})
+
 test_that("model works", {
 
   skip_on_cran()
@@ -98,23 +115,6 @@ test_that("model works", {
     "the model must be a fitted textmodel_kmeans"
   )
 
-})
-
-test_that("textmodel_kmeans works with matrix", {
-
-  km1 <- textmodel_kmeans(as.matrix(dov_test))
-  expect_equal(
-    names(km1),
-    c("k", "omit", "centers", "cluster", "frequency",
-      "label", "docname", "docvars", "call", "version")
-  )
-  expect_equal(
-    colnames(km1$docvars),
-    "docname_"
-  )
-  expect_null(
-    km1$frequency
-  )
 })
 
 test_that("seeds works", {
