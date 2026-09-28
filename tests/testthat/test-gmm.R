@@ -26,8 +26,9 @@ test_that("textmodel_gmm works", {
       "model", "model.likelihood", "frequency", "label", "docname", "docvars",
       "call", "version")
   )
-  expect_true(
-    is.data.frame(gmm_test$docvars)
+  expect_equal(
+    colnames(gmm_test$docvars),
+    c("docname_", "docid_", "segid_", "date")
   )
   expect_true(
     is.numeric(gmm_test$frequency)
@@ -119,6 +120,24 @@ test_that("textmodel_gmm works", {
   expect_error(
     topics(gmm_temp),
     "The length of label is invalid"
+  )
+})
+
+test_that("textmodel_gmm works with matrix", {
+
+  gmm1 <- textmodel_gmm(as.matrix(dov_test))
+  expect_equal(
+    names(gmm1),
+    c("k", "omit", "centers", "covariance", "cluster", "cluster.likelihood",
+      "model", "model.likelihood", "frequency", "label", "docname", "docvars",
+      "call", "version")
+  )
+  expect_equal(
+    colnames(gmm1$docvars),
+    "docname_"
+  )
+  expect_null(
+    gmm1$frequency
   )
 })
 
