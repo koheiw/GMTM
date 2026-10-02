@@ -221,30 +221,3 @@ print.textmodel_gmm <- function(x, ...) {
 is.textmodel_gmm <- function(x) {
   "textmodel_gmm" %in% class(x)
 }
-
-build_gmm <- function(...) {
-
-  args <- list(...)
-  result <- list(
-    k = NULL,
-    omit = NULL,
-    centers = NULL,
-    covariance = NULL,
-    cluster = NULL,
-    cluster.likelihood = NULL,
-    model = NULL,
-    model.likelihood = NULL,
-    frequency = NULL,
-    label = NULL,
-    docname = NULL,
-    docvars = NULL,
-    call = NULL,
-    version = utils::packageVersion("GMTM")
-  )
-  for (m in intersect(names(result), names(args))) {
-    result[m] <- args[m]
-  }
-  class(result) <- c("textmodel_gmm", "textmodel_gmtm")
-  return(result)
-}
-
