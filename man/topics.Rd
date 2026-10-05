@@ -4,15 +4,15 @@
 \alias{topics}
 \title{Extract the topics of documents}
 \usage{
-topics(x, group = FALSE, ...)
+topics(x, data = NULL, type = c("top", "all"), ...)
 }
 \arguments{
 \item{x}{a fitted model.}
 
+\item{...}{not used.}
+
 \item{group}{if \code{TRUE}, aggregate the probability of topics by the original
 document \code{doc_id}. Ignored if \code{x} is a \code{textmodel_kmeans} object.}
-
-\item{...}{not used.}
 }
 \value{
 Returns predicted topics as a vector.

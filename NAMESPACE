@@ -28,6 +28,5 @@ importFrom(quanteda,
   check_logical
 )
 importFrom(stats,runif)
-importFrom(utils,head)
 importFrom(wordvector,probability)
 useDynLib(GMTM)
