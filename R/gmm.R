@@ -164,7 +164,7 @@ textmodel_gmm.textmodel_word2vec <- function(x, k = 10, model = NULL,
 #' and saved in `x$dovars$docid_` as factor.
 #'
 #' @export
-topics <- function(x, group = FALSE, ...) {
+topics <- function(x, data = NULL, type = c("top", "all"), ...) {
   UseMethod("topics")
 }
 
@@ -230,7 +230,7 @@ terms <- function(x, data, n = 10, ...) {
 
 #' @method terms textmodel_gmm
 #' @export
-terms.textmodel_gmm <- function(x, data = NULL, n = 10, ...) {
+terms.textmodel_gmm <- function(x, data = NULL, n = 10, filter = NULL,...) {
   prob <- probability(x, ...)
   if (identical(x$mode, "word")) {
     phi <- prob
@@ -243,6 +243,8 @@ terms.textmodel_gmm <- function(x, data = NULL, n = 10, ...) {
     phi <- as.matrix(dfm_match(t(data), rownames(prob)) %*% prob)
     names(dimnames(phi)) <- NULL
   }
+  if (!is.null(filter))
+    phi <- phi[intersect(rownames(phi), filter),, drop = FALSE]
   get_terms(phi, n = n)
 }
 
