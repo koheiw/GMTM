@@ -14,7 +14,7 @@ for each topic.}
 
 \item{n}{the number of topic words.}
 
-\item{...}{passed to functions.}
+\item{...}{passed to \code{probability()}.}
 }
 \value{
 Returns a character matrix with the most distinctive words for each topic.

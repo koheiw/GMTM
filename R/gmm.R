@@ -44,7 +44,7 @@
 #'
 #' gmm <- textmodel_gmm(dov, k = 10)
 #' table(topics(gmm))
-textmodel_gmm <- function(x, k = 10, data = NULL, model = NULL,
+textmodel_gmm <- function(x, k = 10, model = NULL,
                           seeds = NULL, omit = NULL,
                           verbose = quanteda_options("verbose"),
                           ...) {
@@ -119,7 +119,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
 #' @export
 #' @method textmodel_gmm textmodel_doc2vec
 #' @import wordvector
-textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, data = NULL, model = NULL,
+textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
                                             seeds = NULL, omit = NULL,
                                             verbose = quanteda_options("verbose"),
                                             ...) {
@@ -137,7 +137,7 @@ textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, data = NULL, model = NULL
 #' @export
 #' @method textmodel_gmm textmodel_word2vec
 #' @import wordvector
-textmodel_gmm.textmodel_word2vec <- function(x, k = 10, data = NULL, model = NULL,
+textmodel_gmm.textmodel_word2vec <- function(x, k = 10, model = NULL,
                                             seeds = NULL, omit = NULL,
                                             verbose = quanteda_options("verbose"),
                                             ...) {

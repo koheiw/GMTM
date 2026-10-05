@@ -4,7 +4,7 @@
 \alias{probability.textmodel_gmm}
 \title{Extract the probabilities of topics}
 \usage{
-\method{probability}{textmodel_gmm}(x, group = FALSE, ...)
+\method{probability}{textmodel_gmm}(x, group = NULL, ...)
 }
 \arguments{
 \item{x}{a fitted model.}
@@ -19,8 +19,4 @@ Returns the probabilities of topics as a matrix.
 }
 \description{
 Extract the probabilities of topics
-}
-\details{
-The original \code{doc_id} is inherited from \link[quanteda:dfm]{quanteda::dfm} or \link[quanteda:tokens]{quanteda::tokens}
-and saved in \code{x$dovars$docid_} as factor.
 }
