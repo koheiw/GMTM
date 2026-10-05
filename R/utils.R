@@ -1,14 +1,3 @@
-#' @importFrom utils head
-#' @import quanteda
-get_terms <- function(x, n = 10) {
-
-  result <- apply(x, 2, function(y)
-    head(rownames(x)[order(y, decreasing = TRUE)], n)
-  )
-  dimnames(result) <- list(NULL, colnames(result))
-  return(result)
-}
-
 #' Convert a dictionary to a seed word matrix
 #' @param x a [quanteda::dictionary] of seed words.
 #' @param model a [wordvector::textmodel_word2vec] object.
@@ -104,6 +93,14 @@ group_matrix <- function(x, factor, normalize = TRUE) {
     colSums(p, na.rm = TRUE)
   }))
 
+}
+
+get_terms <- function(x, n = 10) {
+  if (nrow(x) == 0)
+    return(x)
+  if (nrow(x) == 1)
+    return(t(apply(x, 2, function(y) rownames(x)[1])))
+  utils::head(apply(x, 2, function(y) rownames(x)[order(y, decreasing = TRUE)]), n)
 }
 
 get_topics <- function(x) {
