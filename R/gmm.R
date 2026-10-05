@@ -44,7 +44,7 @@
 #'
 #' gmm <- textmodel_gmm(dov, k = 10)
 #' table(topics(gmm))
-textmodel_gmm <- function(x, k = 10, model = NULL,
+textmodel_gmm <- function(x, k = 10, data = NULL, model = NULL,
                           seeds = NULL, omit = NULL,
                           verbose = quanteda_options("verbose"),
                           ...) {
@@ -119,7 +119,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
 #' @export
 #' @method textmodel_gmm textmodel_doc2vec
 #' @import wordvector
-textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
+textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, data = NULL, model = NULL,
                                             seeds = NULL, omit = NULL,
                                             verbose = quanteda_options("verbose"),
                                             ...) {
@@ -129,7 +129,25 @@ textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
     result$docvars <- x$docvars
   if (!is.null(x$frequency))
     result$frequency <- x$frequency
+  result$mode <- "document"
+  result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  return(result)
+}
 
+#' @export
+#' @method textmodel_gmm textmodel_word2vec
+#' @import wordvector
+textmodel_gmm.textmodel_word2vec <- function(x, k = 10, data = NULL, model = NULL,
+                                            seeds = NULL, omit = NULL,
+                                            verbose = quanteda_options("verbose"),
+                                            ...) {
+  result <- textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
+                          seeds = seeds, omit = omit, verbose = verbose, ...)
+  if (!is.null(x$docvars))
+    result$docvars <- x$docvars
+  if (!is.null(x$frequency))
+    result$frequency <- x$frequency
+  result$mode <- "word"
   result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   return(result)
 }
@@ -152,8 +170,26 @@ topics <- function(x, group = FALSE, ...) {
 
 #' @method topics textmodel_gmm
 #' @export
-topics.textmodel_gmm <- function(x, group = FALSE, ...) {
-  get_topics(x, group)
+topics.textmodel_gmm <- function(x, data = NULL, type = c("top", "all"), ...) {
+
+  type <- match.arg(type)
+  prob <- probability(x, ...)
+  if (identical(x$mode, "document")) {
+    theta <- prob
+  } else {
+    if (is.null(data))
+      stop("data must be a provided when textmodel_gmm() is applied to word vectors")
+    if (!is.dfm(data))
+      stop("data must be a dfm")
+    data <- dfm(data, remove_padding = TRUE)
+    theta <- as.matrix(dfm_match(data, rownames(prob)) %*% prob)
+    names(dimnames(theta)) <- NULL
+  }
+  if (type == "all") {
+    return(theta)
+  } else {
+    return(get_topics(theta))
+  }
 }
 
 #' @importFrom wordvector probability
@@ -163,12 +199,9 @@ wordvector::probability
 #' Extract the probabilities of topics
 #' @inheritParams topics
 #' @returns Returns the probabilities of topics as a matrix.
-#' @details
-#' The original `doc_id` is inherited from [quanteda::dfm] or [quanteda::tokens]
-#' and saved in `x$dovars$docid_` as factor.
 #' @method probability textmodel_gmm
 #' @export
-probability.textmodel_gmm <- function(x, group = FALSE, ...) {
+probability.textmodel_gmm <- function(x, group = NULL, ...) {
   get_probability(x, group)
 }
 
@@ -181,7 +214,7 @@ probability.textmodel_gmm <- function(x, group = FALSE, ...) {
 #' @param n the number of topic words.
 #' @param data a [quanteda::dfm] or [quanteda::tokens] from which words are extracted
 #'   for each topic.
-#' @param ... passed to functions.
+#' @param ... passed to `probability()`.
 #' @returns Returns a character matrix with the most distinctive words for each topic.
 #' @details
 #' To identify distinctive words for topics, original documents must be provided
@@ -197,14 +230,34 @@ terms <- function(x, data, n = 10, ...) {
 
 #' @method terms textmodel_gmm
 #' @export
-terms.textmodel_gmm <- function(x, data, n = 10, ...) {
-  get_terms(topics(x), data, n = n, ...)
+terms.textmodel_gmm <- function(x, data = NULL, n = 10, ...) {
+  prob <- probability(x, ...)
+  if (identical(x$mode, "word")) {
+    phi <- prob
+  } else {
+    if (is.null(data))
+      stop("data must be a provided when textmodel_gmm() is applied to document vectors")
+    if (!is.dfm(data))
+      stop("data must be a dfm")
+    data <- dfm(data, remove_padding = TRUE)
+    phi <- as.matrix(dfm_match(t(data), rownames(prob)) %*% prob)
+    names(dimnames(phi)) <- NULL
+  }
+  get_terms(phi, n = n)
 }
 
 #' @method terms factor
 #' @export
-terms.factor <- function(x, data, n = 10, ...) {
-  get_terms(x, data, n = n, ...)
+terms.factor <- function(x, data = NULL, n = 10, ...) {
+
+  if (length(x) != ndoc(data))
+    stop("the number of documents do not match")
+
+  data$topic <- x
+  data <- dfm(data, remove_padding = TRUE)
+  data <- dfm_group(data, topic, fill = TRUE)
+  data <- dfm_tfidf(data)
+  get_terms(t(as.matrix(data)), n = n)
 }
 
 #' @method print textmodel_gmm

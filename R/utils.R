@@ -1,17 +1,9 @@
 #' @importFrom utils head
 #' @import quanteda
-get_terms <- function(topic, data, n = 10, min_count = 1) {
+get_terms <- function(x, n = 10) {
 
-  if (length(topic) != ndoc(data))
-    stop("the number of documents do not match")
-
-  data$topic <- topic
-  data <- dfm(data, remove_padding = TRUE)
-  data <- dfm_group(data, topic, fill = TRUE)
-  data <- dfm_trim(data, min_termfreq = min_count)
-  data <- dfm_tfidf(data)
-  result <- apply(data, 1, function(y)
-    head(colnames(data)[order(y, decreasing = TRUE)], n)
+  result <- apply(x, 2, function(y)
+    head(rownames(x)[order(y, decreasing = TRUE)], n)
   )
   dimnames(result) <- list(NULL, colnames(result))
   return(result)
@@ -114,36 +106,27 @@ group_matrix <- function(x, factor, normalize = TRUE) {
 
 }
 
-get_topics <- function(x, group = FALSE) {
-
-  group <- check_logical(group, strict = TRUE)
-
-  if (x$k != length(x$label))
-    stop("The length of label is invalid")
-
-  if (group) {
-    prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)
-    v <- max.col(prob, ties.method = "first")
-    names(v) <- rownames(prob)
-  } else {
-    v <- x$cluster
-    names(v) <- x$docname
-  }
-  v <- factor(v, levels = seq_len(x$k), labels = x$label)
-  return(v)
-
+get_topics <- function(x) {
+  factor(max.col(x, ties.method = "first"),
+         levels = seq_len(ncol(x)), labels = colnames(x))
 }
 
-get_probability <- function(x, group = FALSE) {
-
-  group <- check_logical(group, strict = TRUE)
-
-  if (group) {
-    prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)
+get_probability <- function(x, group = NULL) {
+  if (is.factor(group)) {
+    prob <- group_matrix(x$cluster.likelihood, group)
   } else {
     prob <- x$cluster.likelihood
     rownames(prob) <- x$docname
   }
+  colnames(prob) <- x$label
+
   return(prob / rowSums(prob))
 }
 
+normalize <- function(x) {
+  s <- rowSums(abs(x))
+  l <- s == 0
+  x[] <- x / (s / ncol(x))
+  x[l,] <- 0 # replace NA with zero
+  return(x)
+}
