@@ -81,7 +81,7 @@ group_matrix <- function(x, factor, normalize = TRUE) {
   if (!is.matrix(x))
     stop("x must be a matrix")
   if (length(factor) != nrow(x))
-    stop("the length of the factor does not much nrow(x)")
+    stop("The length of the factor does not much nrow(x)")
 
   if (normalize)
     x <- x / rowSums(abs(x))
@@ -104,15 +104,16 @@ get_terms <- function(x, n = 10) {
 }
 
 get_topics <- function(x) {
-  factor(max.col(x, ties.method = "first"),
-         levels = seq_len(ncol(x)), labels = colnames(x))
+  structure(factor(max.col(x, ties.method = "first"),
+                   levels = seq_len(ncol(x)), labels = colnames(x)),
+            names = rownames(x))
 }
 
 get_probability <- function(x, group = NULL) {
-  if (is.factor(group)) {
-    prob <- group_matrix(x$cluster.likelihood, group)
+  if (!is.null(group)) {
+    prob <- group_matrix(x$topic.likelihood, group)
   } else {
-    prob <- x$cluster.likelihood
+    prob <- x$topic.likelihood
   }
   colnames(prob) <- x$label
 

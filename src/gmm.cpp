@@ -56,7 +56,7 @@ List cpp_gmm(arma::mat &data, int k, arma::mat means,
   //model.means.print("means:");
 
   //urowvec cluster = model.assign(data, eucl_dist);
-  urowvec cluster = model.assign(data, prob_dist);
+  //urowvec cluster = model.assign(data, prob_dist);
 
   double prob = model.avg_log_p(data);
   arma::mat cluster_prob(data.n_cols, k, arma::fill::zeros);
@@ -67,8 +67,8 @@ List cpp_gmm(arma::mat &data, int k, arma::mat means,
                       Rcpp::Named("centers") = model.means,
                       Rcpp::Named("covariance") = model.dcovs,
                       //Rcpp::Named("hefts") = model.hefts
-                      Rcpp::Named("cluster") = to_vector(cluster),
-                      Rcpp::Named("cluster.likelihood") = exp(cluster_prob),
+                      //Rcpp::Named("cluster") = to_vector(cluster),
+                      Rcpp::Named("topic.likelihood") = exp(cluster_prob),
                       Rcpp::Named("model") = "diagonal",
                       Rcpp::Named("model.likelihood") = exp(prob));
 }

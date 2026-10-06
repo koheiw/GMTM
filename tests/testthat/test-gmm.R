@@ -11,71 +11,69 @@ toks_test <- tokens(corp_test, remove_punct = TRUE,
                     remove_symbols = TRUE, remove_numbers = TRUE) |>
              tokens_remove(stopwords("en"), min_nchar = 2) |>
              tokens_subset(min_ntoken = 2)
-wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
+wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 5)
 
 dfmt_test <- dfm(toks_test, remove_padding = TRUE) |>
   dfm_subset(docid_ %in% head(levels(docid(toks_test)), 1000))
 dov_test <- as.textmodel_doc2vec(dfmt_test, wov_test)
-gmm_test <- textmodel_gmm(dov_test)
 
-test_that("textmodel_gmm works", {
+test_that("textmodel_gmm works with doc2vec", {
+
+  gmm_dov <- textmodel_gmm(dov_test)
 
   expect_equal(
-    names(gmm_test),
-    c("k", "omit", "centers", "covariance", "cluster", "cluster.likelihood",
-      "model", "model.likelihood", "frequency", "label", "docname", "docvars",
+    names(gmm_dov),
+    c("k", "omit", "centers", "covariance", "cluster", "topic.likelihood",
+      "model", "model.likelihood", "frequency", "label", "docvars", "mode",
       "call", "version")
   )
   expect_equal(
-    colnames(gmm_test$docvars),
+    colnames(gmm_dov$docvars),
     c("docname_", "docid_", "segid_", "date")
   )
   expect_equal(
-    gmm_test$frequency,
+    gmm_dov$frequency,
     dov_test$frequency
   )
 
   # topics
   expect_equal(
-    names(topics(gmm_test)),
+    names(topics(gmm_dov)),
     rownames(dfmt_test),
   )
   expect_true(
-    is.factor(topics(gmm_test))
+    is.factor(topics(gmm_dov))
   )
   expect_equal(
-    levels(topics(gmm_test)),
+    levels(topics(gmm_dov)),
     paste0("topic", 1:10)
   )
   expect_equal(
-    names(topics(gmm_test, group = FALSE)),
+    names(topics(gmm_dov)),
     docnames(dfmt_test)
   )
   expect_equal(
-    names(topics(gmm_test, group = TRUE)),
+    names(topics(gmm_dov, group = gmm_dov$docvars$docid_)),
     levels(docid(dfmt_test))
-  )
-  expect_error(
-    topics(gmm_test, c("A")),
-    "The type of group must be logical"
   )
 
   # terms
   expect_equal(
-    dim(terms(gmm_test, dfmt_test, 15)),
+    dim(terms(gmm_dov, dfmt_test, 15)),
     c(15, 10)
   )
   expect_equal(
-    dim(terms(topics(gmm_test), dfmt_test, 15)),
+    dim(terms(topics(gmm_dov), dfmt_test, 15)),
     c(15, 10)
   )
   expect_error(
-    terms(gmm_test, head(dfmt_test, 100), n = 20),
-    "the number of documents do not match"
+    terms(gmm_dov),
+    "data must be a provided when textmodel_gmm() is applied to document vectors",
+    fixed = TRUE
   )
 
   # probability
-  prob_ng <- probability(gmm_test, group = FALSE)
+  prob_ng <- probability(gmm_dov)
   expect_equal(
     dim(prob_ng),
     c(3529, 10)
@@ -87,7 +85,7 @@ test_that("textmodel_gmm works", {
   expect_true(
     all(round(rowSums(prob_ng), 10) %in% c(1.0, NA_real_))
   )
-  prob_gp <- probability(gmm_test, group = TRUE)
+  prob_gp <- probability(gmm_dov, group = gmm_dov$docvars$docid_)
   expect_equal(
     dim(prob_gp),
     c(1000, 10)
@@ -100,13 +98,13 @@ test_that("textmodel_gmm works", {
     all(round(rowSums(prob_gp), 10) %in% c(1.0, NA_real_))
   )
   expect_error(
-    probability(gmm_test, c("A")),
-    "The type of group must be logical"
+    probability(gmm_dov, head(gmm_dov$docvars$docid_, 10)),
+    "The length of the factor does not much nrow(x)"
   )
 
   # print
   expect_output(
-    print(gmm_test),
+    print(gmm_dov),
     "Call:\ntextmodel_gmm\\(.*\\)"
   )
 
@@ -116,7 +114,7 @@ test_that("textmodel_gmm works", {
     "Failed to train Gaussian mixture model"
   )
 
-  gmm_temp <- gmm_test
+  gmm_temp <- gmm_dov
   gmm_temp$label <- head(gmm_temp$label, 5)
   expect_error(
     topics(gmm_temp),
@@ -126,36 +124,77 @@ test_that("textmodel_gmm works", {
 
 test_that("textmodel_gmm works with matrix", {
 
-  gmm1 <- textmodel_gmm(as.matrix(dov_test))
+  gmm_mat <- textmodel_gmm(as.matrix(dov_test))
+
   expect_equal(
-    names(gmm1),
-    c("k", "omit", "centers", "covariance", "cluster", "cluster.likelihood",
-      "model", "model.likelihood", "frequency", "label", "docname", "docvars",
-      "call", "version")
-  )
-  expect_equal(
-    colnames(gmm1$docvars),
-    "docname_"
+    names(gmm_mat),
+    c("k", "omit", "centers", "covariance", "topic.likelihood",
+      "model", "model.likelihood", "frequency", "label", "docvars",
+      "mode", "call", "version")
   )
   expect_null(
-    gmm1$frequency
+    gmm_mat$docvars
   )
+  expect_null(
+    gmm_mat$frequency
+  )
+
+  # terms
+  expect_equal(
+    dim(terms(gmm_mat, dfmt_test, 15)),
+    c(15, 10)
+  )
+  # topics
+  expect_equal(
+    dim(terms(topics(gmm_mat), dfmt_test, 15)),
+    c(15, 10)
+  )
+
 })
 
-test_that("model works", {
+test_that("model works with doc2vec", {
 
   skip_on_cran()
 
   withr::local_options(list(GMTM.threads = 1))
   set.seed(1234)
 
-  gmm1 <- textmodel_gmm(dov_test, k = 15, verbose = FALSE)
+  gmm_dov0 <- textmodel_gmm(dov_test, k = 15, verbose = FALSE)
   expect_message(
-    gmm2 <- textmodel_gmm(dov_test, model = gmm1, iter_km = 0, verbose = FALSE),
+    gmm_dov1 <- textmodel_gmm(dov_test, model = gmm_dov0, iter_km = 0, verbose = FALSE),
     "k is overwritten by the fitted model"
   )
-  term1 <- terms(gmm1, dfmt_test, n = 10)
-  term2 <- terms(gmm2, dfmt_test, n = 10)
+  term0 <- terms(gmm_dov0, dfmt_test, n = 10)
+  term1 <- terms(gmm_dov1, dfmt_test, n = 10)
+
+  expect_true(
+    all(sapply(1:15, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
+  )
+
+  expect_error(
+    textmodel_gmm(dov_test, model = list()),
+    "the model must be a fitted textmodel_gmm"
+  )
+
+})
+
+test_that("model works with word2vec", {
+
+  skip_on_cran()
+
+  withr::local_options(list(GMTM.threads = 1))
+  set.seed(1234)
+
+  gmm_wov0 <- textmodel_gmm(wov_test, k = 15, verbose = FALSE)
+  set.seed(1234)
+  expect_message(
+    gmm_wov1 <- textmodel_gmm(wov_test, model = gmm_wov0, iter_km = 0, iter_em = 1, verbose = FALSE),
+    "k is overwritten by the fitted model"
+  )
+  Matrix::diag(proxyC::simil(gmm_wov1$centers, gmm_wov0$centers) )
+
+  term0 <- terms(gmm_wov0, n = 10)
+  term1 <- terms(gmm_wov1, n = 10)
 
   expect_true(
     all(sapply(1:15, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
@@ -287,21 +326,21 @@ test_that("seeds works", {
                           pol = "politi*", cri = "crime"))
 
   seed1 <- as.seedwords(dict, wov_test, residual = 0)
-  gmm1 <- textmodel_gmm(dov_test, seeds = seed1)
+  gmm_dov1 <- textmodel_gmm(dov_test, seeds = seed1)
   expect_equal(
-    colnames(terms(gmm1, dfmt_test)),
+    colnames(terms(gmm_dov1, dfmt_test)),
     names(dict)
   )
 
   seed2 <- as.seedwords(dict, wov_test, residual = 1)
-  gmm2 <- textmodel_gmm(dov_test, seeds = seed2)
+  gmm_dov2 <- textmodel_gmm(dov_test, seeds = seed2)
   expect_equal(
-    colnames(terms(gmm2, dfmt_test)),
+    colnames(terms(gmm_dov2, dfmt_test)),
     c(names(dict), "other")
   )
 
   expect_error(
-    textmodel_gmm(dov_test, model = gmm1, seeds = seed1),
+    textmodel_gmm(dov_test, model = gmm_dov1, seeds = seed1),
     "either the model or seeds must be NULL"
   )
 
@@ -312,10 +351,10 @@ test_that("returns NA for empty documents", {
   b <- rowSums(abs(dov_test$values$doc)) == 0
 
   expect_true(
-    all(is.na(gmm_test$cluster[b]))
+    all(is.na(gmm_dov$cluster[b]))
   )
   expect_true(
-    all(is.na(gmm_test$cluster.likelihood[b,]))
+    all(is.na(gmm_dov$topic.likelihood[b,]))
   )
 
 })

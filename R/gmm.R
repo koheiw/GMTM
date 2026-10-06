@@ -97,16 +97,16 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
   temp$cluster[b] <- NA_real_
-  temp$cluster.likelihood[b,] <- NA_real_
-  rownames(temp$cluster.likelihood) <- rownames(x)
+  temp$topic.likelihood[b,] <- NA_real_
+  rownames(temp$topic.likelihood) <- rownames(x)
 
   build_gmm(
     k = temp$k,
     omit = omit,
     centers = temp$centers,
     covariance = temp$covariance,
-    cluster = as.integer(temp$cluster + 1),
-    cluster.likelihood = temp$cluster.likelihood,
+    #cluster = as.integer(temp$cluster + 1),
+    topic.likelihood = temp$topic.likelihood,
     model = temp$model,
     model.likelihood = temp$model.likelihood,
     label = label,
@@ -186,11 +186,7 @@ topics.textmodel_gmm <- function(x, data = NULL, type = c("top", "all"), ...) {
 
   type <- match.arg(type)
   prob <- probability(x, ...)
-  if (identical(x$mode, "document")) {
-    if (!is.null(data))
-      stop("data can be used only when textmodel_gmm() is applied to word vectors")
-    theta <- prob
-  } else {
+  if (identical(x$mode, "word")) {
     if (is.null(data))
       stop("data must be a provided when textmodel_gmm() is applied to word vectors")
     if (!is.dfm(data))
@@ -198,6 +194,10 @@ topics.textmodel_gmm <- function(x, data = NULL, type = c("top", "all"), ...) {
     data <- dfm(data, remove_padding = TRUE)
     theta <- as.matrix(dfm_match(data, rownames(prob)) %*% prob)
     names(dimnames(theta)) <- NULL
+  } else {
+    if (!is.null(data))
+      stop("data can be used only when textmodel_gmm() is applied to word vectors")
+    theta <- prob
   }
   if (type == "all") {
     return(theta)
