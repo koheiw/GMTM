@@ -100,8 +100,8 @@ topics.textmodel_kmeans <- function(x, ...) {
 
 #' @method terms textmodel_kmeans
 #' @export
-terms.textmodel_kmeans <- function(x, data, n = 10, ...) {
-  get_terms(topics(x), data, n = n, ...)
+terms.textmodel_kmeans <- function(x, data, n = 10, filter = NULL, ...) {
+  terms(topics(x), data, n, filter, ...)
 }
 
 #' @method print textmodel_kmeans
