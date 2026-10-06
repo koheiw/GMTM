@@ -61,25 +61,41 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
 
   temp <- cpp_kmeans(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
   dis <- proxyC::dist(x, t(temp$centers), sparse = FALSE)
+  topic <- max.col(-1 * dis ^ 2, ties.method = "first")
+  names(topic) <- rownames(x)
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
   temp$cluster[b] <- NA_integer_
 
-  result = build_kmeans(
+  build_kmeans(
     k = k,
     centers = temp$centers,
-    topic = max.col(-1 * dis ^ 2, ties.method = "first"),
+    topic = topic,
     label = label,
     call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   )
-  return(result)
+}
+
+#' @export
+#' @method textmodel_kmeans textmodel_doc2vec
+#' @import wordvector
+textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NULL,
+                                               verbose = quanteda_options("verbose"), ...) {
+  temp <- textmodel_kmeans(as.matrix(x, normalize = FALSE), k = k, model = model,
+                           seeds = seeds, verbose = verbose)
+  build_kmeans(
+    model = temp,
+    frequency = x$frequency,
+    docvars = x$docvars,
+    call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  )
 }
 
 #' @method topics textmodel_kmeans
 #' @export
 topics.textmodel_kmeans <- function(x, ...) {
-  get_topics(x)
+  factor(x$topic, levels = seq_along(x$label), labels = x$label)
 }
 
 #' @method terms textmodel_kmeans
