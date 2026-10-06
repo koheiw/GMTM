@@ -12,7 +12,6 @@ build_gmm <- function(...) {
     frequency = NULL,
     label = NULL,
     docvars = NULL,
-    mode = NULL,
     call = NULL,
     version = utils::packageVersion("GMTM")
   )
@@ -35,9 +34,12 @@ build_kmeans <- function(...) {
     topic = NULL,
     frequency = NULL,
     label = NULL,
+    docvars = NULL,
     call = NULL,
     version = utils::packageVersion("GMTM")
   )
+  for (m in intersect(names(result), names(args$model)))
+    result[m] <- args$model[m]
   for (m in intersect(names(result), names(args))) {
     result[m] <- args[m]
   }
