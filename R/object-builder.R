@@ -11,16 +11,26 @@ build_gmm <- function(...) {
     model = NULL,
     model.likelihood = NULL,
     frequency = NULL,
-    label = NULL,
-    docname = NULL,
-    docvars = NULL,
-    #type = "document",
-    call = NULL,
-    version = utils::packageVersion("GMTM")
+    label = NULL
   )
-  for (m in intersect(names(result), names(args))) {
-    result[m] <- args[m]
+  if (arg$mode == "document") {
+    result <- c(result,
+                mode = "document",
+                docname = NULL,
+                docvars = NULL)
+  } else if (arg$mode == "word") {
+    result <- c(result,
+                mode = "word",
+                featname = NULL)
   }
+  result <- c(result,
+              call = NULL,
+              version = utils::packageVersion("GMTM"))
+
+  for (m in intersect(names(result), names(args$model)))
+    result[m] <- args$model[m]
+  for (n in intersect(names(result), names(args)))
+    result[n] <- args[n]
   class(result) <- c("textmodel_gmm", "textmodel_gmtm")
   return(result)
 }
@@ -36,9 +46,6 @@ build_kmeans <- function(...) {
     cluster = NULL,
     frequency = NULL,
     label = NULL,
-    docname = NULL,
-    docvars = NULL,
-    #type = "document",
     call = NULL,
     version = utils::packageVersion("GMTM")
   )

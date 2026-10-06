@@ -72,26 +72,8 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
     centers = temp$centers,
     cluster = temp$cluster,
     label = label,
-    docname = rownames(x),
-    docvars = data.frame(docname_ = rownames(x)),
     call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   )
-  return(result)
-}
-
-#' @export
-#' @method textmodel_kmeans textmodel_doc2vec
-#' @import wordvector
-textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NULL,
-                                               verbose = quanteda_options("verbose"), ...) {
-  result <- textmodel_kmeans(as.matrix(x, normalize = FALSE), k = k, model = model,
-                             seeds = seeds, verbose = verbose)
-  if (!is.null(x$docvars))
-    result$docvars <- x$docvars
-  if (!is.null(x$frequency))
-    result$frequency <- x$frequency
-
-  result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   return(result)
 }
 
