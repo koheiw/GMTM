@@ -128,25 +128,6 @@ textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
     model = temp,
     frequency = x$frequency,
     docvars = x$docvars,
-    mode = "document",
-    call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
-  )
-}
-
-#' @export
-#' @method textmodel_gmm textmodel_word2vec
-#' @import wordvector
-textmodel_gmm.textmodel_word2vec <- function(x, k = 10, model = NULL,
-                                            seeds = NULL, omit = NULL,
-                                            verbose = quanteda_options("verbose"),
-                                            ...) {
-
-  temp <- textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
-                        seeds = seeds, omit = omit, verbose = verbose, ...)
-  build_gmm(
-    model = temp,
-    frequency = x$frequency,
-    mode = "word",
     call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   )
 }
@@ -176,34 +157,18 @@ probability.textmodel_gmm <- function(x, group = NULL, ...) {
 #' and saved in `x$dovars$docid_` as factor.
 #'
 #' @export
-topics <- function(x, data = NULL, type = c("top", "all"), ...) {
+topics <- function(x, data = NULL, ...) {
   UseMethod("topics")
 }
 
 #' @method topics textmodel_gmm
 #' @export
-topics.textmodel_gmm <- function(x, data = NULL, type = c("top", "all"), ...) {
+topics.textmodel_gmm <- function(x, data = NULL, ...) {
 
-  type <- match.arg(type)
-  prob <- probability(x, ...)
-  if (identical(x$mode, "word")) {
-    if (is.null(data))
-      stop("data must be a provided when textmodel_gmm() is applied to word vectors")
-    if (!is.dfm(data))
-      stop("data must be a dfm")
-    data <- dfm(data, remove_padding = TRUE)
-    theta <- as.matrix(dfm_match(data, rownames(prob)) %*% prob)
-    names(dimnames(theta)) <- NULL
-  } else {
-    if (!is.null(data))
-      stop("data can be used only when textmodel_gmm() is applied to word vectors")
-    theta <- prob
-  }
-  if (type == "all") {
-    return(theta)
-  } else {
-    return(get_topics(theta))
-  }
+  if (x$k != length(x$label))
+    stop("The length of label is invalid")
+
+  get_topics(probability(x, ...))
 }
 
 #' Extract words for topics from documents
@@ -215,6 +180,7 @@ topics.textmodel_gmm <- function(x, data = NULL, type = c("top", "all"), ...) {
 #' @param n the number of topic words.
 #' @param data a [quanteda::dfm] or [quanteda::tokens] from which words are extracted
 #'   for each topic.
+#' @param filter a character vector of words to be included in the output.
 #' @param ... passed to `probability()`.
 #' @returns Returns a character matrix with the most distinctive words for each topic.
 #' @details
@@ -231,40 +197,40 @@ terms <- function(x, data, n = 10, ...) {
 
 #' @method terms textmodel_gmm
 #' @export
-terms.textmodel_gmm <- function(x, data = NULL, n = 10, filter = NULL,...) {
+terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
+
   prob <- probability(x, ...)
-  if (identical(x$mode, "word")) {
-    if (!is.null(data))
-      stop("data can be used only when textmodel_gmm() is applied to document vectors")
-    phi <- prob[names(sort(x$frequency, decreasing = TRUE)),, drop = FALSE]
-  } else {
-    if (is.null(data))
-      stop("data must be a provided when textmodel_gmm() is applied to document vectors")
-    if (!is.dfm(data))
-      stop("data must be a dfm")
-    data <- dfm(data, remove_padding = TRUE)
-    # give frequent words priority
-    data <- data[,names(sort(featfreq(data), decreasing = TRUE))]
-    phi <- as.matrix(dfm_match(t(data), rownames(prob)) %*% prob)
-    names(dimnames(phi)) <- NULL
-  }
+  data <- dfm(data, remove_padding = TRUE)
+
+  d <- intersect(rownames(data), rownames(prob))
+  if (length(d) == 0)
+    stop ("data must contain documents on which the model was trained")
+
+  # give frequent words priority
+  data <- data[,names(sort(featfreq(data), decreasing = TRUE))]
+  temp <- as.matrix(t(data[d,]) %*% prob[d,,drop = FALSE])
+  names(dimnames(temp)) <- NULL
+
   if (!is.null(filter))
-    phi <- phi[rownames(phi) %in% filter,, drop = FALSE]
-  get_terms(phi, n = n)
+    temp <- temp[rownames(temp) %in% filter,, drop = FALSE]
+  get_terms(temp, n = n)
 }
 
 #' @method terms factor
 #' @export
-terms.factor <- function(x, data = NULL, n = 10, ...) {
+terms.factor <- function(x, data, n = 10, filter = NULL, ...) {
 
-  if (length(x) != ndoc(data))
-    stop("the number of documents do not match")
-
-  data$topic <- x
   data <- dfm(data, remove_padding = TRUE)
-  data <- dfm_group(data, topic, fill = TRUE)
-  data <- dfm_tfidf(data)
-  get_terms(t(as.matrix(data)), n = n)
+  d <- intersect(rownames(data), names(x))
+  if (length(d) == 0)
+    stop ("data must contain documents for which topics were predicted")
+
+  temp <- dfm_group(data[d,], x[d], fill = TRUE)
+  temp <- t(as.matrix(dfm_tfidf(temp)))
+
+  if (!is.null(filter))
+    temp <- temp[rownames(temp) %in% filter,, drop = FALSE]
+  get_terms(temp, n = n)
 }
 
 #' @method print textmodel_gmm
