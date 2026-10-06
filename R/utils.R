@@ -113,7 +113,6 @@ get_probability <- function(x, group = NULL) {
     prob <- group_matrix(x$cluster.likelihood, group)
   } else {
     prob <- x$cluster.likelihood
-    rownames(prob) <- x$docname
   }
   colnames(prob) <- x$label
 

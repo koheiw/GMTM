@@ -13,12 +13,11 @@ build_gmm <- function(...) {
     frequency = NULL,
     label = NULL
   )
-  if (arg$mode == "document") {
+  if (identical(args$mode, "document")) {
     result <- c(result,
                 mode = "document",
-                docname = NULL,
                 docvars = NULL)
-  } else if (arg$mode == "word") {
+  } else if (identical(args$mode, "word")) {
     result <- c(result,
                 mode = "word",
                 featname = NULL)

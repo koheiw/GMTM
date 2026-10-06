@@ -98,6 +98,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
   b <- rowSums(abs(x)) == 0
   temp$cluster[b] <- NA_real_
   temp$cluster.likelihood[b,] <- NA_real_
+  rownames(temp$cluster.likelihood) <- rownames(x)
 
   build_gmm(
     k = temp$k,
@@ -109,7 +110,6 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
     model = temp$model,
     model.likelihood = temp$model.likelihood,
     label = label,
-    docvars = data.frame(docname_ = rownames(x)),
     call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   )
 }
@@ -121,14 +121,13 @@ textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
                                             seeds = NULL, omit = NULL,
                                             verbose = quanteda_options("verbose"),
                                             ...) {
-  x <- as.matrix(x, normalize = FALSE)
-  temp <- textmodel_gmm(x, k = k, model = model, seeds = seeds, omit = omit,
-                        verbose = verbose, ...)
+
+  temp <- textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
+                        seeds = seeds, omit = omit, verbose = verbose, ...)
   build_gmm(
     model = temp,
     frequency = x$frequency,
     docvars = x$docvars,
-    docnames = rownames(x),
     mode = "document",
     call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   )
@@ -141,13 +140,12 @@ textmodel_gmm.textmodel_word2vec <- function(x, k = 10, model = NULL,
                                             seeds = NULL, omit = NULL,
                                             verbose = quanteda_options("verbose"),
                                             ...) {
-  x <- as.matrix(x, normalize = FALSE)
-  temp <- textmodel_gmm(x, k = k, model = model, seeds = seeds, omit = omit,
-                        verbose = verbose, ...)
+
+  temp <- textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
+                        seeds = seeds, omit = omit, verbose = verbose, ...)
   build_gmm(
     model = temp,
     frequency = x$frequency,
-    featnames = rownames(x),
     mode = "word",
     call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   )
