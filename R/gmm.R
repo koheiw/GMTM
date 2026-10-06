@@ -152,6 +152,19 @@ textmodel_gmm.textmodel_word2vec <- function(x, k = 10, model = NULL,
   return(result)
 }
 
+#' @importFrom wordvector probability
+#' @export
+wordvector::probability
+
+#' Extract the probabilities of topics
+#' @inheritParams topics
+#' @returns Returns the probabilities of topics as a matrix.
+#' @method probability textmodel_gmm
+#' @export
+probability.textmodel_gmm <- function(x, group = NULL, ...) {
+  get_probability(x, group)
+}
+
 #' Extract the topics of documents
 #' @param x a fitted model.
 #' @param group if `TRUE`, aggregate the probability of topics by the original
@@ -175,6 +188,8 @@ topics.textmodel_gmm <- function(x, data = NULL, type = c("top", "all"), ...) {
   type <- match.arg(type)
   prob <- probability(x, ...)
   if (identical(x$mode, "document")) {
+    if (!is.null(data))
+      stop("data can be used only when textmodel_gmm() is applied to word vectors")
     theta <- prob
   } else {
     if (is.null(data))
@@ -190,19 +205,6 @@ topics.textmodel_gmm <- function(x, data = NULL, type = c("top", "all"), ...) {
   } else {
     return(get_topics(theta))
   }
-}
-
-#' @importFrom wordvector probability
-#' @export
-wordvector::probability
-
-#' Extract the probabilities of topics
-#' @inheritParams topics
-#' @returns Returns the probabilities of topics as a matrix.
-#' @method probability textmodel_gmm
-#' @export
-probability.textmodel_gmm <- function(x, group = NULL, ...) {
-  get_probability(x, group)
 }
 
 #' Extract words for topics from documents
@@ -233,18 +235,22 @@ terms <- function(x, data, n = 10, ...) {
 terms.textmodel_gmm <- function(x, data = NULL, n = 10, filter = NULL,...) {
   prob <- probability(x, ...)
   if (identical(x$mode, "word")) {
-    phi <- prob
+    if (!is.null(data))
+      stop("data can be used only when textmodel_gmm() is applied to document vectors")
+    phi <- prob[names(sort(x$frequency, decreasing = TRUE)),, drop = FALSE]
   } else {
     if (is.null(data))
       stop("data must be a provided when textmodel_gmm() is applied to document vectors")
     if (!is.dfm(data))
       stop("data must be a dfm")
     data <- dfm(data, remove_padding = TRUE)
+    # give frequent words priority
+    data <- data[,names(sort(featfreq(data), decreasing = TRUE))]
     phi <- as.matrix(dfm_match(t(data), rownames(prob)) %*% prob)
     names(dimnames(phi)) <- NULL
   }
   if (!is.null(filter))
-    phi <- phi[intersect(rownames(phi), filter),, drop = FALSE]
+    phi <- phi[rownames(phi) %in% filter,, drop = FALSE]
   get_terms(phi, n = n)
 }
 
