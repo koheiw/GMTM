@@ -11,21 +11,12 @@ build_gmm <- function(...) {
     model = NULL,
     model.likelihood = NULL,
     frequency = NULL,
-    label = NULL
+    label = NULL,
+    docvars = NULL,
+    mode = NULL,
+    call = NULL,
+    version = utils::packageVersion("GMTM")
   )
-  if (identical(args$mode, "document")) {
-    result <- c(result,
-                mode = "document",
-                docvars = NULL)
-  } else if (identical(args$mode, "word")) {
-    result <- c(result,
-                mode = "word",
-                featname = NULL)
-  }
-  result <- c(result,
-              call = NULL,
-              version = utils::packageVersion("GMTM"))
-
   for (m in intersect(names(result), names(args$model)))
     result[m] <- args$model[m]
   for (n in intersect(names(result), names(args)))
