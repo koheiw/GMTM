@@ -65,7 +65,7 @@ test_that("OMP is enabled", {
   v3 <- paste0("doc", c(2, 2, 2, 1, 1, 3, 0, 0))
   expect_error(
     group_matrix(mat, v3),
-    "the length of the factor does not much nrow(x)",
+    "The length of the factor does not much nrow(x)",
     fixed = TRUE
   )
 

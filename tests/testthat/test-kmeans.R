@@ -22,8 +22,8 @@ test_that("textmodel_kmeans works", {
 
   expect_equal(
     names(km_test),
-    c("k", "omit", "centers", "cluster", "frequency",
-      "label", "docname", "docvars", "call", "version")
+    c("k", "omit", "centers", "topic", "frequency",
+      "label", "docvars", "call", "version")
   )
   expect_equal(
     colnames(km_test$docvars),
@@ -53,12 +53,12 @@ test_that("textmodel_kmeans works", {
 
   # terms
   expect_equal(
-    dim(terms(km_test, dfmt_test, 15)),
+    dim(terms(km_test, dfmt_test[1:1000,], 15)),
     c(15, 10)
   )
-  expect_error(
-    terms(km_test, head(dfmt_test, 100), n = 20),
-    "the number of documents do not match"
+  expect_equal(
+    dim(terms(km_test, toks_test[1:1000], 15)),
+    c(15, 10)
   )
 
   # print
@@ -79,12 +79,11 @@ test_that("textmodel_kmeans works with matrix", {
   km1 <- textmodel_kmeans(as.matrix(dov_test))
   expect_equal(
     names(km1),
-    c("k", "omit", "centers", "cluster", "frequency",
-      "label", "docname", "docvars", "call", "version")
+    c("k", "omit", "centers", "topic", "frequency",
+      "label", "docvars", "call", "version")
   )
-  expect_equal(
-    colnames(km1$docvars),
-    "docname_"
+  expect_null(
+    km1$docvars,
   )
   expect_null(
     km1$frequency

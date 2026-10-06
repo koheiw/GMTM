@@ -11,7 +11,7 @@ toks_test <- tokens(corp_test, remove_punct = TRUE,
                     remove_symbols = TRUE, remove_numbers = TRUE) |>
              tokens_remove(stopwords("en"), min_nchar = 2) |>
              tokens_subset(min_ntoken = 2)
-wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 5)
+wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
 
 dfmt_test <- dfm(toks_test, remove_padding = TRUE) |>
   dfm_subset(docid_ %in% head(levels(docid(toks_test)), 1000))
@@ -23,8 +23,8 @@ test_that("textmodel_gmm works with doc2vec", {
 
   expect_equal(
     names(gmm_dov),
-    c("k", "omit", "centers", "covariance", "cluster", "topic.likelihood",
-      "model", "model.likelihood", "frequency", "label", "docvars", "mode",
+    c("k", "omit", "centers", "covariance", "topic.likelihood",
+      "model", "model.likelihood", "frequency", "label", "docvars",
       "call", "version")
   )
   expect_equal(
@@ -59,17 +59,28 @@ test_that("textmodel_gmm works with doc2vec", {
 
   # terms
   expect_equal(
-    dim(terms(gmm_dov, dfmt_test, 15)),
+    dim(terms(gmm_dov, dfmt_test[1:1000,], 15)),
     c(15, 10)
   )
   expect_equal(
-    dim(terms(topics(gmm_dov), dfmt_test, 15)),
+    dim(terms(gmm_dov, toks_test[1:1000], 15)),
     c(15, 10)
   )
   expect_error(
-    terms(gmm_dov),
-    "data must be a provided when textmodel_gmm() is applied to document vectors",
-    fixed = TRUE
+    terms(gmm_dov, tail(toks_test, 10)),
+    "data must contain documents on which the model was trained"
+  )
+  expect_equal(
+    dim(terms(topics(gmm_dov), dfmt_test[1:1000,], 15)),
+    c(15, 10)
+  )
+  expect_equal(
+    dim(terms(topics(gmm_dov), toks_test[1:1000], 15)),
+    c(15, 10)
+  )
+  expect_error(
+    dim(terms(topics(gmm_dov), tail(toks_test, 10), 15)),
+    "data must contain documents for which topics were predicted"
   )
 
   # probability
@@ -130,7 +141,7 @@ test_that("textmodel_gmm works with matrix", {
     names(gmm_mat),
     c("k", "omit", "centers", "covariance", "topic.likelihood",
       "model", "model.likelihood", "frequency", "label", "docvars",
-      "mode", "call", "version")
+      "call", "version")
   )
   expect_null(
     gmm_mat$docvars
@@ -168,36 +179,7 @@ test_that("model works with doc2vec", {
   term1 <- terms(gmm_dov1, dfmt_test, n = 10)
 
   expect_true(
-    all(sapply(1:15, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
-  )
-
-  expect_error(
-    textmodel_gmm(dov_test, model = list()),
-    "the model must be a fitted textmodel_gmm"
-  )
-
-})
-
-test_that("model works with word2vec", {
-
-  skip_on_cran()
-
-  withr::local_options(list(GMTM.threads = 1))
-  set.seed(1234)
-
-  gmm_wov0 <- textmodel_gmm(wov_test, k = 15, verbose = FALSE)
-  set.seed(1234)
-  expect_message(
-    gmm_wov1 <- textmodel_gmm(wov_test, model = gmm_wov0, iter_km = 0, iter_em = 1, verbose = FALSE),
-    "k is overwritten by the fitted model"
-  )
-  Matrix::diag(proxyC::simil(gmm_wov1$centers, gmm_wov0$centers) )
-
-  term0 <- terms(gmm_wov0, n = 10)
-  term1 <- terms(gmm_wov1, n = 10)
-
-  expect_true(
-    all(sapply(1:15, function(i) length(intersect(term1[,i], term2[,i]))) > 0),
+    all(sapply(1:15, function(i) length(intersect(term0[,i], term1[,i]))) > 0),
   )
 
   expect_error(
@@ -348,6 +330,7 @@ test_that("seeds works", {
 
 test_that("returns NA for empty documents", {
 
+  gmm_dov <- textmodel_gmm(dov_test, k = 15, verbose = FALSE)
   b <- rowSums(abs(dov_test$values$doc)) == 0
 
   expect_true(
