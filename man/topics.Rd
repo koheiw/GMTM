@@ -4,7 +4,7 @@
 \alias{topics}
 \title{Extract the topics of documents}
 \usage{
-topics(x, data = NULL, type = c("top", "all"), ...)
+topics(x, data = NULL, ...)
 }
 \arguments{
 \item{x}{a fitted model.}

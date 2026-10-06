@@ -184,12 +184,13 @@ topics.textmodel_gmm <- function(x, data = NULL, ...) {
 #' @param ... passed to `probability()`.
 #' @returns Returns a character matrix with the most distinctive words for each topic.
 #' @details
-#' To identify distinctive words for topics, original documents must be provided
-#' along with a fitted model because the information about individual words are lost in
-#' document vectors.
-#' The documents in `data` is grouped by topic and weighted by TF-IDF
-#' to select the most distinctive words for each topic. This technique is
-#' commonly known as c-TF-IDF.
+#' To identify topic terms, `data` must be provided along with a fitted model because
+#' the information about the frequency of individual words are lost in document vectors.
+#'
+#' When `x` is a `textmodel_gmm`, `data` is weighted by the topic probability to
+#' extract most likely topic terms. When `x` is `textmodel_kmeans` or a factor,
+#' `data` is grouped by topic and weighted by TF-IDF to select the most distinctive
+#' words for each topic (known as c-TF-IDF).
 #' @export
 terms <- function(x, data, n = 10, ...) {
   UseMethod("terms")

@@ -15,6 +15,8 @@ for each topic.}
 \item{n}{the number of topic words.}
 
 \item{...}{passed to \code{probability()}.}
+
+\item{filter}{a character vector of words to be included in the output.}
 }
 \value{
 Returns a character matrix with the most distinctive words for each topic.
@@ -24,10 +26,11 @@ Identify distinctive words for each topic by applying TF-IDF weights to the
 original \link[quanteda:dfm]{quanteda::dfm}.
 }
 \details{
-To identify distinctive words for topics, original documents must be provided
-along with a fitted model because the information about individual words are lost in
-document vectors.
-The documents in \code{data} is grouped by topic and weighted by TF-IDF
-to select the most distinctive words for each topic. This technique is
-commonly known as c-TF-IDF.
+To identify topic terms, \code{data} must be provided along with a fitted model because
+the information about the frequency of individual words are lost in document vectors.
+
+When \code{x} is a \code{textmodel_gmm}, \code{data} is weighted by the topic probability to
+extract most likely topic terms. When \code{x} is \code{textmodel_kmeans} or a factor,
+\code{data} is grouped by topic and weighted by TF-IDF to select the most distinctive
+words for each topic (known as c-TF-IDF).
 }
