@@ -2,7 +2,7 @@
 % Please edit documentation in R/gmm.R
 \name{terms}
 \alias{terms}
-\title{Extract words for topics from documents}
+\title{Extract lost likely topic terms from documents}
 \usage{
 terms(x, data, n = 10, ...)
 }
@@ -14,7 +14,7 @@ for each topic.}
 
 \item{n}{the number of topic words.}
 
-\item{...}{passed to \code{probability()}.}
+\item{...}{not used.}
 
 \item{filter}{a character vector of words to be included in the output.}
 }
@@ -22,8 +22,7 @@ for each topic.}
 Returns a character matrix with the most distinctive words for each topic.
 }
 \description{
-Identify distinctive words for each topic by applying TF-IDF weights to the
-original \link[quanteda:dfm]{quanteda::dfm}.
+Extract lost likely topic terms from documents
 }
 \details{
 To identify topic terms, \code{data} must be provided along with a fitted model because

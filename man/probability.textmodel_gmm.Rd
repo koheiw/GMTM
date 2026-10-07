@@ -2,15 +2,15 @@
 % Please edit documentation in R/gmm.R
 \name{probability.textmodel_gmm}
 \alias{probability.textmodel_gmm}
-\title{Extract the probabilities of topics}
+\title{Extract the probabilities for topics}
 \usage{
 \method{probability}{textmodel_gmm}(x, group = NULL, ...)
 }
 \arguments{
 \item{x}{a fitted model.}
 
-\item{group}{if \code{TRUE}, aggregate the probability of topics by the original
-document \code{doc_id}. Ignored if \code{x} is a \code{textmodel_kmeans} object.}
+\item{group}{a factor to group documents and average their probability for
+topics. Ignored if \code{x} is a \code{textmodel_kmeans} object.}
 
 \item{...}{not used.}
 }
@@ -18,5 +18,5 @@ document \code{doc_id}. Ignored if \code{x} is a \code{textmodel_kmeans} object.
 Returns the probabilities of topics as a matrix.
 }
 \description{
-Extract the probabilities of topics
+Extract the probabilities for topics
 }

@@ -14,6 +14,9 @@
 #' @useDynLib GMTM
 #' @export
 #' @details
+#'
+#' ### multi-threading
+#'
 #' Users can change the number of threads for the parallel computing via
 #' `options(GMTM.threads)` or `OMP_THREAD_LIMIT` in the environmental
 #' variable. To reproduce results, set `options(GMTM.threads = 1)` and call
@@ -22,10 +25,14 @@
 #' On MacOS, only one thread is used regardless of `GMTM.threads`
 #' because CRAN's toolchain for the platform does not support OpenMP.
 #'
+#' ### noise reduction
+#'
 #' `omit` is used to reduce the noise in the `x` by applying `base::svd` before
 #' clustering. If it is not `NULL`, singular values corresponding to `omit` are
 #' set to zero, removing their variance in `x`. See Chan et al. (2020)
 #' <doi:10.1080/19312458.2020.1812555> for the methodology.
+#'
+#' ### additional arguments
 #'
 #' The number of iterations in k-means (`iter_km`) and expectation maximization
 #' (`iter_em`) stages can be set via `...`.
@@ -136,8 +143,11 @@ textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
 #' @export
 wordvector::probability
 
-#' Extract the probabilities of topics
+#' Extract the probabilities for topics
 #' @inheritParams topics
+#' @param group a factor to group documents and average their probability for
+#' topics. Ignored if `x` is a `textmodel_kmeans` object.
+#' @param ... not used.
 #' @returns Returns the probabilities of topics as a matrix.
 #' @method probability textmodel_gmm
 #' @export
@@ -145,17 +155,11 @@ probability.textmodel_gmm <- function(x, group = NULL, ...) {
   get_probability(x, group)
 }
 
-#' Extract the topics of documents
+#' Extract the most likely topics of documents
 #' @param x a fitted model.
-#' @param group if `TRUE`, aggregate the probability of topics by the original
-#'   document `doc_id`. Ignored if `x` is a `textmodel_kmeans` object.
-#' @param ... not used.
+#' @param ... passed to [GMTM::probability.textmodel_gmm()].
 #' @rdname topics
 #' @returns Returns predicted topics as a vector.
-#' @details
-#' The original `doc_id` is inherited from [quanteda::dfm] or [quanteda::tokens]
-#' and saved in `x$dovars$docid_` as factor.
-#'
 #' @export
 topics <- function(x, data = NULL, ...) {
   UseMethod("topics")
@@ -171,17 +175,14 @@ topics.textmodel_gmm <- function(x, data = NULL, ...) {
   get_topics(probability(x, ...))
 }
 
-#' Extract words for topics from documents
-#'
-#' Identify distinctive words for each topic by applying TF-IDF weights to the
-#' original [quanteda::dfm].
+#' Extract lost likely topic terms from documents
 #' @rdname terms
 #' @param x a fitted model or a factor from `GMTM::topics()`.
 #' @param n the number of topic words.
 #' @param data a [quanteda::dfm] or [quanteda::tokens] from which words are extracted
 #'   for each topic.
 #' @param filter a character vector of words to be included in the output.
-#' @param ... passed to `probability()`.
+#' @param ... not used.
 #' @returns Returns a character matrix with the most distinctive words for each topic.
 #' @details
 #' To identify topic terms, `data` must be provided along with a fitted model because
@@ -200,7 +201,7 @@ terms <- function(x, data, n = 10, ...) {
 #' @export
 terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
 
-  prob <- probability(x, ...)
+  prob <- probability(x)
   data <- dfm(data, remove_padding = TRUE)
 
   d <- intersect(rownames(data), rownames(prob))

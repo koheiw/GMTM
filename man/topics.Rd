@@ -2,25 +2,18 @@
 % Please edit documentation in R/gmm.R
 \name{topics}
 \alias{topics}
-\title{Extract the topics of documents}
+\title{Extract the most likely topics of documents}
 \usage{
 topics(x, data = NULL, ...)
 }
 \arguments{
 \item{x}{a fitted model.}
 
-\item{...}{not used.}
-
-\item{group}{if \code{TRUE}, aggregate the probability of topics by the original
-document \code{doc_id}. Ignored if \code{x} is a \code{textmodel_kmeans} object.}
+\item{...}{passed to \code{\link[=probability.textmodel_gmm]{probability.textmodel_gmm()}}.}
 }
 \value{
 Returns predicted topics as a vector.
 }
 \description{
-Extract the topics of documents
-}
-\details{
-The original \code{doc_id} is inherited from \link[quanteda:dfm]{quanteda::dfm} or \link[quanteda:tokens]{quanteda::tokens}
-and saved in \code{x$dovars$docid_} as factor.
+Extract the most likely topics of documents
 }
