@@ -1,22 +1,3 @@
-#' @importFrom utils head
-#' @import quanteda
-get_terms <- function(topic, data, n = 10, min_count = 1) {
-
-  if (length(topic) != ndoc(data))
-    stop("the number of documents do not match")
-
-  data$topic <- topic
-  data <- dfm(data, remove_padding = TRUE)
-  data <- dfm_group(data, topic, fill = TRUE)
-  data <- dfm_trim(data, min_termfreq = min_count)
-  data <- dfm_tfidf(data)
-  result <- apply(data, 1, function(y)
-    head(colnames(data)[order(y, decreasing = TRUE)], n)
-  )
-  dimnames(result) <- list(NULL, colnames(result))
-  return(result)
-}
-
 #' Convert a dictionary to a seed word matrix
 #' @param x a [quanteda::dictionary] of seed words.
 #' @param model a [wordvector::textmodel_word2vec] object.
@@ -100,7 +81,7 @@ group_matrix <- function(x, factor, normalize = TRUE) {
   if (!is.matrix(x))
     stop("x must be a matrix")
   if (length(factor) != nrow(x))
-    stop("the length of the factor does not much nrow(x)")
+    stop("The length of the factor does not much nrow(x)")
 
   if (normalize)
     x <- x / rowSums(abs(x))
@@ -114,36 +95,37 @@ group_matrix <- function(x, factor, normalize = TRUE) {
 
 }
 
-get_topics <- function(x, group = FALSE) {
-
-  group <- check_logical(group, strict = TRUE)
-
-  if (x$k != length(x$label))
-    stop("The length of label is invalid")
-
-  if (group) {
-    prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)
-    v <- max.col(prob, ties.method = "first")
-    names(v) <- rownames(prob)
-  } else {
-    v <- x$cluster
-    names(v) <- x$docname
-  }
-  v <- factor(v, levels = seq_len(x$k), labels = x$label)
-  return(v)
-
+get_terms <- function(x, n = 10) {
+  if (nrow(x) == 0)
+    return(x)
+  if (nrow(x) == 1)
+    return(t(apply(x, 2, function(y) rownames(x)[1])))
+  utils::head(apply(x, 2, function(y) rownames(x)[order(y, decreasing = TRUE)]), n)
 }
 
-get_probability <- function(x, group = FALSE) {
+get_topics <- function(x) {
+  structure(factor(max.col(x, ties.method = "first"),
+                   levels = seq_len(ncol(x)), labels = colnames(x)),
+            names = rownames(x))
+}
 
-  group <- check_logical(group, strict = TRUE)
-
-  if (group) {
-    prob <- group_matrix(x$cluster.likelihood, x$docvars$docid_)
+get_probability <- function(x, group = NULL) {
+  if (!is.null(group)) {
+    if (length(group) != nrow(x$topic.likelihood))
+      stop("The length of group does not much the number of documents")
+    prob <- group_matrix(x$topic.likelihood, group)
   } else {
-    prob <- x$cluster.likelihood
-    rownames(prob) <- x$docname
+    prob <- x$topic.likelihood
   }
+  colnames(prob) <- x$label
+
   return(prob / rowSums(prob))
 }
 
+# normalize <- function(x) {
+#   s <- rowSums(abs(x))
+#   l <- s == 0
+#   x[] <- x / (s / ncol(x))
+#   x[l,] <- 0 # replace NA with zero
+#   return(x)
+# }

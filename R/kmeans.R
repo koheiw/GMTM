@@ -61,22 +61,20 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
 
   temp <- cpp_kmeans(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
   dis <- proxyC::dist(x, t(temp$centers), sparse = FALSE)
-  temp$cluster <- max.col(-1 * dis ^ 2, ties.method = "first")
+  topic <- max.col(-1 * dis ^ 2, ties.method = "first")
+  names(topic) <- rownames(x)
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
   temp$cluster[b] <- NA_integer_
 
-  result = build_kmeans(
+  build_kmeans(
     k = k,
     centers = temp$centers,
-    cluster = temp$cluster,
+    topic = topic,
     label = label,
-    docname = rownames(x),
-    docvars = data.frame(docname_ = rownames(x)),
     call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
   )
-  return(result)
 }
 
 #' @export
@@ -84,27 +82,26 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
 #' @import wordvector
 textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = NULL,
                                                verbose = quanteda_options("verbose"), ...) {
-  result <- textmodel_kmeans(as.matrix(x, normalize = FALSE), k = k, model = model,
-                             seeds = seeds, verbose = verbose)
-  if (!is.null(x$docvars))
-    result$docvars <- x$docvars
-  if (!is.null(x$frequency))
-    result$frequency <- x$frequency
-
-  result$call <- try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
-  return(result)
+  temp <- textmodel_kmeans(as.matrix(x, normalize = FALSE), k = k, model = model,
+                           seeds = seeds, verbose = verbose)
+  build_kmeans(
+    model = temp,
+    frequency = x$frequency,
+    docvars = x$docvars,
+    call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  )
 }
 
 #' @method topics textmodel_kmeans
 #' @export
 topics.textmodel_kmeans <- function(x, ...) {
-  get_topics(x)
+  factor(x$topic, levels = seq_along(x$label), labels = x$label)
 }
 
 #' @method terms textmodel_kmeans
 #' @export
-terms.textmodel_kmeans <- function(x, data, n = 10, ...) {
-  get_terms(topics(x), data, n = n, ...)
+terms.textmodel_kmeans <- function(x, data, n = 10, filter = NULL, ...) {
+  terms(topics(x), data, n, filter, ...)
 }
 
 #' @method print textmodel_kmeans
@@ -121,27 +118,3 @@ print.textmodel_kmeans <- function(x, ...) {
 is.textmodel_kmeans <- function(x) {
   "textmodel_kmeans" %in% class(x)
 }
-
-
-build_kmeans <- function(...) {
-
-  args <- list(...)
-  result <- list(
-    k = NULL,
-    omit = NULL,
-    centers = NULL,
-    cluster = NULL,
-    frequency = NULL,
-    label = NULL,
-    docname = NULL,
-    docvars = NULL,
-    call = NULL,
-    version = utils::packageVersion("GMTM")
-  )
-  for (m in intersect(names(result), names(args))) {
-    result[m] <- args[m]
-  }
-  class(result) <- c("textmodel_kmeans", "textmodel_gmtm")
-  return(result)
-}
-
