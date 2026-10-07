@@ -9,7 +9,7 @@ corp_test <- corpus_reshape(corp)
 
 toks_test <- tokens(corp_test, remove_punct = TRUE,
                     remove_symbols = TRUE, remove_numbers = TRUE) |>
-             tokens_remove(stopwords("en"), min_nchar = 2, padding = TRUE) |>
+             tokens_remove(stopwords("en"), min_nchar = 2) |>
              tokens_subset(min_ntoken = 2)
 wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
 
@@ -61,7 +61,7 @@ test_that("textmodel_gmm works with doc2vec", {
     c(15, 10)
   )
   expect_equal(
-    dim(terms(gmm_test, toks_test[1:1000], 15)),
+    dim(terms(gmm_test, dfmt_test[1:1000,], 15)),
     c(15, 10)
   )
   expect_silent(
@@ -85,7 +85,7 @@ test_that("textmodel_gmm works with doc2vec", {
     c(15, 10)
   )
   expect_equal(
-    dim(terms(topics(gmm_test), toks_test[1:1000], 15)),
+    dim(terms(topics(gmm_test), dfmt_test[1:1000,], 15)),
     c(15, 10)
   )
   expect_equal(
@@ -117,7 +117,7 @@ test_that("textmodel_gmm works with doc2vec", {
   prob_gp <- probability(gmm_test, group = gmm_test$docvars$docid_)
   expect_equal(
     dim(prob_gp),
-    c(1517, 10)
+    c(1521, 10)
   )
   expect_equal(
     rownames(prob_gp),
@@ -424,7 +424,11 @@ test_that("gmm errors with NA", {
 
 test_that("terms works with various data", {
 
-  term1 <- terms(gmm_test, toks_test[1:1000])
+  toks_pad <- tokens(corp_test[1:1000], remove_punct = TRUE,
+                     remove_symbols = TRUE, remove_numbers = TRUE) |>
+              tokens_remove(stopwords("en"), min_nchar = 2, padding = TRUE)
+
+  term1 <- terms(gmm_test, toks_pad)
   expect_true(
     is.matrix(term1)
   )
@@ -435,7 +439,7 @@ test_that("terms works with various data", {
     all(term1 != "")
   )
 
-  term2 <- terms(gmm_test, dfm(toks_test[1:1000], tolower = FALSE,
+  term2 <- terms(gmm_test, dfm(toks_pad, tolower = FALSE,
                                remove_padding = FALSE))
   expect_true(
     is.matrix(term2)
@@ -447,7 +451,7 @@ test_that("terms works with various data", {
     all(term2 != "")
   )
 
-  term3 <- terms(gmm_test, dfm(toks_test[1:1000], tolower = TRUE,
+  term3 <- terms(gmm_test, dfm(toks_pad, tolower = TRUE,
                                remove_padding = FALSE))
   expect_true(
     is.matrix(term3)
@@ -459,7 +463,7 @@ test_that("terms works with various data", {
     all(term3 != "")
   )
 
-  term4 <- terms(gmm_test, dfm(toks_test[4,]))
+  term4 <- terms(gmm_test, dfm(toks_pad[4,]))
   expect_true(
     is.matrix(term4)
   )
@@ -470,20 +474,20 @@ test_that("terms works with various data", {
     all(term4 != "")
   )
 
-  term6 <- terms(topics(gmm_test), dfm(toks_test[1:1000], tolower = FALSE,
+  term6 <- terms(topics(gmm_test), dfm(toks_pad, tolower = FALSE,
                                        remove_padding = FALSE))
   expect_true(
     is.matrix(term6)
   )
   expect_true(
-    any(term6 == "EU")
+    any(term6 == "Ukraine")
   )
   expect_true(
     all(term6 != "")
   )
 
   expect_error(
-    terms(gmm_test, dfm(toks_test[0,])),
+    terms(gmm_test, dfm(toks_pad[0,])),
     "data must contain documents on which the model was trained"
   )
 
