@@ -111,6 +111,8 @@ get_topics <- function(x) {
 
 get_probability <- function(x, group = NULL) {
   if (!is.null(group)) {
+    if (length(group) != nrow(x$topic.likelihood))
+      stop("The length of group does not much the number of documents")
     prob <- group_matrix(x$topic.likelihood, group)
   } else {
     prob <- x$topic.likelihood
