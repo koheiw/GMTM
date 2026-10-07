@@ -110,7 +110,7 @@ test_that("textmodel_gmm works with doc2vec", {
   )
   expect_error(
     probability(gmm_dov, head(gmm_dov$docvars$docid_, 10)),
-    "The length of the factor does not much nrow(x)"
+    "The length of group does not much the number of documents"
   )
 
   # print

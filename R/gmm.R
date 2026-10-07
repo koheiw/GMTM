@@ -158,20 +158,17 @@ probability.textmodel_gmm <- function(x, group = NULL, ...) {
 #' Extract the most likely topics of documents
 #' @param x a fitted model.
 #' @param ... passed to [GMTM::probability.textmodel_gmm()].
-#' @rdname topics
 #' @returns Returns predicted topics as a vector.
 #' @export
-topics <- function(x, data = NULL, ...) {
+topics <- function(x, ...) {
   UseMethod("topics")
 }
 
 #' @method topics textmodel_gmm
 #' @export
-topics.textmodel_gmm <- function(x, data = NULL, ...) {
-
+topics.textmodel_gmm <- function(x, ...) {
   if (x$k != length(x$label))
     stop("The length of label is invalid")
-
   get_topics(probability(x, ...))
 }
 
@@ -188,12 +185,12 @@ topics.textmodel_gmm <- function(x, data = NULL, ...) {
 #' To identify topic terms, `data` must be provided along with a fitted model because
 #' the information about the frequency of individual words are lost in document vectors.
 #'
-#' When `x` is a `textmodel_gmm`, `data` is weighted by the topic probability to
-#' extract most likely topic terms. When `x` is `textmodel_kmeans` or a factor,
+#' When `x` is a `textmodel_gmm`, `data` is weighted by the documents' probabilities
+#' for topics to extract most likely terms. When `x` is `textmodel_kmeans` or a factor,
 #' `data` is grouped by topic and weighted by TF-IDF to select the most distinctive
 #' words for each topic (known as c-TF-IDF).
 #' @export
-terms <- function(x, data, n = 10, ...) {
+terms <- function(x, data, n = 10, filter = NULL, ...) {
   UseMethod("terms")
 }
 

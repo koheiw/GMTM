@@ -4,7 +4,7 @@
 \alias{topics}
 \title{Extract the most likely topics of documents}
 \usage{
-topics(x, data = NULL, ...)
+topics(x, ...)
 }
 \arguments{
 \item{x}{a fitted model.}
