@@ -66,10 +66,19 @@ test_that("textmodel_gmm works with doc2vec", {
     dim(terms(gmm_dov, toks_test[1:1000], 15)),
     c(15, 10)
   )
+  expect_equal(
+    dim(terms(gmm_dov, dfmt_test[1:1000,], filter = "government")),
+    c(1, 10)
+  )
+  expect_equal(
+    dim(terms(gmm_dov, dfmt_test[1:1000,], filter = "xxxx")),
+    c(0, 10)
+  )
   expect_error(
     terms(gmm_dov, tail(toks_test, 10)),
     "data must contain documents on which the model was trained"
   )
+
   expect_equal(
     dim(terms(topics(gmm_dov), dfmt_test[1:1000,], 15)),
     c(15, 10)
@@ -77,6 +86,14 @@ test_that("textmodel_gmm works with doc2vec", {
   expect_equal(
     dim(terms(topics(gmm_dov), toks_test[1:1000], 15)),
     c(15, 10)
+  )
+  expect_equal(
+    dim(terms(topics(gmm_dov), dfmt_test[1:1000,], filter = "government")),
+    c(1, 10)
+  )
+  expect_equal(
+    dim(terms(topics(gmm_dov), dfmt_test[1:1000,], filter = "xxxx")),
+    c(0, 10)
   )
   expect_error(
     dim(terms(topics(gmm_dov), tail(toks_test, 10), 15)),
