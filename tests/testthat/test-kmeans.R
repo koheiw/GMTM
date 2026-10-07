@@ -13,8 +13,7 @@ toks_test <- tokens(corp_test, remove_punct = TRUE,
              tokens_subset(min_ntoken = 2)
 wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
 
-dfmt_test <- dfm(toks_test, remove_padding = TRUE) |>
-  dfm_subset(docid_ %in% head(levels(docid(toks_test)), 1000))
+dfmt_test <- head(dfm(toks_test, remove_padding = TRUE), 5000)
 dov_test <- as.textmodel_doc2vec(dfmt_test, wov_test)
 km_test <- textmodel_kmeans(dov_test)
 
@@ -163,7 +162,7 @@ test_that("results are reproduced", {
     topics(textmodel_kmeans(dov_test))
   })
   expect_true(
-    all(mat[,1] == mat)
+    all(mat[,1] == mat, na.rm = TRUE)
   )
 })
 

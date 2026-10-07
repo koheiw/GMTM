@@ -198,11 +198,9 @@ terms <- function(x, data, n = 10, filter = NULL, ...) {
 #' @export
 terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
 
+  data <- dfm(data, tolower = FALSE, remove_padding = TRUE,
+              trim = FALSE, verbose = FALSE)
   prob <- probability(x)
-
-  if (!is.dfm(data))
-    data <- dfm(data, remove_padding = TRUE)
-
   d <- intersect(rownames(data), rownames(prob))
   if (length(d) == 0)
     stop ("data must contain documents on which the model was trained")
@@ -220,12 +218,13 @@ terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
 #' @export
 terms.factor <- function(x, data, n = 10, filter = NULL, ...) {
 
-  data <- dfm(data, remove_padding = TRUE)
+  data <- dfm(data, tolower = FALSE, remove_padding = TRUE,
+              trim = FALSE, verbose = FALSE)
   d <- intersect(rownames(data), names(x))
   if (length(d) == 0)
     stop ("data must contain documents for which topics were predicted")
 
-  temp <- dfm_group(data[d,], x[d], fill = TRUE)
+  temp <- dfm_group(data[d,], x[d], fill = TRUE, verbose = FALSE)
   temp <- t(as.matrix(dfm_tfidf(temp)))
 
   if (!is.null(filter))
