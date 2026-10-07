@@ -199,7 +199,9 @@ terms <- function(x, data, n = 10, filter = NULL, ...) {
 terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
 
   prob <- probability(x)
-  data <- dfm(data, remove_padding = TRUE)
+
+  if (!is.dfm(data))
+    data <- dfm(data, remove_padding = TRUE)
 
   d <- intersect(rownames(data), rownames(prob))
   if (length(d) == 0)

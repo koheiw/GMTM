@@ -66,6 +66,9 @@ test_that("textmodel_gmm works with doc2vec", {
     dim(terms(gmm_dov, toks_test[1:1000], 15)),
     c(15, 10)
   )
+  expect_silent(
+    terms(gmm_dov, dfm_tfidf(dfmt_test))
+  )
   expect_equal(
     dim(terms(gmm_dov, dfmt_test[1:1000,], filter = "government")),
     c(1, 10)
