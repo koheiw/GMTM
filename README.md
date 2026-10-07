@@ -63,34 +63,34 @@ table(topics(gmm))
 
     ## 
     ##  topic1  topic2  topic3  topic4  topic5  topic6  topic7  topic8  topic9 topic10 
-    ##     601    5866    7227    6926    7775   10906    5742    7632    7736    5293
+    ##     600    6013    7129    8387   10264    5165    8415    6970    6941    5820
 
 ``` r
 terms(gmm, data = dfmt)
 ```
 
-    ##       topic1        topic2         topic3       topic4     topic5      
-    ##  [1,] "editing"     "government"   "militants"  "ap"       "said"      
-    ##  [2,] "writing"     "presidential" "islamic"    "krasnaya" "ap"        
-    ##  [3,] "stonestreet" "elections"    "syria"      "polyana"  "tsunami"   
-    ##  [4,] "tait"        "president"    "iraq"       "sochi"    "passengers"
-    ##  [5,] "chizu"       "minister"     "sunni"      "olympics" "ebola"     
-    ##  [6,] "nomiyama"    "parliament"   "government" "new"      "tropical"  
-    ##  [7,] "gutterman"   "prime"        "gaza"       "cannes"   "hurricane" 
-    ##  [8,] "hepinstall"  "party"        "said"       "world"    "mh370"     
-    ##  [9,] "pomeroy"     "election"     "military"   "olympic"  "people"    
-    ## [10,] "bangalore"   "said"         "islamist"   "janeiro"  "south"     
-    ##       topic6      topic7         topic8     topic9      topic10    
-    ##  [1,] "said"      "champions"    "earnings" "said"      "police"   
-    ##  [2,] "ukraine"   "championship" "futures"  "police"    "said"     
-    ##  [3,] "kerry"     "rugby"        "index"    "murder"    "gunmen"   
-    ##  [4,] "sanctions" "beats"        "billion"  "sentenced" "killed"   
-    ##  [5,] "lavrov"    "1-0"          "said"     "pistorius" "killing"  
-    ##  [6,] "russia"    "england"      "growth"   "court"     "militants"
-    ##  [7,] "obama"     "ap"           "inc"      "ap"        "people"   
-    ##  [8,] "u.s"       "scored"       "stock"    "rights"    "bomb"     
-    ##  [9,] "crimea"    "2-0"          "percent"  "lawyer"    "soldiers" 
-    ## [10,] "nuclear"   "3-0"          "tsx"      "sentence"  "ap"
+    ##       topic1        topic2       topic3      topic4      topic5    topic6   
+    ##  [1,] "reporting"   "president"  "said"      "ukraine"   "ap"      "court"  
+    ##  [2,] "editing"     "minister"   "state"     "russia"    "said"    "ap"     
+    ##  [3,] "writing"     "prime"      "islamic"   "said"      "new"     "said"   
+    ##  [4,] "john"        "party"      "syria"     "u.s"       "south"   "trial"  
+    ##  [5,] "bangalore"   "election"   "iraq"      "president" "people"  "police" 
+    ##  [6,] "heritage"    "government" "group"     "russian"   "says"    "former" 
+    ##  [7,] "timothy"     "said"       "militants" "ap"        "china"   "death"  
+    ##  [8,] "steve"       "new"        "forces"    "united"    "reuters" "man"    
+    ##  [9,] "michael"     "reuters"    "ap"        "talks"     "ebola"   "charges"
+    ## [10,] "stonestreet" "vote"       "gaza"      "sanctions" "two"     "case"   
+    ##       topic7      topic8    topic9       topic10    
+    ##  [1,] "ap"        "percent" "said"       "said"     
+    ##  [2,] "world"     "said"    "told"       "police"   
+    ##  [3,] "cup"       "reuters" "minister"   "killed"   
+    ##  [4,] "first"     "billion" "reuters"    "people"   
+    ##  [5,] "new"       "u.s"     "u.s"        "ap"       
+    ##  [6,] "win"       "million" "statement"  "two"      
+    ##  [7,] "league"    "year"    "news"       "least"    
+    ##  [8,] "australia" "new"     "state"      "city"     
+    ##  [9,] "england"   "bank"    "government" "attack"   
+    ## [10,] "team"      "ap"      "foreign"    "officials"
 
 ### Semi-supervised analysis
 
@@ -114,31 +114,20 @@ table(topics(sgmm))
 
     ## 
     ##  economy politics security   sports   crimes    other 
-    ##     8390    18691    10398     8410     8189    11626
+    ##     9032    18019     9954     8683     8126    11890
 
 ``` r
 terms(sgmm, data = dfmt)
 ```
 
-    ##       economy    politics      security    sports      crimes       
-    ##  [1,] "growth"   "lavrov"      "militants" "beats"     "pistorius"  
-    ##  [2,] "stocks"   "kerry"       "islamic"   "6-4"       "sentence"   
-    ##  [3,] "index"    "parliament"  "killing"   "innings"   "killing"    
-    ##  [4,] "earnings" "nato"        "syria"     "6-3"       "crimes"     
-    ##  [5,] "chrysler" "nuclear"     "militant"  "rugby"     "arrested"   
-    ##  [6,] "tsx"      "poroshenko"  "army"      "6-2"       "murder"     
-    ##  [7,] "futures"  "pro-russian" "shiite"    "3-0"       "brotherhood"
-    ##  [8,] "wireless" "u.n"         "civilians" "twenty20"  "jury"       
-    ##  [9,] "corp"     "erdogan"     "syrian"    "champions" "sentences"  
-    ## [10,] "cents"    "resolution"  "sunni"     "2-0"       "girlfriend" 
-    ##       other        
-    ##  [1,] "editing"    
-    ##  [2,] "hurricane"  
-    ##  [3,] "stonestreet"
-    ##  [4,] "magnitude"  
-    ##  [5,] "rico"       
-    ##  [6,] "earthquake" 
-    ##  [7,] "tsunami"    
-    ##  [8,] "rescuers"   
-    ##  [9,] "killing"    
-    ## [10,] "tropical"
+    ##       economy   politics     security    sports      crimes   other      
+    ##  [1,] "said"    "said"       "said"      "ap"        "said"   "ap"       
+    ##  [2,] "percent" "president"  "killed"    "world"     "ap"     "said"     
+    ##  [3,] "reuters" "ukraine"    "state"     "cup"       "court"  "people"   
+    ##  [4,] "u.s"     "minister"   "ap"        "new"       "police" "south"    
+    ##  [5,] "billion" "russia"     "people"    "first"     "former" "new"      
+    ##  [6,] "million" "ap"         "police"    "win"       "trial"  "reuters"  
+    ##  [7,] "new"     "government" "militants" "australia" "death"  "reporting"
+    ##  [8,] "year"    "reuters"    "islamic"   "league"    "man"    "city"     
+    ##  [9,] "bank"    "new"        "forces"    "england"   "years"  "two"      
+    ## [10,] "ap"      "united"     "iraq"      "team"      "new"    "editing"
