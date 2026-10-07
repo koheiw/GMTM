@@ -207,8 +207,7 @@ terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
   if (length(d) == 0)
     stop ("data must contain documents on which the model was trained")
 
-  # give frequent words priority
-  data <- data[,names(sort(featfreq(data), decreasing = TRUE))]
+  data <- dfm_sort(data) # give frequent words priority
   temp <- as.matrix(t(data[d,]) %*% prob[d,,drop = FALSE])
   names(dimnames(temp)) <- NULL
 
