@@ -13,7 +13,7 @@ toks_test <- tokens(corp_test, remove_punct = TRUE,
              tokens_subset(min_ntoken = 2)
 wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
 
-dfmt_test <- head(dfm(toks_test, remove_padding = TRUE), 5000)
+dfmt_test <- dfm(toks_test[1:5000], remove_padding = TRUE)
 dov_test <- as.textmodel_doc2vec(dfmt_test, wov_test)
 km_test <- textmodel_kmeans(dov_test)
 

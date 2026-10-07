@@ -13,7 +13,7 @@ toks_test <- tokens(corp_test, remove_punct = TRUE,
              tokens_subset(min_ntoken = 2)
 wov_test <- textmodel_word2vec(toks_test, dim = 100, min_count = 2)
 
-dfmt_test <- head(dfm(toks_test, remove_padding = TRUE), 5000)
+dfmt_test <- dfm(toks_test[1:5000], remove_padding = TRUE)
 dov_test <- as.textmodel_doc2vec(dfmt_test, wov_test)
 gmm_test <- textmodel_gmm(dov_test)
 
@@ -421,4 +421,77 @@ test_that("gmm errors with NA", {
   )
 
 })
+
+test_that("terms works with various data", {
+
+  term1 <- terms(gmm_test, toks_test[1:1000])
+  expect_true(
+    is.matrix(term1)
+  )
+  expect_true(
+    any(term1 == "AP")
+  )
+  expect_true(
+    all(term1 != "")
+  )
+
+  term2 <- terms(gmm_test, dfm(toks_test[1:1000], tolower = FALSE,
+                               remove_padding = FALSE))
+  expect_true(
+    is.matrix(term2)
+  )
+  expect_true(
+    any(term2 == "AP")
+  )
+  expect_true(
+    all(term2 != "")
+  )
+
+  term3 <- terms(gmm_test, dfm(toks_test[1:1000], tolower = TRUE,
+                               remove_padding = FALSE))
+  expect_true(
+    is.matrix(term3)
+  )
+  expect_true(
+    any(term3 == "ap")
+  )
+  expect_true(
+    all(term3 != "")
+  )
+
+  term4 <- terms(gmm_test, dfm(toks_test[4,]))
+  expect_true(
+    is.matrix(term4)
+  )
+  expect_true(
+    any(term4 == "ap")
+  )
+  expect_true(
+    all(term4 != "")
+  )
+
+  term6 <- terms(topics(gmm_test), dfm(toks_test[1:1000], tolower = FALSE,
+                                       remove_padding = FALSE))
+  expect_true(
+    is.matrix(term6)
+  )
+  expect_true(
+    any(term6 == "EU")
+  )
+  expect_true(
+    all(term6 != "")
+  )
+
+  expect_error(
+    terms(gmm_test, dfm(toks_test[0,])),
+    "data must contain documents on which the model was trained"
+  )
+
+  expect_error(
+    terms(gmm_test, list()),
+    "dfm() only works on dfm, tokens, tokens_xptr objects.",
+    fixed = TRUE
+  )
+})
+
 
