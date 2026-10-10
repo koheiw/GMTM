@@ -471,7 +471,7 @@ test_that("terms works with various data", {
     any(term4 == "ap")
   )
   expect_true(
-    all(term4 != "")
+    any(is.na(term4))
   )
 
   term6 <- terms(topics(gmm_test), dfm(toks_pad, tolower = FALSE,
