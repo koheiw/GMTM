@@ -95,12 +95,18 @@ group_matrix <- function(x, factor, normalize = TRUE) {
 
 }
 
-get_terms <- function(x, n = 10) {
+get_terms <- function(x, n = 10, filter = NULL) {
+  if (!is.null(filter))
+    x[!rownames(x) %in% filter,] <- 0
   if (nrow(x) == 0)
     return(x)
-  if (nrow(x) == 1)
-    return(t(apply(x, 2, function(y) rownames(x)[1])))
-  utils::head(apply(x, 2, function(y) rownames(x)[order(y, decreasing = TRUE)]), n)
+  term <- utils::head(apply(x, 2, function(y) {
+    w <- rownames(x)
+    w[y == 0] <- NA_character_
+    w[order(y, decreasing = TRUE)]
+  }), n)
+  b <- apply(term, 1, function(x) all(is.na(x)))
+  return(term[!b,,drop = FALSE])
 }
 
 get_topics <- function(x) {

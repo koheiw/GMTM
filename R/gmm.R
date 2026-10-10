@@ -201,17 +201,16 @@ terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
   data <- dfm(data, tolower = FALSE, remove_padding = TRUE,
               trim = FALSE, verbose = FALSE)
   prob <- probability(x)
+
   d <- intersect(rownames(data), rownames(prob))
   if (length(d) == 0)
     stop ("data must contain documents on which the model was trained")
 
   data <- dfm_sort(data) # give frequent words priority
+  prob[prob < 1 / ncol(prob)] <- 0 # ignore low probability
   temp <- as.matrix(t(data[d,]) %*% prob[d,,drop = FALSE])
   names(dimnames(temp)) <- NULL
-
-  if (!is.null(filter))
-    temp <- temp[rownames(temp) %in% filter,, drop = FALSE]
-  get_terms(temp, n = n)
+  get_terms(temp, n, filter)
 }
 
 #' @method terms factor
@@ -226,10 +225,7 @@ terms.factor <- function(x, data, n = 10, filter = NULL, ...) {
 
   temp <- dfm_group(data[d,], x[d], fill = TRUE, verbose = FALSE)
   temp <- t(as.matrix(dfm_tfidf(temp)))
-
-  if (!is.null(filter))
-    temp <- temp[rownames(temp) %in% filter,, drop = FALSE]
-  get_terms(temp, n = n)
+  get_terms(temp, n, filter)
 }
 
 #' @method print textmodel_gmm
