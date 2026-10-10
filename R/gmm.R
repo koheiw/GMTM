@@ -186,9 +186,13 @@ topics.textmodel_gmm <- function(x, ...) {
 #' the information about the frequency of individual words are lost in document vectors.
 #'
 #' When `x` is a `textmodel_gmm`, `data` is weighted by the documents' probabilities
-#' for topics to extract most likely terms. When `x` is `textmodel_kmeans` or a factor,
+#' for topics to extract most likely terms. Probabilities less than the inverse of `k`
+#' is set to zero to eliminate spurious topic terms. If topic terms are not found for topics,
+#'  cells are filled with `NA`.
+#'
+#' When `x` is `textmodel_kmeans` or a factor,
 #' `data` is grouped by topic and weighted by TF-IDF to select the most distinctive
-#' words for each topic (known as c-TF-IDF).
+#' words for each topic (also known as c-TF-IDF).
 #' @export
 terms <- function(x, data, n = 10, filter = NULL, ...) {
   UseMethod("terms")

@@ -29,7 +29,11 @@ To identify topic terms, \code{data} must be provided along with a fitted model 
 the information about the frequency of individual words are lost in document vectors.
 
 When \code{x} is a \code{textmodel_gmm}, \code{data} is weighted by the documents' probabilities
-for topics to extract most likely terms. When \code{x} is \code{textmodel_kmeans} or a factor,
+for topics to extract most likely terms. Probabilities less than the inverse of \code{k}
+is set to zero to eliminate spurious topic terms. If topic terms are not found for topics,
+cells are filled with \code{NA}.
+
+When \code{x} is \code{textmodel_kmeans} or a factor,
 \code{data} is grouped by topic and weighted by TF-IDF to select the most distinctive
-words for each topic (known as c-TF-IDF).
+words for each topic (also known as c-TF-IDF).
 }
