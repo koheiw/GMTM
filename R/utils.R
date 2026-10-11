@@ -33,11 +33,13 @@ as.seedwords <- function(x, model, residual = 0, levels = 1) {
 
   residual <- check_integer(residual, min = 0)
   x <- flatten_dictionary(x, levels = levels)
-  v <- unlist(object2fixed(x, types = rownames(model$values$word),
-                           match_pattern = "single"))
+  w <- object2fixed(x, types = rownames(model$values$word),
+                    concatenator = model$concatenator)
+  v <- structure(unlist_character(w), names = rep(names(w), lengths(w)))
   d <- dfm(as.tokens(split(v, factor(names(v), levels = names(x)))))
   e <- as.textmodel_doc2vec(d, model)
   seed <- e$values$doc
+  names(dimnames(seed)) <- NULL
   if (residual == 0)
     return(seed)
 
@@ -120,6 +122,19 @@ get_probability <- function(x, group = NULL) {
   colnames(prob) <- x$label
 
   return(prob / rowSums(prob))
+}
+
+
+# copied from quanteda
+unlist_character <- function(x, unique = FALSE, ...) {
+  result <- unlist(x, ...)
+  if (unique)
+    result <- unique(result)
+  if (is.null(result)) {
+    return(character())
+  } else {
+    return(result)
+  }
 }
 
 # normalize <- function(x) {
