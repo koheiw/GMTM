@@ -226,6 +226,7 @@ terms.factor <- function(x, data, n = 10, filter = NULL, ...) {
 
   temp <- dfm_group(data[d,], x[d], fill = TRUE, verbose = FALSE)
   temp <- t(as.matrix(dfm_tfidf(temp)))
+  names(dimnames(temp)) <- NULL
 
   if (!is.null(filter))
     temp <- temp[rownames(temp) %in% filter,, drop = FALSE]
