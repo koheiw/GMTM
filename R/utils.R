@@ -72,10 +72,8 @@ get_probability <- function(x, group = NULL) {
 
 
 # copied from quanteda
-unlist_character <- function(x, unique = FALSE, ...) {
+unlist_character <- function(x, ...) {
   result <- unlist(x, ...)
-  if (unique)
-    result <- unique(result)
   if (is.null(result)) {
     return(character())
   } else {
