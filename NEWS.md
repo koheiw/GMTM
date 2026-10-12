@@ -1,7 +1,8 @@
 ## GMTM version 0.2.1
 
 - Improve the consistency of the `textmodel_kmeans` and `textmodel_gmm` objects.
-- Change how most likely topic terms are identified for `textmodel_gmm`.
+- Change the method to identify the most likely topic terms for `textmodel_gmm`.
+- Fix the handling of multi-word expressions in `as.seedwords()`.
 
 ## GMTM version 0.2.0
 

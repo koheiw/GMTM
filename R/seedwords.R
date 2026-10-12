@@ -5,6 +5,10 @@
 #' @param levels integers specifying the levels of entries in
 #'   a hierarchical dictionary.
 #' @details
+#' Word vectors of the dictionary values within the same key are all averaged as a
+#' single seed vector. If dictionary values are multi-word expressions, they are
+#' matched against both individual and compounded words in the `model`.
+#'
 #' Unseeded topics are labeled "other", but it can be changed via
 #' options("GMTM.residual.name").
 #' @export
