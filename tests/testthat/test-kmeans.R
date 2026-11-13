@@ -59,6 +59,10 @@ test_that("textmodel_kmeans works", {
     dim(terms(km_test, toks_test[1:1000], 15)),
     c(15, 10)
   )
+  expect_identical(
+    dimnames(terms(km_test, dfmt_test[1:1000,], 15)),
+    list(NULL, paste0("topic", 1:10))
+  )
 
   # print
   expect_output(

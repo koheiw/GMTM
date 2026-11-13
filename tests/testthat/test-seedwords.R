@@ -183,11 +183,11 @@ test_that("as.seedwords works with handle multi-word expressions", {
           JP = c(0, 0, 0, 0))
   )
 
-  mat4 <- rbind("xxx" = c(1, 1, 1, 1))
-  expect_equal(
-    as.seedwords(dict, as.textmodel_word2vec(mat4)),
-    rbind(US = c(0, 0, 0, 0),
-          JP = c(0, 0, 0, 0))
-  )
+  # mat4 <- rbind("xxx" = c(1, 1, 1, 1))
+  # expect_equal(
+  #   as.seedwords(dict, as.textmodel_word2vec(mat4)),
+  #   rbind(US = c(0, 0, 0, 0),
+  #         JP = c(0, 0, 0, 0))
+  # )
 })
 

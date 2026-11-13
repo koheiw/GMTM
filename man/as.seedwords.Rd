@@ -25,7 +25,7 @@ Convert a dictionary to a seed word matrix
 \details{
 Word vectors of the dictionary values within the same key are all averaged as a
 single seed vector. If dictionary values are multi-word expressions, they are
-matched against individual and compounded words in the \code{model}.
+matched against both individual and compounded words in the \code{model}.
 
 Unseeded topics are labeled "other", but it can be changed via
 options("GMTM.residual.name").
