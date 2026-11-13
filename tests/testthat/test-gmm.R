@@ -22,7 +22,7 @@ test_that("textmodel_gmm works with doc2vec", {
   expect_equal(
     names(gmm_test),
     c("k", "omit", "centers", "covariance", "topic.likelihood",
-      "model", "model.likelihood", "frequency", "label", "docvars",
+      "model.likelihood", "frequency", "label", "docvars",
       "call", "version")
   )
   expect_equal(
@@ -61,8 +61,12 @@ test_that("textmodel_gmm works with doc2vec", {
     c(15, 10)
   )
   expect_equal(
-    dim(terms(gmm_test, dfmt_test[1:1000,], 15)),
+    dim(terms(gmm_test, toks_test[1:1000,], 15)),
     c(15, 10)
+  )
+  expect_identical(
+    dimnames(terms(gmm_test, dfmt_test[1:1000,], 15)),
+    list(NULL, paste0("topic", 1:10))
   )
   expect_silent(
     terms(gmm_test, dfm_tfidf(dfmt_test))
@@ -158,7 +162,7 @@ test_that("textmodel_gmm works with matrix", {
   expect_equal(
     names(gmm_mat),
     c("k", "omit", "centers", "covariance", "topic.likelihood",
-      "model", "model.likelihood", "frequency", "label", "docvars",
+      "model.likelihood", "frequency", "label", "docvars",
       "call", "version")
   )
   expect_null(
