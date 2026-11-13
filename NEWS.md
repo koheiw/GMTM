@@ -1,3 +1,7 @@
+## GMTM version 0.2.2
+
+- Reduce the size of `textmodel_gmm` objects.
+
 ## GMTM version 0.2.1
 
 - Improve the consistency of the `textmodel_kmeans` and `textmodel_gmm` objects.
