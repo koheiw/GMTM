@@ -48,9 +48,7 @@ get_terms <- function(x, n = 10) {
     return(x)
   if (nrow(x) == 1)
     return(t(apply(x, 2, function(y) rownames(x)[1])))
-  result <- utils::head(apply(x, 2, function(y) rownames(x)[order(y, decreasing = TRUE)]), n)
-  names(dimnames(result)) <- NULL
-  return(result)
+  utils::head(apply(x, 2, function(y) rownames(x)[order(y, decreasing = TRUE)]), n)
 }
 
 get_topics <- function(x) {
