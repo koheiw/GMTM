@@ -7,7 +7,6 @@ build_gmm <- function(...) {
     centers = NULL,
     covariance = NULL,
     topic.likelihood = NULL,
-    model = NULL,
     model.likelihood = NULL,
     frequency = NULL,
     label = NULL,

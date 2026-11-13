@@ -114,7 +114,6 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
     covariance = temp$covariance,
     #cluster = as.integer(temp$cluster + 1),
     topic.likelihood = temp$topic.likelihood,
-    model = temp$model,
     model.likelihood = temp$model.likelihood,
     label = label,
     call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
