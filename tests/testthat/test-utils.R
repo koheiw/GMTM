@@ -99,3 +99,24 @@ test_that("upgrade_gmm is working", {
 
 })
 
+test_that("upgrade_kmeans is working", {
+
+  km_v01 <- upgrade_kmeans(readRDS("tests/data/kmeans_v0.1.0.RDS"))
+  expect_setequal(km_v01$topic, 1L:10L)
+  expect_equal(length(km_v01$topic), 1000)
+  expect_equal(
+    km_v01$docvars$docname_,
+    names(head(wordvector::data_corpus_news2014, 1000))
+  )
+
+  km_v02 <- upgrade_kmeans(readRDS("tests/data/kmeans_v0.2.0.RDS"))
+  expect_setequal(km_v02$topic, 1L:10L)
+  expect_equal(length(km_v02$topic), 1000)
+  expect_equal(
+    km_v02$docvars$docname_,
+    names(head(wordvector::data_corpus_news2014, 1000))
+  )
+
+})
+
+

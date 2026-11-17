@@ -114,3 +114,17 @@ upgrade_gmm <- function(x) {
   }
   return(x)
 }
+
+upgrade_kmeans <- function(x) {
+
+  if (x$version < "0.2.0") {
+    x$topic <- x$cluster
+    x$docvars <- data.frame("docname_" = x$docname)
+    x[c("cluster", "docname")] <- NULL
+  } else if (x$version < "0.3.0") {
+    x$topic <- x$cluster
+    x[c("cluster", "docname")] <- NULL
+  }
+  return(x)
+}
+
