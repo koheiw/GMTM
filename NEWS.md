@@ -1,6 +1,7 @@
 ## GMTM version 0.2.2
 
 - Reduce the size of `textmodel_gmm` objects.
+- Change the `omit` argument to experimental.
 
 ## GMTM version 0.2.1
 

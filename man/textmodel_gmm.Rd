@@ -23,7 +23,7 @@ textmodel_gmm(
 
 \item{seeds}{a matrix created using \link{as.seedwords}.}
 
-\item{omit}{indices of singular values of \code{x} to be zero. See the details.}
+\item{omit}{[experimental] indices of singular values of \code{x} to be zero. See the details.}
 
 \item{verbose}{print the progress if \code{TRUE}.}
 

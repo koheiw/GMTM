@@ -5,7 +5,7 @@
 #' @param k the number of topics to identify.
 #' @param model a fitted model from which initial centroids are extracted.
 #' @param seeds a matrix created using [GMTM::as.seedwords].
-#' @param omit indices of singular values of `x` to be zero. See the details.
+#' @param omit \[experimental\] indices of singular values of `x` to be zero. See the details.
 #' @param verbose print the progress if `TRUE`.
 #' @param ... passed to the underlying function.
 #' @import Rcpp
