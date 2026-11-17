@@ -6,6 +6,9 @@
 #' @param model a fitted model from which initial centroids are extracted.
 #' @param seeds a matrix created using [GMTM::as.seedwords].
 #' @param omit \[experimental\] indices of singular values of `x` to be zero. See the details.
+#' @param include_prob if `TRUE`, the resulting object includes `topic.likelihood` that records
+#'   probabilities for all the topics. `include_prob = FALSE` reduces the size of the object
+#'   significantly.
 #' @param verbose print the progress if `TRUE`.
 #' @param ... passed to the underlying function.
 #' @import Rcpp
@@ -52,7 +55,7 @@
 #' gmm <- textmodel_gmm(dov, k = 10)
 #' table(topics(gmm))
 textmodel_gmm <- function(x, k = 10, model = NULL,
-                          seeds = NULL, omit = NULL,
+                          seeds = NULL, include_prob = TRUE, omit = NULL,
                           verbose = quanteda_options("verbose"),
                           ...) {
   UseMethod("textmodel_gmm")
@@ -61,12 +64,14 @@ textmodel_gmm <- function(x, k = 10, model = NULL,
 #' @export
 #' @method textmodel_gmm matrix
 textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
-                                 seeds = NULL, omit = NULL,
+                                 seeds = NULL, include_prob = TRUE, omit = NULL,
                                  verbose = quanteda_options("verbose"),
                                  ...) {
 
   if (any(is.na(x)))
     stop("x should not contain any NA")
+
+  include_prob <- check_logical(include_prob)
   verbose <- check_logical(verbose)
 
   if (!is.null(omit)) {
@@ -100,19 +105,24 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
   }
 
   temp <- cpp_gmm(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
+  temp$topic <- max.col(temp$topic.likelihood)
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
-  temp$cluster[b] <- NA_real_
-  temp$topic.likelihood[b,] <- NA_real_
-  rownames(temp$topic.likelihood) <- rownames(x)
+  temp$topic[b] <- NA_real_
+  if (include_prob) {
+    temp$topic.likelihood[b,] <- NA_real_
+    rownames(temp$topic.likelihood) <- rownames(x)
+  } else {
+    temp$topic.likelihood <- NULL
+  }
 
   build_gmm(
     k = temp$k,
     omit = omit,
     centers = temp$centers,
+    topic = temp$topic,
     covariance = temp$covariance,
-    #cluster = as.integer(temp$cluster + 1),
     topic.likelihood = temp$topic.likelihood,
     model.likelihood = temp$model.likelihood,
     label = label,
@@ -144,8 +154,6 @@ wordvector::probability
 
 #' Extract the probabilities for topics
 #' @inheritParams topics
-#' @param group a factor to group documents and average their probability for
-#' topics. Ignored if `x` is a `textmodel_kmeans` object.
 #' @param ... not used.
 #' @returns Returns the probabilities of topics as a matrix.
 #' @method probability textmodel_gmm
@@ -156,19 +164,36 @@ probability.textmodel_gmm <- function(x, group = NULL, ...) {
 
 #' Extract the most likely topics of documents
 #' @param x a fitted model.
-#' @param ... passed to [GMTM::probability.textmodel_gmm()].
+#' @param group a factor to group documents and average their probability for
+#' topics. Ignored if `x` is a `textmodel_kmeans` object.
+#' @param ... not used.
 #' @returns Returns predicted topics as a vector.
 #' @export
-topics <- function(x, ...) {
+topics <- function(x, group = NULL, ...) {
   UseMethod("topics")
 }
 
 #' @method topics textmodel_gmm
 #' @export
-topics.textmodel_gmm <- function(x, ...) {
+topics.textmodel_gmm <- function(x, group = NULL, ...) {
+
   if (x$k != length(x$label))
     stop("The length of label is invalid")
-  get_topics(probability(x, ...))
+
+  if (!is.null(group)) {
+    topic <- get_topics(probability(x, group))
+  } else {
+    if (!is.null(x$cluster)) { # v0.1.0
+      topic <- x$cluster
+    } else if (!is.null(x$topic)) { # v0.2.x
+      topic <- max.col(x$topic.likelihood, ties.method = "first")
+    } else {
+      topic <- x$topic
+    }
+    topic <- structure(factor(topic, levels = seq_along(x$label), labels = x$label),
+                       names = rownames(x))
+  }
+  return(topic)
 }
 
 #' Extract lost likely topic terms from documents
