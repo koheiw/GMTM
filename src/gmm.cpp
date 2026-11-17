@@ -55,28 +55,29 @@ List cpp_gmm(arma::mat &data, int k, arma::mat means,
 
   //model.means.print("means:");
 
-  //urowvec cluster = model.assign(data, eucl_dist);
-  //urowvec cluster = model.assign(data, prob_dist);
+  urowvec cluster_eucl = model.assign(data, eucl_dist);
+  urowvec cluster_prob = model.assign(data, prob_dist);
 
   double prob = model.avg_log_p(data);
-  arma::mat cluster_prob(data.n_cols, k, arma::fill::zeros);
+  arma::mat prob_topic(data.n_cols, k, arma::fill::zeros);
   for (int j = 0; j < k; j++) {
-    cluster_prob.col(j) = model.log_p(data, j).t();
+    prob_topic.col(j) = model.log_p(data, j).t();
   }
   return List::create(Rcpp::Named("k") = k,
                       Rcpp::Named("centers") = model.means,
                       Rcpp::Named("covariance") = model.dcovs,
                       //Rcpp::Named("hefts") = model.hefts
-                      //Rcpp::Named("cluster") = to_vector(cluster),
-                      Rcpp::Named("topic.likelihood") = exp(cluster_prob),
+                      Rcpp::Named("cluster_eucl") = to_vector(cluster_eucl),
+                      Rcpp::Named("cluster_prob") = to_vector(cluster_prob),
+                      Rcpp::Named("topic.likelihood") = exp(prob_topic),
                       Rcpp::Named("model") = "diagonal",
                       Rcpp::Named("model.likelihood") = exp(prob));
 }
 
 /*** R
-#mat <- matrix(rnorm(100 * 10), ncol = 10)
 k <- 20
-m <- matrix(rnorm(100 * k), ncol = k)
-out <- cpp_gmm(mat, k, means = m, verbose = FALSE)
-GMTM:::get_terms(out$cluster, dfmt, min_count = 1)
+mat <- matrix(rnorm(10000 * 100), ncol = 100)
+seed <- matrix(rnorm(100 * k), ncol = k)
+out <- cpp_gmm(mat, k, means = seed, verbose = FALSE)
+out
 */
