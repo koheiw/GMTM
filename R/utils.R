@@ -52,8 +52,15 @@ get_terms <- function(x, n = 10) {
 }
 
 get_topics <- function(x) {
-  structure(factor(max.col(x, ties.method = "first"),
-                   levels = seq_len(ncol(x)), labels = colnames(x)),
+
+  if (!is.null(x$cluster)) { # v0.1.0
+    topic <- x$cluster
+  } else if (!is.null(x$topic)) { # v0.2.x
+    topic <- max.col(x$topic.likelihood, ties.method = "first")
+  } else {
+    topic <- x$topic
+  }
+  structure(factor(topic, levels = seq_along(x$label), labels = x$label),
             names = rownames(x))
 }
 
@@ -92,3 +99,18 @@ unlist_character <- function(x, ...) {
 #   x[l,] <- 0 # replace NA with zero
 #   return(x)
 # }
+
+upgrade_gmm <- function(x) {
+
+  if (x$version < "0.2.0") {
+    x$topic.likelihood <- x$likelihood
+    x$topic <- x$cluster
+    x$docvars <- data.frame("docname_" = x$docname)
+    x[c("likelihood", "cluster", "docname")] <- NULL
+  } else if (x$version < "0.3.0") {
+    x$topic.likelihood <- x$cluster.likelihood
+    x$topic <- x$cluster
+    x[c("cluster.likelihood", "cluster", "docname")] <- NULL
+  }
+  return(x)
+}

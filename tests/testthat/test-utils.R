@@ -70,3 +70,32 @@ test_that("OMP is enabled", {
   )
 
 })
+
+test_that("upgrade_gmm is working", {
+
+  gmm_v01 <- upgrade_gmm(readRDS("tests/data/gmm_v0.1.0.RDS"))
+  expect_equal(
+    dim(gmm_v01$topic.likelihood),
+    c(1000, 10)
+  )
+  expect_setequal(gmm_v01$topic, 1L:10L)
+  expect_equal(length(gmm_v01$topic), 1000)
+  expect_equal(
+    gmm_v01$docvars$docname_,
+    names(head(wordvector::data_corpus_news2014, 1000))
+  )
+
+  gmm_v02 <- upgrade_gmm(readRDS("tests/data/gmm_v0.2.0.RDS"))
+  expect_equal(
+    dim(gmm_v02$topic.likelihood),
+    c(1000, 10)
+  )
+  expect_setequal(gmm_v02$topic, 1L:10L)
+  expect_equal(length(gmm_v02$topic), 1000)
+  expect_equal(
+    gmm_v02$docvars$docname_,
+    names(head(wordvector::data_corpus_news2014, 1000))
+  )
+
+})
+
