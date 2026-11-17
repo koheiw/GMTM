@@ -1,4 +1,4 @@
-install.packages("https://cran.r-project.org/src/contrib/Archive/GMTM/GMTM_0.1.0.tar.gz")
+#install.packages("https://cran.r-project.org/src/contrib/Archive/GMTM/GMTM_0.1.0.tar.gz")
 
 library(quanteda)
 library(wordvector)
@@ -15,3 +15,7 @@ gmm <- textmodel_gmm(dov, k = 10)
 
 gmm$version
 saveRDS(gmm, "tests/data/gmm_v0.1.0.RDS")
+
+km <- textmodel_kmeans(dov, k = 10)
+km$version
+saveRDS(km, "tests/data/kmeans_v0.1.0.RDS")
