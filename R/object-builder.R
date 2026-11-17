@@ -4,6 +4,7 @@ build_gmm <- function(...) {
   result <- list(
     k = NULL,
     centers = NULL,
+    topic = NULL,
     covariance = NULL,
     topic.likelihood = NULL,
     model.likelihood = NULL,
