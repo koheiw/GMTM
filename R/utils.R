@@ -43,45 +43,6 @@ group_matrix <- function(x, factor, normalize = TRUE) {
 
 }
 
-get_terms <- function(x, n = 10) {
-  if (nrow(x) == 0)
-    return(x)
-  if (nrow(x) == 1)
-    return(t(apply(x, 2, function(y) rownames(x)[1])))
-  utils::head(apply(x, 2, function(y) rownames(x)[order(y, decreasing = TRUE)]), n)
-}
-
-get_topics <- function(x) {
-
-  if (!is.null(x$cluster)) { # v0.1.0
-    topic <- x$cluster
-  } else if (!is.null(x$topic)) { # v0.2.x
-    topic <- max.col(x$topic.likelihood, ties.method = "first")
-  } else {
-    topic <- x$topic
-  }
-  structure(factor(topic, levels = seq_along(x$label), labels = x$label),
-            names = rownames(x))
-}
-
-get_probability <- function(x, group = NULL) {
-
-  if (is.null(x$topic.likelihood))
-    stop("The model does not include topic.likelihood")
-
-  if (!is.null(group)) {
-    if (length(group) != nrow(x$topic.likelihood))
-      stop("The length of group does not much the number of documents")
-    prob <- group_matrix(x$topic.likelihood, group)
-  } else {
-    prob <- x$topic.likelihood
-  }
-  colnames(prob) <- x$label
-
-  return(prob / rowSums(prob))
-}
-
-
 # copied from quanteda
 unlist_character <- function(x, ...) {
   result <- unlist(x, ...)
@@ -103,28 +64,30 @@ unlist_character <- function(x, ...) {
 upgrade_gmm <- function(x) {
 
   if (x$version < "0.2.0") {
-    x$topic.likelihood <- x$likelihood
-    x$topic <- x$cluster
-    x$docvars <- data.frame("docname_" = x$docname)
+    if (is.null(x$topic.likelihood)) x$topic.likelihood <- x$likelihood
+    if (is.null(x$topic)) x$topic <- x$cluster
+    if (is.null(x$docvars)) x$docvars <- data.frame("docname_" = x$docname)
     x[c("likelihood", "cluster", "docname")] <- NULL
   } else if (x$version < "0.3.0") {
-    x$topic.likelihood <- x$cluster.likelihood
-    x$topic <- x$cluster
+    if (is.null(x$topic.likelihood)) x$topic.likelihood <- x$cluster.likelihood
+    if (is.null(x$topic)) x$topic <- x$cluster
     x[c("cluster.likelihood", "cluster", "docname")] <- NULL
   }
+  x$version <- packageVersion("GMTM")
   return(x)
 }
 
 upgrade_kmeans <- function(x) {
 
   if (x$version < "0.2.0") {
-    x$topic <- x$cluster
+    if (is.null(x$topic)) x$topic <- x$cluster
     x$docvars <- data.frame("docname_" = x$docname)
     x[c("cluster", "docname")] <- NULL
   } else if (x$version < "0.3.0") {
-    x$topic <- x$cluster
+    if (is.null(x$topic)) x$topic <- x$cluster
     x[c("cluster", "docname")] <- NULL
   }
+  x$version <- packageVersion("GMTM")
   return(x)
 }
 

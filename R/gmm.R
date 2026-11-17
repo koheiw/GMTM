@@ -119,7 +119,6 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
 
   build_gmm(
     k = temp$k,
-    omit = omit,
     centers = temp$centers,
     topic = temp$topic,
     covariance = temp$covariance,
@@ -159,6 +158,8 @@ wordvector::probability
 #' @method probability textmodel_gmm
 #' @export
 probability.textmodel_gmm <- function(x, group = NULL, ...) {
+
+  x <- upgrade_gmm(x)
   get_probability(x, group)
 }
 
@@ -177,23 +178,8 @@ topics <- function(x, group = NULL, ...) {
 #' @export
 topics.textmodel_gmm <- function(x, group = NULL, ...) {
 
-  if (x$k != length(x$label))
-    stop("The length of label is invalid")
-
-  if (!is.null(group)) {
-    topic <- get_topics(probability(x, group))
-  } else {
-    if (!is.null(x$cluster)) { # v0.1.0
-      topic <- x$cluster
-    } else if (!is.null(x$topic)) { # v0.2.x
-      topic <- max.col(x$topic.likelihood, ties.method = "first")
-    } else {
-      topic <- x$topic
-    }
-    topic <- structure(factor(topic, levels = seq_along(x$label), labels = x$label),
-                       names = rownames(x))
-  }
-  return(topic)
+  x <- upgrade_gmm(x)
+  get_topics(x, group)
 }
 
 #' Extract lost likely topic terms from documents
@@ -222,9 +208,11 @@ terms <- function(x, data, n = 10, filter = NULL, ...) {
 #' @export
 terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
 
+  x <- upgrade_gmm(x)
+
   data <- dfm(data, tolower = FALSE, remove_padding = TRUE,
               trim = FALSE, verbose = FALSE)
-  prob <- probability(x)
+  prob <- get_probability(x)
   d <- intersect(rownames(data), rownames(prob))
   if (length(d) == 0)
     stop ("data must contain documents on which the model was trained")
@@ -261,13 +249,61 @@ terms.factor <- function(x, data, n = 10, filter = NULL, ...) {
 #' @keywords internal
 #' @export
 print.textmodel_gmm <- function(x, ...) {
+
+  x <- upgrade_gmm(x)
+
   cat("\nCall:\n")
   print(x$call)
   cat("\n", prettyNum(x$k, big.mark = ","), " topics; ",
-      prettyNum(length(x$cluster), big.mark = ","), " documents; ",
+      prettyNum(length(x$topic), big.mark = ","), " documents; ",
       "\n", sep = "")
 }
 
 is.textmodel_gmm <- function(x) {
   "textmodel_gmm" %in% class(x)
+}
+
+# internal functions -----------------------
+
+get_terms <- function(x, n = 10) {
+  if (nrow(x) == 0)
+    return(x)
+  if (nrow(x) == 1)
+    return(t(apply(x, 2, function(y) rownames(x)[1])))
+  utils::head(apply(x, 2, function(y) rownames(x)[order(y, decreasing = TRUE)]), n)
+}
+
+get_topics <- function(x, group = NULL) {
+
+  if (x$k != length(x$label))
+    stop("The length of label is invalid")
+
+  if (is.null(group)) {
+    topic <- structure(factor(x$topic, levels = seq_along(x$label), labels = x$label),
+                       names = x$docvars$docname_)
+  } else {
+    prob <- get_probability(x, group)
+    topic <- structure(factor(max.col(prob, "first"),
+                              levels = seq_along(x$label), labels = x$label),
+                       names = rownames(prob))
+  }
+  return(topic)
+}
+
+get_probability <- function(x, group = NULL) {
+
+  if (is.null(x$topic.likelihood))
+    stop("The model does not include topic.likelihood")
+
+  if (!is.null(group)) {
+    if (length(group) != nrow(x$topic.likelihood))
+      stop("The length of group does not much the number of documents")
+    prob <- group_matrix(x$topic.likelihood, group)
+  } else {
+    prob <- x$topic.likelihood
+    rownames(prob) <- x$docvars$docname_
+  }
+  colnames(prob) <- x$label
+
+  return(prob / rowSums(prob))
 }
