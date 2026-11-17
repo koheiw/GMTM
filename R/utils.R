@@ -64,13 +64,20 @@ unlist_character <- function(x, ...) {
 upgrade_gmm <- function(x) {
 
   if (x$version < "0.2.0") {
-    if (is.null(x$topic.likelihood)) x$topic.likelihood <- x$likelihood
-    if (is.null(x$topic)) x$topic <- x$cluster
-    if (is.null(x$docvars)) x$docvars <- data.frame("docname_" = x$docname)
+    if (is.null(x[["topic.likelihood"]])) {
+      x$topic.likelihood <- x$likelihood
+      rownames(x$topic.likelihood) <- x$docname
+    }
+    if (is.null(x[["topic"]]))
+      x$topic <- structure(x$cluster, names = x$docname)
     x[c("likelihood", "cluster", "docname")] <- NULL
   } else if (x$version < "0.3.0") {
-    if (is.null(x$topic.likelihood)) x$topic.likelihood <- x$cluster.likelihood
-    if (is.null(x$topic)) x$topic <- x$cluster
+    if (is.null(x[["topic.likelihood"]])) {
+      x$topic.likelihood <- x$cluster.likelihood
+      rownames(x$topic.likelihood) <- x$docname
+    }
+    if (is.null(x[["topic"]]))
+      x$topic <- structure(x$cluster, names = x$docname)
     x[c("cluster.likelihood", "cluster", "docname")] <- NULL
   }
   x$version <- packageVersion("GMTM")
@@ -80,11 +87,12 @@ upgrade_gmm <- function(x) {
 upgrade_kmeans <- function(x) {
 
   if (x$version < "0.2.0") {
-    if (is.null(x$topic)) x$topic <- x$cluster
-    x$docvars <- data.frame("docname_" = x$docname)
+    if (is.null(x[["topic"]]))
+      x$topic <- structure(x$cluster, names = x$docname)
     x[c("cluster", "docname")] <- NULL
   } else if (x$version < "0.3.0") {
-    if (is.null(x$topic)) x$topic <- x$cluster
+    if (is.null(x[["topic"]]))
+      x$topic <- structure(x$cluster, names = x$docname)
     x[c("cluster", "docname")] <- NULL
   }
   x$version <- packageVersion("GMTM")
