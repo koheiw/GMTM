@@ -3,7 +3,6 @@ build_gmm <- function(...) {
   args <- list(...)
   result <- list(
     k = NULL,
-    omit = NULL,
     centers = NULL,
     covariance = NULL,
     topic.likelihood = NULL,
@@ -28,7 +27,6 @@ build_kmeans <- function(...) {
   args <- list(...)
   result <- list(
     k = NULL,
-    omit = NULL,
     centers = NULL,
     topic = NULL,
     frequency = NULL,
