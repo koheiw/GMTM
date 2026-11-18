@@ -21,7 +21,7 @@ test_that("textmodel_kmeans works", {
 
   expect_equal(
     names(km_test),
-    c("k", "omit", "centers", "topic", "frequency",
+    c("k", "centers", "topic", "frequency",
       "label", "docvars", "call", "version")
   )
   expect_equal(
@@ -82,7 +82,7 @@ test_that("textmodel_kmeans works with matrix", {
   km1 <- textmodel_kmeans(as.matrix(dov_test))
   expect_equal(
     names(km1),
-    c("k", "omit", "centers", "topic", "frequency",
+    c("k", "centers", "topic", "frequency",
       "label", "docvars", "call", "version")
   )
   expect_null(
