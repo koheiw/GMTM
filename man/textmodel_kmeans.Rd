@@ -2,6 +2,7 @@
 % Please edit documentation in R/kmeans.R
 \name{textmodel_kmeans}
 \alias{textmodel_kmeans}
+\alias{as.textmodel_kmeans}
 \title{Topic analysis using k-means}
 \usage{
 textmodel_kmeans(
@@ -12,6 +13,8 @@ textmodel_kmeans(
   verbose = quanteda_options("verbose"),
   ...
 )
+
+as.textmodel_kmeans(x)
 }
 \arguments{
 \item{x}{a \link[wordvector:textmodel_doc2vec]{wordvector::textmodel_doc2vec} or a dense matrix of document vectors in the rows.}
@@ -41,9 +44,11 @@ corp <- head(wordvector::data_corpus_news2014, 1000)
 toks <- tokens(corp, remove_punct = TRUE,
                remove_symbols = TRUE, remove_numbers = TRUE) \%>\%
         tokens_remove(stopwords("en"), min_nchar = 2)
+dfmt <- dfm(toks)
 wov <- textmodel_word2vec(toks, dim = 50)
-dov <- as.textmodel_doc2vec(dfm(toks), wov)
+dov <- as.textmodel_doc2vec(dfmt, wov)
 
 km <- textmodel_kmeans(dov, k = 10)
 table(topics(km))
+terms(km, dfmt)
 }

@@ -3,8 +3,8 @@ build_gmm <- function(...) {
   args <- list(...)
   result <- list(
     k = NULL,
-    omit = NULL,
     centers = NULL,
+    topic = NULL,
     covariance = NULL,
     topic.likelihood = NULL,
     model.likelihood = NULL,
@@ -14,8 +14,8 @@ build_gmm <- function(...) {
     call = NULL,
     version = utils::packageVersion("GMTM")
   )
-  for (m in intersect(names(result), names(args$model)))
-    result[m] <- args$model[m]
+  for (m in intersect(names(result), names(args[["model"]])))
+    result[m] <- args[["model"]][m]
   for (n in intersect(names(result), names(args)))
     result[n] <- args[n]
   class(result) <- c("textmodel_gmm", "textmodel_gmtm")
@@ -28,7 +28,6 @@ build_kmeans <- function(...) {
   args <- list(...)
   result <- list(
     k = NULL,
-    omit = NULL,
     centers = NULL,
     topic = NULL,
     frequency = NULL,
@@ -37,8 +36,8 @@ build_kmeans <- function(...) {
     call = NULL,
     version = utils::packageVersion("GMTM")
   )
-  for (m in intersect(names(result), names(args$model)))
-    result[m] <- args$model[m]
+  for (m in intersect(names(result), names(args[["model"]])))
+    result[m] <- args[["model"]][m]
   for (m in intersect(names(result), names(args))) {
     result[m] <- args[m]
   }

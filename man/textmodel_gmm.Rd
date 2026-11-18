@@ -2,6 +2,7 @@
 % Please edit documentation in R/gmm.R
 \name{textmodel_gmm}
 \alias{textmodel_gmm}
+\alias{as.textmodel_gmm}
 \title{Topic analysis using Gaussian mixture models}
 \usage{
 textmodel_gmm(
@@ -9,10 +10,13 @@ textmodel_gmm(
   k = 10,
   model = NULL,
   seeds = NULL,
+  include_prob = TRUE,
   omit = NULL,
   verbose = quanteda_options("verbose"),
   ...
 )
+
+as.textmodel_gmm(x, include_prob = TRUE)
 }
 \arguments{
 \item{x}{a \link[wordvector:textmodel_doc2vec]{wordvector::textmodel_doc2vec} or a dense matrix of document vectors in the rows.}
@@ -23,7 +27,11 @@ textmodel_gmm(
 
 \item{seeds}{a matrix created using \link{as.seedwords}.}
 
-\item{omit}{indices of singular values of \code{x} to be zero. See the details.}
+\item{include_prob}{if \code{TRUE}, the resulting object includes \code{topic.likelihood} that records
+probabilities for all the topics. \code{include_prob = FALSE} reduces the size of the object
+significantly but limits its usage.}
+
+\item{omit}{[experimental] indices of singular values of \code{x} to be zero. See the details.}
 
 \item{verbose}{print the progress if \code{TRUE}.}
 
@@ -70,9 +78,11 @@ corp <- head(wordvector::data_corpus_news2014, 1000)
 toks <- tokens(corp, remove_punct = TRUE,
                remove_symbols = TRUE, remove_numbers = TRUE) \%>\%
         tokens_remove(stopwords("en"), min_nchar = 2)
+dfmt <- dfm(toks)
 wov <- textmodel_word2vec(toks, dim = 50)
-dov <- as.textmodel_doc2vec(dfm(toks), wov)
+dov <- as.textmodel_doc2vec(dfmt, wov)
 
 gmm <- textmodel_gmm(dov, k = 10)
 table(topics(gmm))
+terms(gmm, dfmt)
 }

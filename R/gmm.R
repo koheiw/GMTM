@@ -5,7 +5,10 @@
 #' @param k the number of topics to identify.
 #' @param model a fitted model from which initial centroids are extracted.
 #' @param seeds a matrix created using [GMTM::as.seedwords].
-#' @param omit indices of singular values of `x` to be zero. See the details.
+#' @param omit \[experimental\] indices of singular values of `x` to be zero. See the details.
+#' @param include_prob if `TRUE`, the resulting object includes `topic.likelihood` that records
+#'   probabilities for all the topics. `include_prob = FALSE` reduces the size of the object
+#'   significantly but limits its usage.
 #' @param verbose print the progress if `TRUE`.
 #' @param ... passed to the underlying function.
 #' @import Rcpp
@@ -46,14 +49,16 @@
 #' toks <- tokens(corp, remove_punct = TRUE,
 #'                remove_symbols = TRUE, remove_numbers = TRUE) %>%
 #'         tokens_remove(stopwords("en"), min_nchar = 2)
+#' dfmt <- dfm(toks)
 #' wov <- textmodel_word2vec(toks, dim = 50)
-#' dov <- as.textmodel_doc2vec(dfm(toks), wov)
+#' dov <- as.textmodel_doc2vec(dfmt, wov)
 #'
 #' gmm <- textmodel_gmm(dov, k = 10)
 #' table(topics(gmm))
+#' terms(gmm, dfmt)
 textmodel_gmm <- function(x, k = 10, model = NULL,
-                          seeds = NULL, omit = NULL,
-                          verbose = quanteda_options("verbose"),
+                          seeds = NULL, include_prob = TRUE,
+                          omit = NULL, verbose = quanteda_options("verbose"),
                           ...) {
   UseMethod("textmodel_gmm")
 }
@@ -61,12 +66,14 @@ textmodel_gmm <- function(x, k = 10, model = NULL,
 #' @export
 #' @method textmodel_gmm matrix
 textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
-                                 seeds = NULL, omit = NULL,
-                                 verbose = quanteda_options("verbose"),
+                                 seeds = NULL, include_prob = TRUE,
+                                 omit = NULL, verbose = quanteda_options("verbose"),
                                  ...) {
 
   if (any(is.na(x)))
     stop("x should not contain any NA")
+
+  include_prob <- check_logical(include_prob)
   verbose <- check_logical(verbose)
 
   if (!is.null(omit)) {
@@ -100,19 +107,23 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
   }
 
   temp <- cpp_gmm(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
+  temp$topic <- structure(max.col(temp$topic.likelihood), names = rownames(x))
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
-  temp$cluster[b] <- NA_real_
-  temp$topic.likelihood[b,] <- NA_real_
-  rownames(temp$topic.likelihood) <- rownames(x)
+  temp$topic[b] <- NA_real_
+  if (include_prob) {
+    temp$topic.likelihood[b,] <- NA_real_
+    rownames(temp$topic.likelihood) <- rownames(x)
+  } else {
+    temp$topic.likelihood <- NULL
+  }
 
   build_gmm(
     k = temp$k,
-    omit = omit,
     centers = temp$centers,
+    topic = temp$topic,
     covariance = temp$covariance,
-    #cluster = as.integer(temp$cluster + 1),
     topic.likelihood = temp$topic.likelihood,
     model.likelihood = temp$model.likelihood,
     label = label,
@@ -124,12 +135,13 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
 #' @method textmodel_gmm textmodel_doc2vec
 #' @import wordvector
 textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
-                                            seeds = NULL, omit = NULL,
-                                            verbose = quanteda_options("verbose"),
+                                            seeds = NULL, include_prob = TRUE,
+                                            omit = NULL, verbose = quanteda_options("verbose"),
                                             ...) {
 
   temp <- textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
-                        seeds = seeds, omit = omit, verbose = verbose, ...)
+                        seeds = seeds, include_prob = include_prob,
+                        omit = omit, verbose = verbose, ...)
   build_gmm(
     model = temp,
     frequency = x$frequency,
@@ -144,31 +156,31 @@ wordvector::probability
 
 #' Extract the probabilities for topics
 #' @inheritParams topics
-#' @param group a factor to group documents and average their probability for
-#' topics. Ignored if `x` is a `textmodel_kmeans` object.
 #' @param ... not used.
 #' @returns Returns the probabilities of topics as a matrix.
 #' @method probability textmodel_gmm
 #' @export
 probability.textmodel_gmm <- function(x, group = NULL, ...) {
+  x <- upgrade_gmm(x)
   get_probability(x, group)
 }
 
 #' Extract the most likely topics of documents
 #' @param x a fitted model.
-#' @param ... passed to [GMTM::probability.textmodel_gmm()].
+#' @param group a factor to group documents and average their probability for
+#' topics. Ignored if `x` is a `textmodel_kmeans` object.
+#' @param ... not used.
 #' @returns Returns predicted topics as a vector.
 #' @export
-topics <- function(x, ...) {
+topics <- function(x, group = NULL, ...) {
   UseMethod("topics")
 }
 
 #' @method topics textmodel_gmm
 #' @export
-topics.textmodel_gmm <- function(x, ...) {
-  if (x$k != length(x$label))
-    stop("The length of label is invalid")
-  get_topics(probability(x, ...))
+topics.textmodel_gmm <- function(x, group = NULL, ...) {
+  x <- upgrade_gmm(x)
+  get_topics(x, group)
 }
 
 #' Extract lost likely topic terms from documents
@@ -177,7 +189,6 @@ topics.textmodel_gmm <- function(x, ...) {
 #' @param n the number of topic words.
 #' @param data a [quanteda::dfm] or [quanteda::tokens] from which words are extracted
 #'   for each topic.
-#' @param filter a character vector of words to be included in the output.
 #' @param ... not used.
 #' @returns Returns a character matrix with the most distinctive words for each topic.
 #' @details
@@ -185,21 +196,26 @@ topics.textmodel_gmm <- function(x, ...) {
 #' the information about the frequency of individual words are lost in document vectors.
 #'
 #' When `x` is a `textmodel_gmm`, `data` is weighted by the documents' probabilities
-#' for topics to extract most likely terms. When `x` is `textmodel_kmeans` or a factor,
-#' `data` is grouped by topic and weighted by TF-IDF to select the most distinctive
-#' words for each topic (known as c-TF-IDF).
+#' for topics to extract most likely terms. When `x` is `textmodel_kmeans` or the
+#' output from [GMTM::topics], `data` is grouped by the topic and weighted by TF-IDF to select
+#' the most distinctive words for each topic (known as c-TF-IDF).
 #' @export
-terms <- function(x, data, n = 10, filter = NULL, ...) {
+terms <- function(x, data, n = 10, ...) {
   UseMethod("terms")
 }
 
 #' @method terms textmodel_gmm
 #' @export
-terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
+terms.textmodel_gmm <- function(x, data, n = 10, ...) {
+
+  check_args(data = data, ...)
+  x <- upgrade_gmm(x)
+  if (is.null(x$topic.likelihood))
+    stop("Use terms(topics(x), data) when x is fitted with include_prob = FALSE")
 
   data <- dfm(data, tolower = FALSE, remove_padding = TRUE,
               trim = FALSE, verbose = FALSE)
-  prob <- probability(x)
+  prob <- get_probability(x)
   d <- intersect(rownames(data), rownames(prob))
   if (length(d) == 0)
     stop ("data must contain documents on which the model was trained")
@@ -207,16 +223,14 @@ terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
   data <- dfm_sort(data) # give frequent words priority
   temp <- as.matrix(t(data[d,]) %*% prob[d,,drop = FALSE])
   names(dimnames(temp)) <- NULL
-
-  if (!is.null(filter))
-    temp <- temp[rownames(temp) %in% filter,, drop = FALSE]
   get_terms(temp, n = n)
 }
 
 #' @method terms factor
 #' @export
-terms.factor <- function(x, data, n = 10, filter = NULL, ...) {
+terms.factor <- function(x, data, n = 10, ...) {
 
+  check_args(data = data, ...)
   data <- dfm(data, tolower = FALSE, remove_padding = TRUE,
               trim = FALSE, verbose = FALSE)
   d <- intersect(rownames(data), names(x))
@@ -226,23 +240,93 @@ terms.factor <- function(x, data, n = 10, filter = NULL, ...) {
   temp <- dfm_group(data[d,], x[d], fill = TRUE, verbose = FALSE)
   temp <- t(as.matrix(dfm_tfidf(temp)))
   names(dimnames(temp)) <- NULL
-
-  if (!is.null(filter))
-    temp <- temp[rownames(temp) %in% filter,, drop = FALSE]
   get_terms(temp, n = n)
+}
+
+check_args <- function(...) {
+  args <- list(...)
+  if ("filter" %in% names(args)) {
+    if (is.dfm(args$data)) {
+      .Defunct(msg = "filter is defunct in v0.3.0; use dfm_select(data, pattern = filter) instead")
+    } else {
+      .Defunct(msg = "filter is defunct in v0.3.0; use tokens_select(data, pattern = filter) instead")
+    }
+  }
 }
 
 #' @method print textmodel_gmm
 #' @keywords internal
 #' @export
 print.textmodel_gmm <- function(x, ...) {
+  x <- upgrade_gmm(x)
   cat("\nCall:\n")
   print(x$call)
   cat("\n", prettyNum(x$k, big.mark = ","), " topics; ",
-      prettyNum(length(x$cluster), big.mark = ","), " documents; ",
+      prettyNum(length(x$topic), big.mark = ","), " documents.",
       "\n", sep = "")
 }
 
 is.textmodel_gmm <- function(x) {
   "textmodel_gmm" %in% class(x)
+}
+
+#' @rdname textmodel_gmm
+#' @export
+as.textmodel_gmm <- function(x, include_prob = TRUE) {
+  UseMethod("as.textmodel_gmm")
+}
+
+#' @export
+as.textmodel_gmm.textmodel_gmm <- function(x, include_prob = TRUE) {
+  x <- upgrade_gmm(x)
+  include_prob <- check_logical(include_prob)
+  if (!include_prob)
+    x$topic.likelihood <- NULL
+  build_gmm(
+    model = x,
+    call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  )
+}
+
+# internal functions -----------------------
+
+get_terms <- function(x, n = 10) {
+  if (nrow(x) == 0)
+    return(x)
+  if (nrow(x) == 1)
+    return(t(apply(x, 2, function(y) rownames(x)[1])))
+  utils::head(apply(x, 2, function(y) rownames(x)[order(y, decreasing = TRUE)]), n)
+}
+
+get_topics <- function(x, group = NULL) {
+
+  if (x$k != length(x$label))
+    stop("The length of label is invalid")
+
+  if (is.null(group)) {
+    topic <- factor(x$topic, levels = seq_along(x$label), labels = x$label)
+  } else {
+    prob <- get_probability(x, group)
+    topic <- structure(factor(max.col(prob, "first"),
+                              levels = seq_along(x$label), labels = x$label),
+                       names = rownames(prob))
+  }
+  return(topic)
+}
+
+get_probability <- function(x, group = NULL) {
+
+  if (is.null(x$topic.likelihood))
+    stop("The model does not include topic.likelihood")
+
+  if (!is.null(group)) {
+    if (length(group) != nrow(x$topic.likelihood))
+      stop("The length of group does not much the number of documents")
+    prob <- group_matrix(x$topic.likelihood, group)
+  } else {
+    prob <- x$topic.likelihood
+  }
+  colnames(prob) <- x$label
+
+  return(prob / rowSums(prob))
 }

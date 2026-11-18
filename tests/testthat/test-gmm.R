@@ -21,7 +21,7 @@ test_that("textmodel_gmm works with doc2vec", {
 
   expect_equal(
     names(gmm_test),
-    c("k", "omit", "centers", "covariance", "topic.likelihood",
+    c("k", "centers", "topic", "covariance", "topic.likelihood",
       "model.likelihood", "frequency", "label", "docvars",
       "call", "version")
   )
@@ -71,13 +71,15 @@ test_that("textmodel_gmm works with doc2vec", {
   expect_silent(
     terms(gmm_test, dfm_tfidf(dfmt_test))
   )
-  expect_equal(
-    dim(terms(gmm_test, dfmt_test[1:1000,], filter = "government")),
-    c(1, 10)
+  expect_error(
+    terms(gmm_test, dfmt_test[1:1000,], filter = "government"),
+    "filter is defunct in v0.3.0; use dfm_select(data, pattern = filter) instead",
+    fixed = TRUE
   )
-  expect_equal(
-    dim(terms(gmm_test, dfmt_test[1:1000,], filter = "xxxx")),
-    c(0, 10)
+  expect_error(
+    terms(gmm_test, toks_test[1:1000], filter = "government"),
+    "filter is defunct in v0.3.0; use tokens_select(data, pattern = filter) instead",
+    fixed = TRUE
   )
   expect_error(
     terms(gmm_test, tail(toks_test, 10)),
@@ -92,13 +94,15 @@ test_that("textmodel_gmm works with doc2vec", {
     dim(terms(topics(gmm_test), dfmt_test[1:1000,], 15)),
     c(15, 10)
   )
-  expect_equal(
-    dim(terms(topics(gmm_test), dfmt_test[1:1000,], filter = "government")),
-    c(1, 10)
+  expect_error(
+    terms(topics(gmm_test), dfmt_test[1:1000,], filter = "government"),
+    "filter is defunct in v0.3.0; use dfm_select(data, pattern = filter) instead",
+    fixed = TRUE
   )
-  expect_equal(
-    dim(terms(topics(gmm_test), dfmt_test[1:1000,], filter = "xxxx")),
-    c(0, 10)
+  expect_error(
+    terms(topics(gmm_test), toks_test[1:1000], filter = "government"),
+    "filter is defunct in v0.3.0; use tokens_select(data, pattern = filter) instead",
+    fixed = TRUE
   )
   expect_error(
     dim(terms(topics(gmm_test), tail(toks_test, 10), 15)),
@@ -138,7 +142,9 @@ test_that("textmodel_gmm works with doc2vec", {
   # print
   expect_output(
     print(gmm_test),
-    "Call:\ntextmodel_gmm\\(.*\\)"
+    paste0("Call:\ntextmodel_gmm\\(.*\\)",
+           ".*",
+           "10 topics; 5,000 documents\\.")
   )
 
   # error
@@ -157,11 +163,12 @@ test_that("textmodel_gmm works with doc2vec", {
 
 test_that("textmodel_gmm works with matrix", {
 
-  gmm_mat <- textmodel_gmm(as.matrix(dov_test))
+  mat <- as.matrix(dov_test)
+  gmm_mat <- textmodel_gmm(mat)
 
   expect_equal(
     names(gmm_mat),
-    c("k", "omit", "centers", "covariance", "topic.likelihood",
+    c("k", "centers", "topic", "covariance", "topic.likelihood",
       "model.likelihood", "frequency", "label", "docvars",
       "call", "version")
   )
@@ -197,8 +204,8 @@ test_that("model works with doc2vec", {
     gmm1 <- textmodel_gmm(dov_test, model = gmm0, iter_km = 0, verbose = FALSE),
     "k is overwritten by the fitted model"
   )
-  term0 <- terms(gmm0, dfmt_test, n = 10)
-  term1 <- terms(gmm1, dfmt_test, n = 10)
+  term0 <- terms(gmm0, dfmt_test, n = 20)
+  term1 <- terms(gmm1, dfmt_test, n = 30)
 
   expect_true(
     all(sapply(1:15, function(i) length(intersect(term0[,i], term1[,i]))) > 0),
@@ -258,9 +265,8 @@ test_that("omit works", {
     GMTM:::is.textmodel_gmm(gmm1)
   )
 
-  expect_identical(
-    gmm1$omit,
-    1L:3L
+  expect_null(
+    gmm1$omit
   )
 
   expect_error(
@@ -365,3 +371,133 @@ test_that("terms works with various data", {
 })
 
 
+test_that("get_probability is working", {
+
+  prob1 <- GMTM:::get_probability(gmm_test)
+  expect_equal(
+    rownames(prob1),
+    gmm_test$docvars$docname_
+  )
+  expect_equal(
+    dim(prob1),
+    c(5000, 10)
+  )
+
+  prob2 <- GMTM:::get_probability(gmm_test, group = gmm_test$docvars$docid_)
+  expect_equal(
+    rownames(prob2),
+    levels(gmm_test$docvars$docid_)
+  )
+  expect_equal(
+    dim(prob2),
+    c(1521, 10)
+  )
+
+})
+
+test_that("get_topics is working", {
+
+  topic1 <- GMTM:::get_topics(gmm_test)
+  expect_equal(length(topic1), 5000)
+  expect_true(is.factor(topic1))
+
+  topic2 <- GMTM:::get_topics(gmm_test, group = gmm_test$docvars$docid_)
+  expect_equal(length(topic2), 1521)
+  expect_true(is.factor(topic2))
+
+})
+
+test_that("get_terms is working", {
+
+  mat <- matrix(rnorm(50), ncol = 5)
+  dimnames(mat) <- list(head(letters, 10), paste0("topic", 1:5))
+
+  expect_equal(
+    dim(GMTM:::get_terms(mat)),
+    c(10, 5)
+  )
+  expect_equal(
+    dim(GMTM:::get_terms(mat, n = 3)),
+    c(3, 5)
+  )
+  expect_equal(
+    dimnames(GMTM:::get_terms(mat)),
+    list(NULL, paste0("topic", 1:5))
+  )
+  expect_equal(
+    dim(GMTM:::get_terms(mat[1,,drop = FALSE])),
+    c(1, 5)
+  )
+  expect_equal(
+    dimnames(GMTM:::get_terms(mat[1,,drop = FALSE])),
+    list(NULL, paste0("topic", 1:5))
+  )
+  expect_equal(
+    dim(GMTM:::get_terms(mat[0,,drop = FALSE])),
+    c(0, 5)
+  )
+  expect_equal(
+    dimnames(GMTM:::get_terms(mat[0,,drop = FALSE])),
+    list(NULL, paste0("topic", 1:5))
+  )
+
+})
+
+test_that("include_prob is working", {
+
+  gmm0 <- textmodel_gmm(dov_test, include_prob = TRUE)
+  expect_equal(
+    dimnames(gmm0$topic.likelihood),
+    list(names(gmm0$topic), NULL)
+  )
+  expect_error(
+    textmodel_gmm(dov_test, include_prob = c(TRUE, FALSE)),
+    "The length of include_prob must be 1"
+  )
+
+  gmm1 <- textmodel_gmm(dov_test, include_prob = FALSE)
+
+  expect_null(gmm1$topic.likelihood)
+  expect_equal(
+    levels(topics(gmm1)),
+    paste0("topic", 1:10)
+  )
+  expect_error(
+    probability(gmm1),
+    "The model does not include topic.likelihood"
+  )
+  expect_error(
+    terms(gmm1, dfmt_test),
+    "Use terms(topics(x), data) when x is fitted with include_prob = FALSE",
+    fixed = TRUE
+  )
+
+})
+
+test_that("as.textmodel_gmm() works with old objects", {
+
+  gmm_old <- readRDS("../data/gmm_v0.1.0.RDS")
+  gmm_new1 <- as.textmodel_gmm(gmm_old)
+  expect_equal(
+    names(gmm_new1),
+    c("k", "centers", "topic", "covariance", "topic.likelihood",
+      "model.likelihood", "frequency", "label", "docvars",
+      "call", "version")
+  )
+  expect_true(is.matrix(gmm_new1$topic.likelihood))
+
+  gmm_new2 <- as.textmodel_gmm(gmm_old, include_prob = FALSE)
+  expect_equal(
+    names(gmm_new2),
+    c("k", "centers", "topic", "covariance", "topic.likelihood",
+      "model.likelihood", "frequency", "label", "docvars",
+      "call", "version")
+  )
+  expect_null(gmm_new2$topic.likelihood)
+
+  expect_error(
+    as.textmodel_gmm(gmm_old, include_prob = c(TRUE, FALSE)),
+    "The length of include_prob must be 1"
+  )
+
+})

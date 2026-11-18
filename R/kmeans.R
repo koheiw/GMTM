@@ -17,11 +17,13 @@
 #' toks <- tokens(corp, remove_punct = TRUE,
 #'                remove_symbols = TRUE, remove_numbers = TRUE) %>%
 #'         tokens_remove(stopwords("en"), min_nchar = 2)
+#' dfmt <- dfm(toks)
 #' wov <- textmodel_word2vec(toks, dim = 50)
-#' dov <- as.textmodel_doc2vec(dfm(toks), wov)
+#' dov <- as.textmodel_doc2vec(dfmt, wov)
 #'
 #' km <- textmodel_kmeans(dov, k = 10)
 #' table(topics(km))
+#' terms(km, dfmt)
 textmodel_kmeans <- function(x, k = 10, model = NULL, seeds = NULL,
                              verbose = quanteda_options("verbose"), ...) {
   UseMethod("textmodel_kmeans")
@@ -61,8 +63,7 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
 
   temp <- cpp_kmeans(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
   dis <- proxyC::dist(x, t(temp$centers), sparse = FALSE)
-  topic <- max.col(-1 * dis ^ 2, ties.method = "first")
-  names(topic) <- rownames(x)
+  topic <- structure(max.col(-1 * dis ^ 2, ties.method = "first"), names = rownames(x))
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
@@ -95,12 +96,14 @@ textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = 
 #' @method topics textmodel_kmeans
 #' @export
 topics.textmodel_kmeans <- function(x, ...) {
+  x <- upgrade_kmeans(x)
   factor(x$topic, levels = seq_along(x$label), labels = x$label)
 }
 
 #' @method terms textmodel_kmeans
 #' @export
 terms.textmodel_kmeans <- function(x, data, n = 10, filter = NULL, ...) {
+  x <- upgrade_kmeans(x)
   terms(topics(x), data, n, filter, ...)
 }
 
@@ -108,13 +111,29 @@ terms.textmodel_kmeans <- function(x, data, n = 10, filter = NULL, ...) {
 #' @keywords internal
 #' @export
 print.textmodel_kmeans <- function(x, ...) {
+  x <- upgrade_kmeans(x)
   cat("\nCall:\n")
   print(x$call)
   cat("\n", prettyNum(x$k, big.mark = ","), " topics; ",
-      prettyNum(length(x$cluster), big.mark = ","), " documents; ",
+      prettyNum(length(x$topic), big.mark = ","), " documents.",
       "\n", sep = "")
 }
 
 is.textmodel_kmeans <- function(x) {
   "textmodel_kmeans" %in% class(x)
+}
+
+#' @rdname textmodel_kmeans
+#' @export
+as.textmodel_kmeans <- function(x) {
+  UseMethod("as.textmodel_kmeans")
+}
+
+#' @export
+as.textmodel_kmeans.textmodel_kmeans <- function(x) {
+  x <- upgrade_kmeans(x)
+  build_kmeans(
+    model = x,
+    call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  )
 }

@@ -4,7 +4,7 @@
 \alias{terms}
 \title{Extract lost likely topic terms from documents}
 \usage{
-terms(x, data, n = 10, filter = NULL, ...)
+terms(x, data, n = 10, ...)
 }
 \arguments{
 \item{x}{a fitted model or a factor from \code{GMTM::topics()}.}
@@ -13,8 +13,6 @@ terms(x, data, n = 10, filter = NULL, ...)
 for each topic.}
 
 \item{n}{the number of topic words.}
-
-\item{filter}{a character vector of words to be included in the output.}
 
 \item{...}{not used.}
 }
@@ -29,7 +27,7 @@ To identify topic terms, \code{data} must be provided along with a fitted model 
 the information about the frequency of individual words are lost in document vectors.
 
 When \code{x} is a \code{textmodel_gmm}, \code{data} is weighted by the documents' probabilities
-for topics to extract most likely terms. When \code{x} is \code{textmodel_kmeans} or a factor,
-\code{data} is grouped by topic and weighted by TF-IDF to select the most distinctive
-words for each topic (known as c-TF-IDF).
+for topics to extract most likely terms. When \code{x} is \code{textmodel_kmeans} or the
+output from \link{topics}, \code{data} is grouped by the topic and weighted by TF-IDF to select
+the most distinctive words for each topic (known as c-TF-IDF).
 }
