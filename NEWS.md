@@ -1,9 +1,10 @@
 ## GMTM version 0.3.0
 
 - Add `include_prob` to `textmodel_gmm()` to reduce the size of `textmodel_gmm` when it is `FALSE`.
+- Add `as.textmodel_gmm()` and `as.textmodel_kmeans()` to upgrade old objects to the current format.
 - Change the structure of objects while providing compatibility with the earlier versions of the package.
-- Remove `filter` from `terms()` in favor of applying `dfm_select()` or `tokens_select()` to `data`.
 - Change the `omit` argument to experimental.
+- Remove `filter` from `terms()` in favor of applying `dfm_select()` or `tokens_select()` to `data`.
 
 ## GMTM version 0.2.1
 

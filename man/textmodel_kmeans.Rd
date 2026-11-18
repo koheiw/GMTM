@@ -2,6 +2,7 @@
 % Please edit documentation in R/kmeans.R
 \name{textmodel_kmeans}
 \alias{textmodel_kmeans}
+\alias{as.textmodel_kmeans}
 \title{Topic analysis using k-means}
 \usage{
 textmodel_kmeans(
@@ -12,6 +13,8 @@ textmodel_kmeans(
   verbose = quanteda_options("verbose"),
   ...
 )
+
+as.textmodel_kmeans(x)
 }
 \arguments{
 \item{x}{a \link[wordvector:textmodel_doc2vec]{wordvector::textmodel_doc2vec} or a dense matrix of document vectors in the rows.}

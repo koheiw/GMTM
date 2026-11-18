@@ -2,6 +2,7 @@
 % Please edit documentation in R/gmm.R
 \name{textmodel_gmm}
 \alias{textmodel_gmm}
+\alias{as.textmodel_gmm}
 \title{Topic analysis using Gaussian mixture models}
 \usage{
 textmodel_gmm(
@@ -14,6 +15,8 @@ textmodel_gmm(
   verbose = quanteda_options("verbose"),
   ...
 )
+
+as.textmodel_gmm(x, include_prob = TRUE)
 }
 \arguments{
 \item{x}{a \link[wordvector:textmodel_doc2vec]{wordvector::textmodel_doc2vec} or a dense matrix of document vectors in the rows.}

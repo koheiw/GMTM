@@ -268,7 +268,7 @@ is.textmodel_gmm <- function(x) {
   "textmodel_gmm" %in% class(x)
 }
 
-#' @rdname as.textmodel_gmm
+#' @rdname textmodel_gmm
 #' @export
 as.textmodel_gmm <- function(x, include_prob = TRUE) {
   UseMethod("as.textmodel_gmm")
