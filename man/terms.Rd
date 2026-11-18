@@ -4,7 +4,7 @@
 \alias{terms}
 \title{Extract lost likely topic terms from documents}
 \usage{
-terms(x, data, n = 10, filter = NULL, ...)
+terms(x, data, n = 10, ...)
 }
 \arguments{
 \item{x}{a fitted model or a factor from \code{GMTM::topics()}.}
@@ -13,8 +13,6 @@ terms(x, data, n = 10, filter = NULL, ...)
 for each topic.}
 
 \item{n}{the number of topic words.}
-
-\item{filter}{a character vector of words to be included in the output.}
 
 \item{...}{not used.}
 }

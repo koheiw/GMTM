@@ -71,13 +71,15 @@ test_that("textmodel_gmm works with doc2vec", {
   expect_silent(
     terms(gmm_test, dfm_tfidf(dfmt_test))
   )
-  expect_equal(
-    dim(terms(gmm_test, dfmt_test[1:1000,], filter = "government")),
-    c(1, 10)
+  expect_error(
+    terms(gmm_test, dfmt_test[1:1000,], filter = "government"),
+    "filter is defunct in v0.3.0; use dfm_select(data, pattern = filter) instead",
+    fixed = TRUE
   )
-  expect_equal(
-    dim(terms(gmm_test, dfmt_test[1:1000,], filter = "xxxx")),
-    c(0, 10)
+  expect_error(
+    terms(gmm_test, toks_test[1:1000], filter = "government"),
+    "filter is defunct in v0.3.0; use tokens_select(data, pattern = filter) instead",
+    fixed = TRUE
   )
   expect_error(
     terms(gmm_test, tail(toks_test, 10)),
@@ -427,7 +429,8 @@ test_that("include_prob is working", {
   )
   expect_error(
     terms(gmm1, dfmt_test),
-    "The model does not include topic.likelihood"
+    "Use terms(topics(x), data) when x is fitted with include_prob = FALSE",
+    fixed = TRUE
   )
 
 })

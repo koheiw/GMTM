@@ -187,7 +187,6 @@ topics.textmodel_gmm <- function(x, group = NULL, ...) {
 #' @param n the number of topic words.
 #' @param data a [quanteda::dfm] or [quanteda::tokens] from which words are extracted
 #'   for each topic.
-#' @param filter a character vector of words to be included in the output.
 #' @param ... not used.
 #' @returns Returns a character matrix with the most distinctive words for each topic.
 #' @details
@@ -199,14 +198,19 @@ topics.textmodel_gmm <- function(x, group = NULL, ...) {
 #' output from [GMTM::topics], `data` is grouped by the topic and weighted by TF-IDF to select
 #' the most distinctive words for each topic (known as c-TF-IDF).
 #' @export
-terms <- function(x, data, n = 10, filter = NULL, ...) {
+terms <- function(x, data, n = 10, ...) {
   UseMethod("terms")
 }
 
 #' @method terms textmodel_gmm
 #' @export
-terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
+terms.textmodel_gmm <- function(x, data, n = 10, ...) {
+
+  check_args(data = data, ...)
   x <- upgrade_gmm(x)
+  if (is.null(x$topic.likelihood))
+    stop("Use terms(topics(x), data) when x is fitted with include_prob = FALSE")
+
   data <- dfm(data, tolower = FALSE, remove_padding = TRUE,
               trim = FALSE, verbose = FALSE)
   prob <- get_probability(x)
@@ -217,16 +221,14 @@ terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
   data <- dfm_sort(data) # give frequent words priority
   temp <- as.matrix(t(data[d,]) %*% prob[d,,drop = FALSE])
   names(dimnames(temp)) <- NULL
-
-  if (!is.null(filter))
-    temp <- temp[rownames(temp) %in% filter,, drop = FALSE]
   get_terms(temp, n = n)
 }
 
 #' @method terms factor
 #' @export
-terms.factor <- function(x, data, n = 10, filter = NULL, ...) {
+terms.factor <- function(x, data, n = 10, ...) {
 
+  check_args(data = data, ...)
   data <- dfm(data, tolower = FALSE, remove_padding = TRUE,
               trim = FALSE, verbose = FALSE)
   d <- intersect(rownames(data), names(x))
@@ -236,10 +238,18 @@ terms.factor <- function(x, data, n = 10, filter = NULL, ...) {
   temp <- dfm_group(data[d,], x[d], fill = TRUE, verbose = FALSE)
   temp <- t(as.matrix(dfm_tfidf(temp)))
   names(dimnames(temp)) <- NULL
-
-  if (!is.null(filter))
-    temp <- temp[rownames(temp) %in% filter,, drop = FALSE]
   get_terms(temp, n = n)
+}
+
+check_args <- function(...) {
+  args <- list(...)
+  if ("filter" %in% names(args)) {
+    if (is.dfm(args$data)) {
+      .Defunct(msg = "filter is defunct in v0.3.0; use dfm_select(data, pattern = filter) instead")
+    } else {
+      .Defunct(msg = "filter is defunct in v0.3.0; use tokens_select(data, pattern = filter) instead")
+    }
+  }
 }
 
 #' @method print textmodel_gmm
