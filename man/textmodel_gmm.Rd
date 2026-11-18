@@ -9,6 +9,7 @@ textmodel_gmm(
   k = 10,
   model = NULL,
   seeds = NULL,
+  include_prob = TRUE,
   omit = NULL,
   verbose = quanteda_options("verbose"),
   ...
@@ -22,6 +23,10 @@ textmodel_gmm(
 \item{model}{a fitted model from which initial centroids are extracted.}
 
 \item{seeds}{a matrix created using \link{as.seedwords}.}
+
+\item{include_prob}{if \code{TRUE}, the resulting object includes \code{topic.likelihood} that records
+probabilities for all the topics. \code{include_prob = FALSE} reduces the size of the object
+significantly but limits its usage.}
 
 \item{omit}{[experimental] indices of singular values of \code{x} to be zero. See the details.}
 

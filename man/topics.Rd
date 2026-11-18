@@ -4,12 +4,15 @@
 \alias{topics}
 \title{Extract the most likely topics of documents}
 \usage{
-topics(x, ...)
+topics(x, group = NULL, ...)
 }
 \arguments{
 \item{x}{a fitted model.}
 
-\item{...}{passed to \code{\link[=probability.textmodel_gmm]{probability.textmodel_gmm()}}.}
+\item{group}{a factor to group documents and average their probability for
+topics. Ignored if \code{x} is a \code{textmodel_kmeans} object.}
+
+\item{...}{not used.}
 }
 \value{
 Returns predicted topics as a vector.

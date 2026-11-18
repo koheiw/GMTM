@@ -8,7 +8,7 @@
 #' @param omit \[experimental\] indices of singular values of `x` to be zero. See the details.
 #' @param include_prob if `TRUE`, the resulting object includes `topic.likelihood` that records
 #'   probabilities for all the topics. `include_prob = FALSE` reduces the size of the object
-#'   significantly.
+#'   significantly but limits its usage.
 #' @param verbose print the progress if `TRUE`.
 #' @param ... passed to the underlying function.
 #' @import Rcpp
@@ -55,8 +55,8 @@
 #' gmm <- textmodel_gmm(dov, k = 10)
 #' table(topics(gmm))
 textmodel_gmm <- function(x, k = 10, model = NULL,
-                          seeds = NULL, include_prob = TRUE, omit = NULL,
-                          verbose = quanteda_options("verbose"),
+                          seeds = NULL, include_prob = TRUE,
+                          omit = NULL, verbose = quanteda_options("verbose"),
                           ...) {
   UseMethod("textmodel_gmm")
 }
@@ -64,8 +64,8 @@ textmodel_gmm <- function(x, k = 10, model = NULL,
 #' @export
 #' @method textmodel_gmm matrix
 textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
-                                 seeds = NULL, include_prob = TRUE, omit = NULL,
-                                 verbose = quanteda_options("verbose"),
+                                 seeds = NULL, include_prob = TRUE,
+                                 omit = NULL, verbose = quanteda_options("verbose"),
                                  ...) {
 
   if (any(is.na(x)))
@@ -133,8 +133,8 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
 #' @method textmodel_gmm textmodel_doc2vec
 #' @import wordvector
 textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
-                                            seeds = NULL, omit = NULL,
-                                            verbose = quanteda_options("verbose"),
+                                            seeds = NULL, include_prob = TRUE,
+                                            omit = NULL, verbose = quanteda_options("verbose"),
                                             ...) {
 
   temp <- textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
@@ -194,9 +194,9 @@ topics.textmodel_gmm <- function(x, group = NULL, ...) {
 #' the information about the frequency of individual words are lost in document vectors.
 #'
 #' When `x` is a `textmodel_gmm`, `data` is weighted by the documents' probabilities
-#' for topics to extract most likely terms. When `x` is `textmodel_kmeans` or a factor,
-#' `data` is grouped by topic and weighted by TF-IDF to select the most distinctive
-#' words for each topic (known as c-TF-IDF).
+#' for topics to extract most likely terms. When `x` is `textmodel_kmeans` or the
+#' output from [GMTM::topics], `data` is grouped by the topic and weighted by TF-IDF to select
+#' the most distinctive words for each topic (known as c-TF-IDF).
 #' @export
 terms <- function(x, data, n = 10, filter = NULL, ...) {
   UseMethod("terms")
