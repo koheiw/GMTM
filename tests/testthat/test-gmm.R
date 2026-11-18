@@ -441,7 +441,7 @@ test_that("include_prob is working", {
 
 test_that("as.textmodel_gmm() works with old objects", {
 
-  gmm_old <- readRDS("tests/data/gmm_v0.1.0.RDS")
+  gmm_old <- readRDS("../data/gmm_v0.1.0.RDS")
   gmm_new1 <- as.textmodel_gmm(gmm_old)
   expect_equal(
     names(gmm_new1),

@@ -193,7 +193,7 @@ test_that("kmeans errors with NA", {
 
 test_that("as.textmodel_kmeans() works with old objects", {
 
-  km_old <- readRDS("tests/data/kmeans_v0.1.0.RDS")
+  km_old <- readRDS("../data/kmeans_v0.1.0.RDS")
   km_new <- as.textmodel_kmeans(km_old)
   expect_equal(
     names(km_new),
