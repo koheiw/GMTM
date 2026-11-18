@@ -79,7 +79,7 @@ upgrade_gmm <- function(x) {
     x$topic <- structure(x$cluster, names = x$docname)
   }
   x[c("likelihood", "cluster.likelihood", "cluster", "docname")] <- NULL
-  x$version <- packageVersion("GMTM")
+  x$version <- utils::packageVersion("GMTM")
   return(x)
 }
 
@@ -92,7 +92,7 @@ upgrade_kmeans <- function(x) {
     x$topic <- structure(x$cluster, names = x$docname)
   }
   x[c("cluster", "docname")] <- NULL
-  x$version <- packageVersion("GMTM")
+  x$version <- utils::packageVersion("GMTM")
   return(x)
 }
 

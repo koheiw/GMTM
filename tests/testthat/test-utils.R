@@ -73,7 +73,7 @@ test_that("OMP is enabled", {
 
 test_that("upgrade_gmm is working", {
 
-  gmm_v01 <- upgrade_gmm(readRDS("../data/gmm_v0.1.0.RDS"))
+  gmm_v01 <- GMTM:::upgrade_gmm(readRDS("../data/gmm_v0.1.0.RDS"))
   expect_equal(
     dim(gmm_v01$topic.likelihood),
     c(1000, 10)
@@ -81,11 +81,11 @@ test_that("upgrade_gmm is working", {
   expect_setequal(gmm_v01$topic, 1L:10L)
   expect_equal(length(gmm_v01$topic), 1000)
   expect_equal(
-    gmm_v01$docvars$docname_,
+    names(gmm_v01$topic),
     names(head(wordvector::data_corpus_news2014, 1000))
   )
 
-  gmm_v02 <- upgrade_gmm(readRDS("../data/gmm_v0.2.0.RDS"))
+  gmm_v02 <- GMTM:::upgrade_gmm(readRDS("../data/gmm_v0.2.0.RDS"))
   expect_equal(
     dim(gmm_v02$topic.likelihood),
     c(1000, 10)
@@ -93,7 +93,7 @@ test_that("upgrade_gmm is working", {
   expect_setequal(gmm_v02$topic, 1L:10L)
   expect_equal(length(gmm_v02$topic), 1000)
   expect_equal(
-    gmm_v02$docvars$docname_,
+    names(gmm_v02$topic),
     names(head(wordvector::data_corpus_news2014, 1000))
   )
 
@@ -101,19 +101,19 @@ test_that("upgrade_gmm is working", {
 
 test_that("upgrade_kmeans is working", {
 
-  km_v01 <- upgrade_kmeans(readRDS("../data/kmeans_v0.1.0.RDS"))
+  km_v01 <- GMTM:::upgrade_kmeans(readRDS("../data/kmeans_v0.1.0.RDS"))
   expect_setequal(km_v01$topic, 1L:10L)
   expect_equal(length(km_v01$topic), 1000)
   expect_equal(
-    km_v01$docvars$docname_,
+    names(km_v01$topic),
     names(head(wordvector::data_corpus_news2014, 1000))
   )
 
-  km_v02 <- upgrade_kmeans(readRDS("../data/kmeans_v0.2.0.RDS"))
+  km_v02 <- GMTM:::upgrade_kmeans(readRDS("../data/kmeans_v0.2.0.RDS"))
   expect_setequal(km_v02$topic, 1L:10L)
   expect_equal(length(km_v02$topic), 1000)
   expect_equal(
-    km_v02$docvars$docname_,
+    names(km_v02$topic),
     names(head(wordvector::data_corpus_news2014, 1000))
   )
 
