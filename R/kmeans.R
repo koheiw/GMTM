@@ -17,11 +17,13 @@
 #' toks <- tokens(corp, remove_punct = TRUE,
 #'                remove_symbols = TRUE, remove_numbers = TRUE) %>%
 #'         tokens_remove(stopwords("en"), min_nchar = 2)
+#' dfmt <- dfm(toks)
 #' wov <- textmodel_word2vec(toks, dim = 50)
-#' dov <- as.textmodel_doc2vec(dfm(toks), wov)
+#' dov <- as.textmodel_doc2vec(dfmt, wov)
 #'
 #' km <- textmodel_kmeans(dov, k = 10)
 #' table(topics(km))
+#' terms(km, dfmt)
 textmodel_kmeans <- function(x, k = 10, model = NULL, seeds = NULL,
                              verbose = quanteda_options("verbose"), ...) {
   UseMethod("textmodel_kmeans")

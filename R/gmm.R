@@ -49,11 +49,13 @@
 #' toks <- tokens(corp, remove_punct = TRUE,
 #'                remove_symbols = TRUE, remove_numbers = TRUE) %>%
 #'         tokens_remove(stopwords("en"), min_nchar = 2)
+#' dfmt <- dfm(toks)
 #' wov <- textmodel_word2vec(toks, dim = 50)
-#' dov <- as.textmodel_doc2vec(dfm(toks), wov)
+#' dov <- as.textmodel_doc2vec(dfmt, wov)
 #'
 #' gmm <- textmodel_gmm(dov, k = 10)
 #' table(topics(gmm))
+#' terms(gmm, dfmt)
 textmodel_gmm <- function(x, k = 10, model = NULL,
                           seeds = NULL, include_prob = TRUE,
                           omit = NULL, verbose = quanteda_options("verbose"),
