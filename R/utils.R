@@ -67,10 +67,10 @@ upgrade_gmm <- function(x) {
     return(x)
 
   if (is.null(x[["topic.likelihood"]])) {
-    if (x$version < "0.2.0") {
+    if (!is.null(x[["likelihood"]])) { # < v0.2.0
       x$topic.likelihood <- x$likelihood
       rownames(x$topic.likelihood) <- x$docname
-    } else if (x$version < "0.3.0") {
+    } else if (!is.null(x[["cluster.likelihood"]])) { # < v0.3.0
       x$topic.likelihood <- x$cluster.likelihood
       rownames(x$topic.likelihood) <- x$docname
     }
