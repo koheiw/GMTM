@@ -61,8 +61,7 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
 
   temp <- cpp_kmeans(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
   dis <- proxyC::dist(x, t(temp$centers), sparse = FALSE)
-  topic <- max.col(-1 * dis ^ 2, ties.method = "first")
-  names(topic) <- rownames(x)
+  topic <- structure(max.col(-1 * dis ^ 2, ties.method = "first"), rownames(x))
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
@@ -95,12 +94,14 @@ textmodel_kmeans.textmodel_doc2vec <- function(x, k = 10, model = NULL, seeds = 
 #' @method topics textmodel_kmeans
 #' @export
 topics.textmodel_kmeans <- function(x, ...) {
+  x <- upgrade_kmeans(x)
   factor(x$topic, levels = seq_along(x$label), labels = x$label)
 }
 
 #' @method terms textmodel_kmeans
 #' @export
 terms.textmodel_kmeans <- function(x, data, n = 10, filter = NULL, ...) {
+  x <- upgrade_kmeans(x)
   terms(topics(x), data, n, filter, ...)
 }
 
@@ -108,6 +109,7 @@ terms.textmodel_kmeans <- function(x, data, n = 10, filter = NULL, ...) {
 #' @keywords internal
 #' @export
 print.textmodel_kmeans <- function(x, ...) {
+  x <- upgrade_kmeans(x)
   cat("\nCall:\n")
   print(x$call)
   cat("\n", prettyNum(x$k, big.mark = ","), " topics; ",

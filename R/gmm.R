@@ -105,7 +105,7 @@ textmodel_gmm.matrix <- function(x, k = 10, model = NULL,
   }
 
   temp <- cpp_gmm(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
-  temp$topic <- max.col(temp$topic.likelihood)
+  temp$topic <- structure(max.col(temp$topic.likelihood), names = rownames(x))
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
@@ -158,7 +158,6 @@ wordvector::probability
 #' @method probability textmodel_gmm
 #' @export
 probability.textmodel_gmm <- function(x, group = NULL, ...) {
-
   x <- upgrade_gmm(x)
   get_probability(x, group)
 }
@@ -177,7 +176,6 @@ topics <- function(x, group = NULL, ...) {
 #' @method topics textmodel_gmm
 #' @export
 topics.textmodel_gmm <- function(x, group = NULL, ...) {
-
   x <- upgrade_gmm(x)
   get_topics(x, group)
 }
@@ -207,9 +205,7 @@ terms <- function(x, data, n = 10, filter = NULL, ...) {
 #' @method terms textmodel_gmm
 #' @export
 terms.textmodel_gmm <- function(x, data, n = 10, filter = NULL, ...) {
-
   x <- upgrade_gmm(x)
-
   data <- dfm(data, tolower = FALSE, remove_padding = TRUE,
               trim = FALSE, verbose = FALSE)
   prob <- get_probability(x)
@@ -249,9 +245,7 @@ terms.factor <- function(x, data, n = 10, filter = NULL, ...) {
 #' @keywords internal
 #' @export
 print.textmodel_gmm <- function(x, ...) {
-
   x <- upgrade_gmm(x)
-
   cat("\nCall:\n")
   print(x$call)
   cat("\n", prettyNum(x$k, big.mark = ","), " topics; ",
@@ -279,8 +273,7 @@ get_topics <- function(x, group = NULL) {
     stop("The length of label is invalid")
 
   if (is.null(group)) {
-    topic <- structure(factor(x$topic, levels = seq_along(x$label), labels = x$label),
-                       names = x$docvars$docname_)
+    topic <- factor(x$topic, levels = seq_along(x$label), labels = x$label)
   } else {
     prob <- get_probability(x, group)
     topic <- structure(factor(max.col(prob, "first"),
@@ -301,7 +294,6 @@ get_probability <- function(x, group = NULL) {
     prob <- group_matrix(x$topic.likelihood, group)
   } else {
     prob <- x$topic.likelihood
-    rownames(prob) <- x$docvars$docname_
   }
   colnames(prob) <- x$label
 
