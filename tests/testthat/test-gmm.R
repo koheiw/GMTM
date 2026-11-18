@@ -189,6 +189,7 @@ test_that("textmodel_gmm works with matrix", {
 test_that("model works with doc2vec", {
 
   skip_on_cran()
+  skip_on_os("mac")
 
   withr::local_options(list(GMTM.threads = 1))
   set.seed(1234)

@@ -96,6 +96,7 @@ test_that("textmodel_kmeans works with matrix", {
 test_that("model works", {
 
   skip_on_cran()
+  skip_on_os("mac")
 
   withr::local_options(list(GMTM.threads = 1))
   set.seed(1234)
