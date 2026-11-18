@@ -113,10 +113,21 @@ print.textmodel_kmeans <- function(x, ...) {
   cat("\nCall:\n")
   print(x$call)
   cat("\n", prettyNum(x$k, big.mark = ","), " topics; ",
-      prettyNum(length(x$cluster), big.mark = ","), " documents; ",
+      prettyNum(length(x$topic), big.mark = ","), " documents.",
       "\n", sep = "")
 }
 
 is.textmodel_kmeans <- function(x) {
   "textmodel_kmeans" %in% class(x)
+}
+
+#' @rdname textmodel_kmeans
+#' @export
+as.textmodel_kmeans <- function(x) {
+  UseMethod("as.textmodel_kmeans")
+}
+
+#' @export
+as.textmodel_kmeans.textmodel_kmeans <- function(x) {
+  upgrade_kmeans(x)
 }

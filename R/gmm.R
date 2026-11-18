@@ -260,12 +260,26 @@ print.textmodel_gmm <- function(x, ...) {
   cat("\nCall:\n")
   print(x$call)
   cat("\n", prettyNum(x$k, big.mark = ","), " topics; ",
-      prettyNum(length(x$topic), big.mark = ","), " documents; ",
+      prettyNum(length(x$topic), big.mark = ","), " documents.",
       "\n", sep = "")
 }
 
 is.textmodel_gmm <- function(x) {
   "textmodel_gmm" %in% class(x)
+}
+
+#' @rdname as.textmodel_gmm
+#' @export
+as.textmodel_gmm <- function(x) {
+  UseMethod("as.textmodel_gmm")
+}
+
+#' @export
+as.textmodel_gmm.textmodel_gmm <- function(x, include_prob = TRUE) {
+  x <- upgrade_gmm(x)
+  if (!include_prob)
+    x$topic.likelihood <- NULL
+  return(x)
 }
 
 # internal functions -----------------------
