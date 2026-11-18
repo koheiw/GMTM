@@ -407,6 +407,42 @@ test_that("get_topics is working", {
 
 })
 
+test_that("get_terms is working", {
+
+  mat <- matrix(rnorm(50), ncol = 5)
+  dimnames(mat) <- list(head(letters, 10), paste0("topic", 1:5))
+
+  expect_equal(
+    dim(GMTM:::get_terms(mat)),
+    c(10, 5)
+  )
+  expect_equal(
+    dim(GMTM:::get_terms(mat, n = 3)),
+    c(3, 5)
+  )
+  expect_equal(
+    dimnames(GMTM:::get_terms(mat)),
+    list(NULL, paste0("topic", 1:5))
+  )
+  expect_equal(
+    dim(GMTM:::get_terms(mat[1,,drop = FALSE])),
+    c(1, 5)
+  )
+  expect_equal(
+    dimnames(GMTM:::get_terms(mat[1,,drop = FALSE])),
+    list(NULL, paste0("topic", 1:5))
+  )
+  expect_equal(
+    dim(GMTM:::get_terms(mat[0,,drop = FALSE])),
+    c(0, 5)
+  )
+  expect_equal(
+    dimnames(GMTM:::get_terms(mat[0,,drop = FALSE])),
+    list(NULL, paste0("topic", 1:5))
+  )
+
+})
+
 test_that("include_prob is working", {
 
   gmm0 <- textmodel_gmm(dov_test, include_prob = TRUE)
