@@ -61,7 +61,7 @@ textmodel_kmeans.matrix <- function(x, k = 10, model = NULL, seeds = NULL,
 
   temp <- cpp_kmeans(x, k, means = cl, verbose = verbose, threads = get_threads(), ...)
   dis <- proxyC::dist(x, t(temp$centers), sparse = FALSE)
-  topic <- structure(max.col(-1 * dis ^ 2, ties.method = "first"), rownames(x))
+  topic <- structure(max.col(-1 * dis ^ 2, ties.method = "first"), names = rownames(x))
 
   # NA for empty documents
   b <- rowSums(abs(x)) == 0
