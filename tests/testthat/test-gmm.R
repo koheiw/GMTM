@@ -21,7 +21,7 @@ test_that("textmodel_gmm works with doc2vec", {
 
   expect_equal(
     names(gmm_test),
-    c("k", "omit", "centers", "covariance", "topic.likelihood",
+    c("k", "centers", "topic", "covariance", "topic.likelihood",
       "model.likelihood", "frequency", "label", "docvars",
       "call", "version")
   )
@@ -157,11 +157,12 @@ test_that("textmodel_gmm works with doc2vec", {
 
 test_that("textmodel_gmm works with matrix", {
 
-  gmm_mat <- textmodel_gmm(as.matrix(dov_test))
+  mat <- as.matrix(dov_test)
+  gmm_mat <- textmodel_gmm(mat)
 
   expect_equal(
     names(gmm_mat),
-    c("k", "omit", "centers", "covariance", "topic.likelihood",
+    c("k", "centers", "topic", "covariance", "topic.likelihood",
       "model.likelihood", "frequency", "label", "docvars",
       "call", "version")
   )
@@ -258,9 +259,8 @@ test_that("omit works", {
     GMTM:::is.textmodel_gmm(gmm1)
   )
 
-  expect_identical(
-    gmm1$omit,
-    1L:3L
+  expect_null(
+    gmm1$omit
   )
 
   expect_error(
@@ -365,3 +365,68 @@ test_that("terms works with various data", {
 })
 
 
+test_that("get_probability is working", {
+
+  prob1 <- GMTM:::get_probability(gmm_test)
+  expect_equal(
+    rownames(prob1),
+    gmm_test$docvars$docname_
+  )
+  expect_equal(
+    dim(prob1),
+    c(5000, 10)
+  )
+
+  prob2 <- GMTM:::get_probability(gmm_test, group = gmm_test$docvars$docid_)
+  expect_equal(
+    rownames(prob2),
+    levels(gmm_test$docvars$docid_)
+  )
+  expect_equal(
+    dim(prob2),
+    c(1521, 10)
+  )
+
+})
+
+test_that("get_topics is working", {
+
+  topic1 <- GMTM:::get_topics(gmm_test)
+  expect_equal(length(topic1), 5000)
+  expect_true(is.factor(topic1))
+
+  topic2 <- GMTM:::get_topics(gmm_test, group = gmm_test$docvars$docid_)
+  expect_equal(length(topic2), 1521)
+  expect_true(is.factor(topic2))
+
+})
+
+test_that("include_prob is working", {
+
+  gmm0 <- textmodel_gmm(dov_test, include_prob = TRUE)
+  expect_equal(
+    dimnames(gmm0$topic.likelihood),
+    list(names(gmm0$topic), NULL)
+  )
+  expect_error(
+    textmodel_gmm(dov_test, include_prob = c(TRUE, FALSE)),
+    "The length of include_prob must be 1"
+  )
+
+  gmm1 <- textmodel_gmm(dov_test, include_prob = FALSE)
+
+  expect_null(gmm1$topic.likelihood)
+  expect_equal(
+    levels(topics(gmm1)),
+    paste0("topic", 1:10)
+  )
+  expect_error(
+    probability(gmm1),
+    "The model does not include topic.likelihood"
+  )
+  expect_error(
+    terms(gmm1, dfmt_test),
+    "The model does not include topic.likelihood"
+  )
+
+})
