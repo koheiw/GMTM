@@ -138,7 +138,8 @@ textmodel_gmm.textmodel_doc2vec <- function(x, k = 10, model = NULL,
                                             ...) {
 
   temp <- textmodel_gmm(as.matrix(x, normalize = FALSE), k = k, model = model,
-                        seeds = seeds, omit = omit, verbose = verbose, ...)
+                        seeds = seeds, include_prob = include_prob,
+                        omit = omit, verbose = verbose, ...)
   build_gmm(
     model = temp,
     frequency = x$frequency,
