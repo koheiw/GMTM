@@ -270,16 +270,20 @@ is.textmodel_gmm <- function(x) {
 
 #' @rdname as.textmodel_gmm
 #' @export
-as.textmodel_gmm <- function(x) {
+as.textmodel_gmm <- function(x, include_prob = TRUE) {
   UseMethod("as.textmodel_gmm")
 }
 
 #' @export
 as.textmodel_gmm.textmodel_gmm <- function(x, include_prob = TRUE) {
   x <- upgrade_gmm(x)
+  include_prob <- check_logical(include_prob)
   if (!include_prob)
     x$topic.likelihood <- NULL
-  return(x)
+  build_gmm(
+    model = x,
+    call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  )
 }
 
 # internal functions -----------------------

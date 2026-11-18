@@ -129,5 +129,9 @@ as.textmodel_kmeans <- function(x) {
 
 #' @export
 as.textmodel_kmeans.textmodel_kmeans <- function(x) {
-  upgrade_kmeans(x)
+  x <- upgrade_kmeans(x)
+  build_kmeans(
+    model = x,
+    call = try(match.call(sys.function(-1), call = sys.call(-1)), silent = TRUE)
+  )
 }

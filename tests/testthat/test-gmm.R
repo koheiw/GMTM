@@ -142,7 +142,9 @@ test_that("textmodel_gmm works with doc2vec", {
   # print
   expect_output(
     print(gmm_test),
-    "Call:\ntextmodel_gmm\\(.*\\)"
+    paste0("Call:\ntextmodel_gmm\\(.*\\)",
+           ".*",
+           "10 topics; 5,000 documents\\.")
   )
 
   # error
@@ -433,6 +435,34 @@ test_that("include_prob is working", {
     terms(gmm1, dfmt_test),
     "Use terms(topics(x), data) when x is fitted with include_prob = FALSE",
     fixed = TRUE
+  )
+
+})
+
+test_that("as.textmodel_gmm() works with old objects", {
+
+  gmm_old <- readRDS("tests/data/gmm_v0.1.0.RDS")
+  gmm_new1 <- as.textmodel_gmm(gmm_old)
+  expect_equal(
+    names(gmm_new1),
+    c("k", "centers", "topic", "covariance", "topic.likelihood",
+      "model.likelihood", "frequency", "label", "docvars",
+      "call", "version")
+  )
+  expect_true(is.matrix(gmm_new1$topic.likelihood))
+
+  gmm_new2 <- as.textmodel_gmm(gmm_old, include_prob = FALSE)
+  expect_equal(
+    names(gmm_new2),
+    c("k", "centers", "topic", "covariance", "topic.likelihood",
+      "model.likelihood", "frequency", "label", "docvars",
+      "call", "version")
+  )
+  expect_null(gmm_new2$topic.likelihood)
+
+  expect_error(
+    as.textmodel_gmm(gmm_old, include_prob = c(TRUE, FALSE)),
+    "The length of include_prob must be 1"
   )
 
 })
