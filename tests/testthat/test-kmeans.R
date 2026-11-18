@@ -98,7 +98,6 @@ test_that("textmodel_kmeans works with matrix", {
 test_that("model works", {
 
   skip_on_cran()
-  skip_on_os("mac")
 
   withr::local_options(list(GMTM.threads = 1))
   set.seed(1234)
@@ -109,8 +108,8 @@ test_that("model works", {
     "k is overwritten by the fitted model"
   )
 
-  term1 <- terms(km1, dfmt_test, n = 10)
-  term2 <- terms(km2, dfmt_test, n = 10)
+  term1 <- terms(km1, dfmt_test, n = 20)
+  term2 <- terms(km2, dfmt_test, n = 20)
 
   expect_true(
     all(sapply(1:15, function(i) length(intersect(term1[,i], term2[,i]))) > 0),

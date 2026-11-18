@@ -195,7 +195,6 @@ test_that("textmodel_gmm works with matrix", {
 test_that("model works with doc2vec", {
 
   skip_on_cran()
-  skip_on_os("mac")
 
   withr::local_options(list(GMTM.threads = 1))
   set.seed(1234)
@@ -205,8 +204,8 @@ test_that("model works with doc2vec", {
     gmm1 <- textmodel_gmm(dov_test, model = gmm0, iter_km = 0, verbose = FALSE),
     "k is overwritten by the fitted model"
   )
-  term0 <- terms(gmm0, dfmt_test, n = 10)
-  term1 <- terms(gmm1, dfmt_test, n = 10)
+  term0 <- terms(gmm0, dfmt_test, n = 20)
+  term1 <- terms(gmm1, dfmt_test, n = 30)
 
   expect_true(
     all(sapply(1:15, function(i) length(intersect(term0[,i], term1[,i]))) > 0),
