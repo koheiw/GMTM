@@ -2,6 +2,7 @@
 
 - Add `include_prob` to `textmodel_gmm()` to reduce the size of `textmodel_gmm` when it is `FALSE`.
 - Change the structure of objects while providing compatibility with the earlier versions of the package.
+- Remove `filter` from `terms()` in favor of applying `dfm_select()` or `tokens_select()` to `data`.
 - Change the `omit` argument to experimental.
 
 ## GMTM version 0.2.1

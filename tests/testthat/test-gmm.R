@@ -94,13 +94,15 @@ test_that("textmodel_gmm works with doc2vec", {
     dim(terms(topics(gmm_test), dfmt_test[1:1000,], 15)),
     c(15, 10)
   )
-  expect_equal(
-    dim(terms(topics(gmm_test), dfmt_test[1:1000,], filter = "government")),
-    c(1, 10)
+  expect_error(
+    terms(topics(gmm_test), dfmt_test[1:1000,], filter = "government"),
+    "filter is defunct in v0.3.0; use dfm_select(data, pattern = filter) instead",
+    fixed = TRUE
   )
-  expect_equal(
-    dim(terms(topics(gmm_test), dfmt_test[1:1000,], filter = "xxxx")),
-    c(0, 10)
+  expect_error(
+    terms(topics(gmm_test), toks_test[1:1000], filter = "government"),
+    "filter is defunct in v0.3.0; use tokens_select(data, pattern = filter) instead",
+    fixed = TRUE
   )
   expect_error(
     dim(terms(topics(gmm_test), tail(toks_test, 10), 15)),
